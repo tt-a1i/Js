@@ -691,3 +691,53 @@ Tree-shaking 是指在`打包时能够更有效地剔除未使用的代码`，�
 Tree-shaking 是`通过标记和移除未被引用的代码`来实现的，这样可以减少浏览器需要下载和解析的代码量，从而提高应用程序的加载速度和性能。
 
 假设我们有一个 Vue 组件库，其中包含了很多常用的 UI 组件，例如按钮、输入框、对话框等。在某个应用程序中，我们`只使用了其中的按钮和输入框组件，而没有使用对话框组件`。在使用 Tree-shaking 特性后，打包工具会`识别出对话框组件没有被使用`，因此会`将其从最终的构建文件中移除`，减少了打包文件的体积。
+
+## 组件懒加载
+
+指`初始加载页面时`并`不一次性加载所有组件`的代码，而是`仅加载当前视图所需的最少组件`，其他非关键组件的代码会在用户`实际需要它们时`（通常是在用户导航到特定路由或交互触发时）`按需加载`。
+
+#### **动态导入（Dynamic Import）**： 
+
+使用ES6的`import()`函数，它返回一个Promise，可以在运行时异步加载模块。
+
+#### **路由级别的懒加载**：
+
+ 在基于路由的SPA中，可以`配置路由规则`，使得只有当用户导航到特定路由时，对应的组件代码才会被加载。`许多路由库`（如React Router、`Vue Router`等）都`内置了对懒加载的支持`。
+
+## CSS懒加载
+
+**CSS懒加载**则是指`推迟非关键CSS资源的加载`,直到它们对当前视口或即将可见的内容变得必要时再进行加载
+
+这样做可以减少页面首次加载时的网络请求数量和总下载量，加速首屏渲染，尤其是对于长页面或滚动式网站。
+
+CSS懒加载的常见实现方式包括：
+
+#### **媒体查询（Media Queries）**：
+
+ 利用CSS媒体查询的特性，可以将非关键CSS放在一个外部样式表中，并通过`media`属性设置条件。只有当用户的设备或浏览器窗口满足特定条件时，浏览器才会加载相应的样式表。
+
+```javascript
+<link rel="stylesheet" href="critical.css" media="screen">
+<link rel="stylesheet" href="non-critical.css" media="(min-width: 1024px)">
+```
+
+#### **Intersection Observer API**：
+
+ 结合JavaScript，特别是`Intersection Observer API`，可以`检测某个包含CSS链接的HTML元素何时进入视口（或接近视口）`。当元素变为可见时，才动态插入CSS链接，触发CSS文件的加载。
+
+```javascript
+let link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href = 'non-critical.css';
+
+const observer = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting) {
+    document.head.appendChild(link);
+    observer.disconnect();
+  }
+});
+
+const triggerElement = document.querySelector('#trigger');
+observer.observe(triggerElement);
+```
+
