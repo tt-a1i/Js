@@ -752,3 +752,267 @@ console.log(typeof(new Number(1)));//Object
    xhr.send();
    
    ```
+
+## bind、call、apply 区别
+
+`bind`、`call` 和 `apply` 都是 JavaScript 中用于`改变函数执行上下文`的方法
+
+- 三者都可以改变函数的`this`对象指向
+- 三者第一个参数都是`this`要指向的对象，如果如果没有这个参数或参数为`undefined`或`null`，则默认指向全局`window`
+- 三者都可以传参，但是`apply`是数组，而`call`是参数列表，且`apply`和`call`是一次性传入参数，而`bind`可以分为多次传入
+- `bind`是返回绑定this之后的函数，`apply`、`call` 则是立即执行
+
+##### 实现一个Bind
+
+```javascript
+Function.prototype.myBind = function (context) {
+    var self = this; // 保存原函数的引用
+    var args = Array.prototype.slice.call(arguments, 1); // 获取除 context 外的参数
+
+    return function () { // 返回一个新函数
+        var bindArgs = Array.prototype.slice.call(arguments); // 获取新函数的参数
+        return self.apply(context, args.concat(bindArgs)); // 使用 apply 执行原函数，将 context 和参数合并传入
+    };
+};
+```
+
+## 正则表达式
+
+在 `JavaScript`中，正则表达式也是对象
+
+计思想是用一种描述性的语言定义一个规则
+
+构建正则表达式有两种方式
+
+- 字面量创建，其由包含在斜杠之间的模式组成
+
+  ```javascript
+  const re = /\d+/g;
+  ```
+
+- 调用`RegExp`对象的构造函数
+
+  ```javascript
+  const re = new RegExp("\\d+","g");
+  
+  const rul = "\\d+"
+  const re1 = new RegExp(rul,"g");
+  ```
+
+#### 特点
+
+1. **灵活性：** 正则表达式可以描述各种复杂的字符串模式，包括字符、数字、特殊符号等。
+2. **强大的匹配能力：** 正则表达式可以匹配多种字符组合，包括连续字符、单词、数字等。
+3. **通用性：** 正则表达式是跨平台、跨语言的，几乎所有的编程语言都支持正则表达式。
+
+#### 应用场景：
+
+1. **字符串匹配：** 可以用于搜索文本中特定模式的字符串。
+2. **数据验证：** 可以用于验证用户输入的数据格式是否符合要求，例如邮箱、电话号码等。
+3. **字符串替换：** 可以用于将文本中特定模式的字符串替换为其他内容。
+4. **文本提取：** 可以用于从文本中提取特定格式的信息，例如从网页中提取链接、标题等。
+5. **日志分析：** 可以用于分析日志文件中特定格式的信息。
+
+## 事件循环
+
+事件循环（Event Loop）是 `JavaScript 运行时环境中的一种机制`，用于`处理异步任务和事件处理`,`实现单线程非阻塞`。在 JavaScript 中，单线程的执行模型意味着所有的代码都是按顺序执行的，不能同时处理多个任务。但是，`JavaScript 又支持异步编程`，例如通过`定时器`、`事件监听`、`Promise` 等方式`实现的异步操作`。`事件循环机制就是用来管理和调度这些异步任务的执行顺序`。
+
+`同步任务`进入`主线程`，即`主执行栈`，`异步任务`进入`任务队列`，主线程内的任务执行完毕为空，会去任务队列读取对应的任务，推入主线程执行。上述过程的不断重复就事件循环
+
+#### 异步任务还可以细分为微任务与宏任务
+
+- 宏列队: 用来保存待执行的`宏任务`(回调), 比如: `定时器回调`/`DOM 事件回调`/`ajax 回调`
+- 微列队: 用来保存待执行的`微任务`( 回调), 比如:` promise` 的回调/`MutationObserver` 的回调
+
+*JS 执行时会区别这2 个队列*
+
+　　*JS 引擎`首先必须先执行`所有的`初始化同步任务代码`*
+
+　　每次准备取出第一个宏任务执行前, 都要将所有的微任务一个一个取出**执行**
+
+**promise是微任务优先于定时器执行**
+
+
+
+常见的宏任务有：
+
+- script (可以理解为外层同步代码)
+- setTimeout/setInterval
+- UI rendering/UI事件
+- postMessage、MessageChannel
+- setImmediate、I/O（Node.js）
+
+
+
+`async`是用来声明一个异步方法，而 `await`是用来等待异步方法执行, `async`函数返回一个`promise`对象
+
+不管`await`后面跟着的是什么，`await`都会阻塞后面的代码
+
+##### 示例
+
+```javascript
+async function async1() {
+    console.log('async1 start')
+    await async2()
+    console.log('async1 end')
+}
+async function async2() {
+    console.log('async2')
+}
+console.log('script start')
+setTimeout(function () {
+    console.log('settimeout')
+})
+async1()
+new Promise(function (resolve) {
+    console.log('promise1')
+    resolve()
+}).then(function () {
+    console.log('promise2')
+})
+console.log('script end')
+```
+
+最后的结果是：`script start`、`async1 start`、`async2`、`promise1`、`script end`、`async1 end`、`promise2`、`settimeout`
+
+```javascript
+async function fn1 (){
+    console.log(1)
+    await fn2()
+    console.log(2) // 阻塞
+}
+
+async function fn2 (){
+    console.log('fn2')
+}
+
+fn1()
+console.log(3)
+```
+
+执行结果: `1` `fn2` `3` `2`
+
+## 常见Dom操作
+
+#### 什么是dom
+
+DOM（Document Object Model，`文档对象模型`）是一种`用于表示和操作网页文档的编程接口`。它`将整个 HTML 或 XML 文档表示为一个树状结构`，其中`每个节点都是文档中的一个元素、属性或文本`。通过 DOM，可以使用编程方式访问、操作和修改网页的内容、结构和样式
+
+#### 主要特点：
+
+1. **树状结构：** DOM 将文档表示为一个`树状结构`，由多个节点组成，包括元素节点、文本节点、属性节点等。
+2. **对象模型：** DOM 将文档中的`每个部分都表示为一个对象`，通过操作这些对象可以实现对文档内容、结构和样式的控制。
+3. **平台和语言无关：** DOM 是`与平台和语言无关的标准`，因此`可以在各种编程语言和平台上使用`，例如 JavaScript、Python、Java 等。
+4. **动态性：** 由于 DOM 可以通过编程方式修改，因此`可以实现动态地更新页面内容、结构和样式`。
+
+#### 常见的 DOM 操作
+
+1. **获取元素：**
+   - `document.getElementById()`: 根据元素的 id 获取元素对象。
+   - `document.getElementsByClassName()`: 根据类名获取元素对象集合。
+   - `document.getElementsByTagName()`: 根据标签名获取元素对象集合。
+   - `document.querySelector()`: 根据 CSS 选择器获取第一个匹配的元素对象。
+   - `document.querySelectorAll()`: 根据 CSS 选择器获取所有匹配的元素对象集合。
+2. **创建元素：**
+   - `document.createElement()`: 创建新的元素节点。
+   - `document.createTextNode()`: 创建新的文本节点。
+3. **插入、删除和替换元素：**
+   - `parentNode.appendChild()`: 将一个新的子节点添加到指定节点的子节点列表的末尾。
+   - `parentNode.removeChild()`: 从父节点中移除一个子节点。
+   - `parentNode.replaceChild()`: 用一个新的节点替换父节点中的一个子节点。
+   - `parentNode.insertBefore()`: 在指定的已有子节点之前插入新的子节点。
+4. **修改元素的属性和样式：**
+   - `element.setAttribute()`: 设置元素的属性值。
+   - `element.getAttribute()`: 获取元素的属性值。
+   - `element.style.property`: 直接设置元素的 CSS 样式。
+   - `element.classList.add()`: 添加一个类名到元素的类列表中。
+   - `element.classList.remove()`: 从元素的类列表中移除一个类名。
+   - `element.classList.toggle()`: 如果元素的类列表中存在指定的类名，则删除它；如果不存在，则添加它。
+5. **事件处理：**
+   - `element.addEventListener()`: 绑定事件监听器。
+   - `element.removeEventListener()`: 移除事件监听器。
+   - `element.onclick`: 直接设置元素的点击事件处理函数。
+6. **获取和修改元素内容：**
+   - `element.innerHTML`: 获取或设置元素的 HTML 内容。
+   - `element.innerText`: 获取或设置元素的文本内容。
+   - `element.textContent`: 获取或设置元素的纯文本内容。
+
+## BOM
+
+#### 什么是BOM
+
+BOM（Browser Object Model，`浏览器对象模型`）是 `JavaScript 中`用于`操作浏览器窗口和浏览器本身的一组对象`。它`提供了一系列的对象和方法`，`用于获取和控制浏览器窗口`、`导航`、历史记录、屏幕信息等。
+
+`Bom`的核心对象是`window`，它表示浏览器的一个实例
+
+浏览器中，`window`对象有双重角色，即是浏览器窗口的一个接口，又是全局对象
+
+因此所有在全局作用域中声明的变量、函数都会变成`window`对象的属性和方法
+
+#### 常见的 BOM 对象：
+
+1. **window 对象：** 代表浏览器窗口，是 BOM 中的核心对象，包含了很多属性和方法，例如 `window.location`、`window.document`、`window.alert()` 等。
+2. **navigator 对象：** 包含有关浏览器的信息，例如浏览器类型、版本、操作系统等，常用属性有 `navigator.userAgent`、`navigator.platform`。
+3. **screen 对象：** 包含有关用户屏幕的信息，例如屏幕宽度、高度、像素深度等，常用属性有 `screen.width`、`screen.height`、`screen.availWidth` 等。
+4. **history 对象：** 用于操作浏览器的历史记录，可以前进、后退、跳转到指定页面等，常用方法有 `history.back()`、`history.forward()`、`history.go()`。
+5. **location 对象：** 包含有关当前 URL 的信息，可以用于获取和修改浏览器的当前地址，常用属性有 `location.href`、`location.pathname`、`location.search`、`location.hash` 等。
+6. **document 对象：** 代表当前网页的文档，可以用于操作网页中的元素、样式、内容等，常用方法有 `document.getElementById()`、`document.createElement()`、`document.querySelector()` 等。
+7. **event 对象：** 包含有关当前事件的信息，例如事件的类型、目标元素等，常用属性有 `event.type`、`event.target`。
+8. **XMLHttpRequest 对象：** 用于在后台与服务器交换数据，可以实现异步加载数据，常用于 AJAX 请求。
+
+## JavaScript 中内存泄漏的几种情况
+
+JavaScript 中的内存泄漏指的是程序中`不再需要的内存仍然被占用`，`无法被及时释放`，`最终导致内存占用过高或者持续增长`，影响程序性能和稳定性。
+
+Javascript 具有自动垃圾回收机制（GC：Garbage Collecation），也就是说，`执行环境会负责管理代码执行过程中使用的内存`
+
+两种方式:
+
+- 标记清理
+- 引用计数
+
+#### 常见的引起内存泄漏的情况
+
+1. **未释放的引用：** `当一个对象不再被使用，但仍然被其他对象持有引用`，导致对象无法被垃圾回收器识别和释放。这种情况通常发生在循环引用、闭包、事件绑定等场景中。
+2. **定时器未清理：** 如果定时器未被正确清理或者重复设置，会导致定时器中的回调函数一直存在引用，即使不再需要，也无法被垃圾回收器回收。
+3. **DOM 节点未移除：** 当页面上的 DOM 节点被移除或者替换时，如果没有及时清理相关的事件监听器、数据绑定等，会导致 DOM 节点及其相关的对象无法被释放。
+4. **全局变量未销毁：** 如果全局变量不再需要但没有被及时销毁，会一直存在于内存中，无法被回收。
+5. **闭包：** 闭包中的变量在函数执行完毕后依然存在于内存中，如果闭包中引用了大量的外部变量或者其他对象，可能导致内存泄漏。
+6. **缓存：** `缓存数据未被正确管理`，如果缓存过多或者缓存时间过长，会占用大量内存，导致内存泄漏。
+
+## Javascript本地存储的方式有哪些？区别及应用场景？
+
+- cookie
+- sessionStorage
+- localStorage
+- indexedDB
+
+#### cookie
+
+为了解决 `HTTP`无状态导致的问题
+
+- **特点：** Cookie 是一小段数据，由服务器发送到浏览器并保存在本地，`每次请求时都会被发送`到服务器。Cookie `可以设置过期时间`，`可以跨域名访问`，但每个 Cookie 的大小通常受到限制。
+- **应用场景：** 适合存储小量的`用户信息`、`会话标识`等，例`如用户登录状态`、`用户偏好设置`等。
+
+#### **Web Storage（LocalStorage 和 SessionStorage）**
+
+- 生命周期：持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的
+- 存储的信息在同一域中是共享的
+- 当本页操作（新增、修改、删除）了`localStorage`的时候，本页面不会触发`storage`事件,但是别的页面会触发`storage`事件。
+- 大小：`5M（跟浏览器厂商有关系）`
+- `localStorage`本质上是对字符串的读取，如果存储内容多的话会消耗内存空间，会导致页面变卡
+- 受同源策略的限制
+
+**应用场景：** 适合`存储大量的用户数据`、`本地缓存`、`Web 应用的状态`等，例`如用户偏好`设置、`表单数据`、缓存的页面内容等。
+
+**两个缺点：**
+
+- `无法`像`Cookie`一样`设置过期时间`
+- `只能存入字符串`，`无法直接存对象`
+
+SessionStorage 数据`只在当前会话有效`，`页面关闭后就会被清除`。
+
+#### indexedDB
+
+- **特点：** IndexedDB 是一个`浏览器提供的本地数据库`，`允许存储大量结构化数据`，并提供强大的查询和索引功能。IndexedDB 是`异步操作`，`可以在后台处理大量数据`。
+- **应用场景：** `适合存储大量结构化的数据`，例如`离线应用数据`、`复杂的客户端缓存`、大规模数据的本地存储等。
