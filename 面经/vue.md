@@ -741,3 +741,12 @@ const triggerElement = document.querySelector('#trigger');
 observer.observe(triggerElement);
 ```
 
+## vuex
+
+![vuex](https://vuex.vuejs.org/vuex.png)
+
+## 处理Token过期或失效
+
+1. ```
+   清除本地token（本地存储），让用户回到登录页，获取最新的token
+   ```
