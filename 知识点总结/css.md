@@ -340,7 +340,28 @@ display: none; 样式会立即隐藏元素，并触发回流和重绘，但是�
 
 ## 行内元素、块级元素、空元素
 
-![image-20240323223844616](F:\360MoveData\Users\28018\Desktop\知识点图片\image-20240323223844616.png)
+| 类型         | 元素                                                         |
+| :----------- | :----------------------------------------------------------- |
+| 块级元素     | `<div>`, `<p>`, `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>`, `<ol>`, `<ul>`, `<li>`, `<table>`, `<form>`, `<header>`, `<footer>`, `<section>`, `<article>`, `<nav>`, `<aside>` |
+| 行内元素     | `<span>`, `<a>`, `<strong>`, `<b>`, `<em>`, `<i>`, `<u>`, `<sub>`, `<sup>`, `<img>`, `<label>`, `<textarea>`, `<input>`（部分情况除外）, `<button>`（部分情况除外） |
+| 行内块级元素 | `<img>`, `<input>`, `<label>`, `<button>`                    |
+
+### 块级元素（Block-level elements）
+
+- **布局特性**：通常会占据调用它的容器的整个宽度，并且其后的元素会在新的一行显示。
+- **常见用途**：用于创建文档或应用的结构布局。
+
+### 行内元素（Inline elements）
+
+- **布局特性**：不会独占一行，其宽度仅包围其内容。
+- **常见用途**：用于标记文本，可以在段落内部或其他块级元素内部使用，而不会引起文本换行。
+
+### 行内块级元素（Inline-block elements）
+
+- **布局特性**：类似于行内元素，不会导致换行；同时具有块级元素的某些特性，如设置宽度和高度。
+- **常见用途**：适合在需求同时需要行内布局和宽高控制的场景。
+
+请注意，这个表格中的分类是基于元素的默认显示类型，但CSS可以修改这些元素的默认行为（例如，使用`display:block`，`display:inline`或`display:inline-block`等CSS属性）。
 
 ## Css预编语言
 
@@ -364,3 +385,145 @@ CSS预处理器是一种将类似于编程语言的特性引入CSS的工具，�
 6. **代码压缩和优化**：
    - 预处理器通常提供了代码压缩和优化的功能，可以将编写的样式文件编译为精简的CSS文件，减少页面加载时间。
    - 原生CSS没有这样的功能，需要手动进行代码压缩和优化
+
+## SCSS
+
+SCSS（Sassy CSS）是一种 CSS 预处理语言，它扩展了 CSS 的功能并且提供了更多程序化的特性。SCSS 通过 Sass（Syntactically Awesome Style Sheets）来处理，Sass 是一个成熟、稳定、且强大的 CSS 扩展语言。SCSS 让你可以使用变量、嵌套规则、混入（mixins）、继承以及更多有助于编写可维护和重用的样式表的功能。
+
+### 主要特性
+
+#### 1. 变量
+
+你可以存储一些经常使用的样式值，如颜色、字体或任何 CSS 值，并且通过一个方便的名称来重用它们。这让你的 CSS 代码更容易维护和更新。
+
+```scss
+$font-stack: Helvetica, sans-serif;
+$primary-color: #333;
+
+body {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+```
+
+#### 2. 嵌套
+
+SCSS 允许你使用嵌套语法，让 CSS 规则的结构更清晰和更紧凑。这样的方式使得继承父选择器的制定更为直观。
+
+```scss
+nav {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li { display: inline-block; }
+
+  a {
+    display: block;
+    padding: 6px 12px;
+    text-decoration: none;
+  }
+}
+```
+
+#### 3. 混入
+
+混入允许你创建可复用的代码块，并且可以包含全部的 CSS 属性。
+
+```scss
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+.box { @include border-radius(10px); }
+```
+
+#### 4. 导入
+
+SCSS 提供了一个更加强大的 `@import` 规则，它允许你导入其他样式表文件，这有助于你组织和模块化你的样式代码。
+
+#### 5. 继承
+
+使用 `@extend`，你可以让一个选择器继承另一个选择器的样式。这是一个简单强大的方式来避免重复代码，并保持样式表的整洁和可读性。
+
+```scss
+.error {
+  border: 1px #f00;
+  background-color: #fdd;
+}
+
+.seriousError {
+  @extend .error;
+  border-width: 3px;
+}
+```
+
+#### 6. 控制指令
+
+SCSS 提供了一些编程结构如条件语句和循环，这些可以用来动态生成样式。
+
+```scss
+@for $i from 1 through 10 {
+  .border-#{$i} { border-width: #{$i}px; }
+}
+```
+
+## SVG的属性
+
+###  核心属性
+
+- **id:** 定义唯一标识符。
+- **class:** 指定应用一个或多个类。
+- **style:** 用于指定CSS样式。
+
+### 2. 图形属性
+
+- **fill:** 定义图形的`填充颜色`。
+- **stroke:** 定义图形`轮廓的颜色`。
+- **stroke-width:** 定义`轮廓的宽度`。
+
+### 3. 位置与尺寸属性
+
+- **x, y:** 用于定义元素的`位置`。
+- **width, height:** 用来`定义元素的宽度和高度`。
+- **cx, cy:** 对于圆形元素，`定义圆心位置`。
+- **r:** 对于圆形元素，`定义半径`。
+- **d:** 用于`<path>`元素，`定义路径`。
+
+### 4. 变换属性
+
+- **transform:** 应用于元素的变换，如平移（`translate`）、缩放（`scale`）、旋转(`rotate`)、斜切(`skewX`, `skewY`)。
+
+### 5. 文本属性
+
+- **text-anchor:** 定义文本的对齐方式（如`start`, `middle`, `end`）。
+- **font-size, font-family, font-weight:** 分别设置字体大小、字体族和字体粗细。
+
+### 6. 视图控制属性
+
+- **viewBox:** 定义要从SVG图像中显示的部分。
+- **preserveAspectRatio:** 控制SVG图形在不同视口尺寸下的缩放和对齐方式。
+
+### 7. 颜色和样式
+
+- **opacity:** 定义`透明度`。
+- **fill-opacity, stroke-opacity:** 分别设置填充和描边的透明度。
+
+### 8. 动画属性
+
+- **animate, animateTransform, animateMotion:** 用于定义动画效果。
+
+### 9. 链接属性
+
+- **href (或 xlink:href):** 用于在SVG元素中`创建链接`。
+
+### 10. 事件属性
+
+SVG支持绑定常见的事件如：
+
+- **onclick, onmouseover, onmouseout, onload,** 等

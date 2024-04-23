@@ -9,8 +9,7 @@
 - **功能**：`watch`是用来监听特定数据的变化，当被监听的数据发生变化时，将会触发指定的回调函数。
 - 特点
 
-  - **无缓存**：每当监听的数据发生变化，不论变化前后值是否相等，`watch`都会执行回调函数。
-  - **深度监听**：可以配置`deep`选项来深度监听对象内部属性的变化。
+  - **无缓存**：每当监听·**深度监听**：配置`deep`选项来深度监听对象内部属性的变化。
   - **异步处理**：`watch`不仅可以同步执行操作，还可以处理异步操作，例如在网络请求、批量更新等场景下非常有用。
   - **手动触发**：不同于计算属性，`watch`不会在初次绑定时自动执行，若需要在绑定时立即执行，可设置`immediate`为`true`。
 
@@ -750,3 +749,118 @@ observer.observe(triggerElement);
 1. ```
    清除本地token（本地存储），让用户回到登录页，获取最新的token
    ```
+
+## 脚手架目录结构
+
+![image-20240423134658442](D:\Js\assets\image-20240423134658442.png)
+
+- **node_modules**：存放项目依赖的第三方包。这些是通过npm或yarn等包管理工具安装的。
+- **public**：通常包含静态资源如HTML文件、图片、和直接被浏览器访问的其他文件。
+- **src**：源代码目录，包含项目的主要开发文件，如JavaScript、Vue组件、CSS等。
+- **.gitignore**：Git版本控制系统中指定忽略跟踪的文件和文件夹。
+- **.gitlab-ci.yml**：为GitLab CI/CD提供配置，定义如何自动构建、测试和部署项目。
+- **babel.config.js**：配置Babel，帮助将ES6+代码转换为向后兼容的JavaScript代码。
+- **default.conf**：通常用于Web服务器的配置文件，如Nginx或Apache的服务器配置。
+- **Dockerfile**：用于创建Docker容器的脚本，定义了构建Docker镜像所需的步骤。
+- **DockerfileCache**：可能是自定义的用于优化Docker构建过程的特定Dockerfile，以利用缓存机制提高构建效率。
+- **env.prod.js**：包含生产环境的环境变量配置。
+- **jsconfig.json**：为JavaScript项目提供编辑器和IDE的代码感知能力，指定根文件和JavaScript语言选项。
+- **package-lock.json** 和 **pnpm-lock.yaml**：这两个文件都是包依赖管理文件。分别用于npm和pnpm包管理器，确保依赖的一致安装。
+- **package.json**：定义了项目的元数据和管理项目所需的依赖、脚本、版本等信息。
+- **postcss.config.js**：配置PostCSS，一个用于CSS转换的工具，比如自动添加浏览器前缀。
+- **README.md**：项目的README文件，提供项目说明、使用方法、贡献指南等信息。
+- **tailwind.config.js**：Tailwind CSS的配置文件，用于自定义Tailwind的主题、变种和插件等。
+- **vue.config.js**：Vue CLI项目的配置文件，用于调整Webpack配置、开发服务器设置等。
+
+## 权限控制-自定义指令
+
+```javascript
+ Vue.directive("check", {
+  inserted: function (el, binding, vnode) {
+    const user = localStorage.user;
+    console.log(user, binding.value);
+    if (binding.value !== user) {
+      el.hidden = true;
+    }
+  },
+}); 
+```
+
+Vue.js指令的定义，该指令名为 `check`。这个指令的目的是用来检查`localStorage`中的`user`值与绑定值（`binding.value`）是否匹配，如果不匹配，则隐藏该元素。这种类型的指令可以用来在Vue应用中实现简单的权限控制或条件显示逻辑。
+
+让我们详细解析这段代码：
+
+1. **指令名称**: `check` - 这是您定义的自定义Vue指令的名称。
+
+2. **指令钩子函数**: `inserted` - 这是Vue指令的一个生命周期钩子。`inserted` 钩子函数在绑定元素被插入到DOM中时调用。这意味着在这个时刻，您可以访问元素本身，并且可以确保它已经被插入文档。
+
+3. **钩子函数参数**:
+   - `el`: 指令绑定的DOM元素。
+   - `binding`: 一个对象，包含绑定的值、表达式等信息。在此例中，`binding.value`代表绑定到指令的值。
+   - `vnode`: Vue编译生成的虚拟节点。
+
+4. **功能实现**:
+   - 代码首先从`localStorage`读取`user`值。
+   - 使用`console.log`输出当前的用户和绑定值，这有助于调试和查看当前的对比值。
+   - 如果`binding.value`（可能代表某种权限级别或特定用户标识）与`localStorage`中存储的`user`值不同，则将元素设置为隐藏 (`el.hidden = true`)。
+
+**用法**:
+要使用这个指令，您可以在Vue模板中直接将它应用到任何DOM元素上，如下所示：
+
+```html
+<div v-check="'admin'">只有admin用户可以看到这段文字</div>
+```
+
+在上面的例子中，如果`localStorage`中的`user`值不是`'admin'`，则`<div>`元素将被隐藏。
+
+**注意事项**:
+
+- 确保在使用此自定义指令之前已将其全局注册到Vue实例中。
+- 处理敏感的权限检查时要格外注意，可能需要考虑更复杂的安全措施来防止潜在的前端数据篡改。
+- 这种权限控制的实现依赖于客户端存储的数据，不应视为安全的认证机制，更多的是为了`用户体验或轻量级的页面控制`。
+
+## 组件通信-`透传`（transparently pass）
+
+Vue.js 中，`v-on="$listeners"` 是一种常见的模式，主要用于组件开发中，它允许组件实现透传（transparently pass）事件监听器。这样的功能对于实现一个透明的包装组件或高阶组件非常有用。下面我详细解释一下 `$listeners` 和 `v-on="$listeners"` 的用途和原理。
+
+### 什么是 `$listeners`？
+
+在 Vue.js 中，`$listeners` 是一个包含了父级在该组件上设置的所有监听器（不含 `.native` 修饰符的）的对象。它使得组件可以访问由父组件绑定的所有事件监听器，而不必明确地声明每一个事件传递。这在创建可复用和配置灵活的组件时特别有用。
+
+### 如何使用 `v-on="$listeners"`？
+
+当你在组件中使用 `v-on="$listeners"` 时，你实际上是在告诉 Vue 将父组件中绑定到当前组件实例上的所有事件监听器动态绑定到子组件的根元素上。这使得子组件不需要知道具体的事件处理逻辑，而可以将事件处理透传到父组件。
+
+### 示例场景
+
+想象你正在创建一个按钮组件，这个组件在不同的地方被用来执行不同的动作。一种方法是为每种动作创建不同的事件处理器，但这会使得组件难以维护和扩展。使用 `v-on="$listeners"`，你可以简化这一过程：
+
+```vue
+<!-- BaseButton.vue -->
+<template>
+  <button v-on="$listeners">
+    <slot></slot> <!-- 使按钮内容也可定制 -->
+  </button>
+</template>
+
+<!-- ParentComponent.vue -->
+<template>
+  <BaseButton @click="handleClick">Click Me</BaseButton>
+</template>
+
+<script>
+export default {
+  methods: {
+    handleClick() {
+      console.log('Button clicked');
+    }
+  }
+}
+</script>
+```
+
+在这个例子中，`BaseButton` 组件不需要明确知道它需要处理哪些事件。它只需要通过 `v-on="$listeners"` 将任何在它上面声明的监听器绑定到其根元素，即 `<button>` 元素。
+
+### 结论
+
+使用 `v-on="$listeners"` 可以让你的 Vue 组件更加灵活和可复用，尤其是当处理那些需要响应外部事件但又不想直接管理这些事件的组件时。在构建大型应用或者库和框架的时候，这种模式特别有用。
