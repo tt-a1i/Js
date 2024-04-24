@@ -876,3 +876,83 @@ export default {
 
 - **访问或操作DOM**：由于 `created` 钩子触发时，`组件的DOM还未生成`，所以`不能`在 `created` 中`直接操作DOM`。这种情况下应该使用 `mounted` 钩子。
 - **依赖于子组件的数据**：由于`子组件尚未挂载`，`任何依赖于子组件数据的操作都不应在` `created` 中进行。
+
+## 在组件页面刷新为什么触发不了组件的生命周期销毁钩子
+
+当在前端开发中遇到组件页面刷新时，无法触发组件生命周期的销毁钩子（如 Vue 的 `beforeDestroy`/`destroyed` 或 React 的 `componentWillUnmount`），通常有以下几种情况或原因：
+
+1. **页面刷新的本质**：当浏览器页面执行刷新（例如按下F5或点击浏览器刷新按钮）时，整个页面会进行重新加载。此过程实际上是在结束当前页面的所有活动，包括JavaScript的执行，然后重新加载资源并重新运行JavaScript代码。这个过程并不会触发组件的正常生命周期销毁钩子，因为这是一种“硬”终止，不会走正常的组件卸载流程。
+
+2. **设计问题**：组件销毁钩子主要用于处理组件在被正常替换或移除时的清理工作，如移除事件监听器、停止定时器等。当进行页面刷新时，这些操作通常由浏览器自动处理（如清除内存中的变量等），因此不需要组件自身显式触发销毁钩子。
+
+3. **其他方法处理**：如果你需要在页面刷新时执行一些操作（例如保存状态到`localStorage`或进行数据的清理等），你可能需要依赖于浏览器提供的一些事件，比如 `beforeunload` 或 `unload`。这些事件可以在页面即将卸载时触发，允许你执行一些清理或保存工作：
+
+   ```javascript
+   window.addEventListener('beforeunload', function (event) {
+     // 执行清理操作
+     console.log('页面刷新或关闭');
+     // 可以在这里保存一些数据
+   });
+   ```
+
+4. **环境因素**：在某些特定的应用或框架中，可能有自己的方式来管理组件的生命期。如果你使用的是如Next.js这类服务端渲染或静态站点生成的框架，组件的生命周期可能会有所不同，或者有特定的API来处理类似场景。
+
+5. **调试与测试**：如果你确信组件的销毁钩子应该在某个操作时被触发，但实际上没有发生，可能需要检查代码实现是否正确，或是否有其他代码或错误阻止了这一过程。
+
+总之，页面刷新不会触发组件的正常销毁钩子，因为页面刷新意味着整个页面的销毁和重新加载，这是一个浏览器级的操作，不是单个组件或应用的生命周期管理。如果需要在页面刷新时进行特定操作，应该考虑使用浏览器提供的事件如 `beforeunload`。
+
+## NavigationDuplicated
+
+这个错误信息显示的是 `NavigationDuplicated` 错误，也就是说，在 Vue.js 使用 vue-router 时，应用试图导航到一个与当前已经是激活状态的路由相同的新路由上，从而触发了这个错误。在实际应用中，这通常发生在你试图通过 `vue-router` 的 `push` 或者 `replace` 方法重复跳转到相同的路由地址上。
+
+### 报错原因
+
+具体来说，在你的这条错误信息中：
+
+```
+Avoided redundant navigation to current location: "/publicApiHub?cateName=%E5%85%A8%E9%83%A8%E5%88%86%E7%B1%BB"
+```
+
+这表明应用试图再次导航到同一个路径和查询参数（`/publicApiHub?cateName=%E5%85%A8%E9%83%A8%E5%88%86%E7%B1%BB`），这与当前页面相同。
+
+### 解决办法
+
+1. **检查触发导航的条件**：你需要检查为什么你的应用尝试执行这样的导航。可能是因为有某些代码（例如在组件的 `created`、`mounted` 钩子或响应式的计算属性中）错误地触发了多次导航到相同路由的行为。
+
+2. **使用 `push` 或 `replace` 前进行检验**：在调用 `router.push` 或 `router.replace` 之前，你可以添加一个检查，确认即将导航的目标路由是否与当前路由相同。如果相同，则不进行导航。
+
+   ```javascript
+   if (this.$route.path !== newPath || this.$route.fullPath !== newFullPath) {
+       this.$router.push(newPath);
+   }
+   ```
+
+3. **捕捉并忽略这个错误**：Vue Router 在 3.1.0 之后的版本中，默认行为是当路由跳转到相同路径时会产生一个 Promise 错误。你可以通过捕捉并忽略这个错误来处理它：
+
+   ```javascript
+   this.$router.push(path).catch(err => {
+       if (err.name !== 'NavigationDuplicated') {
+           // 只处理 NavigationDuplicated 以外的错误
+           throw err;
+       }
+   });
+   ```
+
+   ```javascript
+   //业务中示例
+   beforeCreate(){
+       this.$router.push({
+             path: "/publicApiHub",
+             query: { cateName: "全部分类" },
+           })
+           .catch(err => {
+             if (err.name === 'NavigationDuplicated') {
+               console.log("NavigationDuplicated");
+           }
+         });
+     },
+   ```
+
+   
+
+4. **升级 Vue Router 的使用方式**：如果你确认需要重复导航到同一个路由（例如刷新视图），可以考虑使用 `router.go(0)` 来强制刷新当前页面，或者根据业务逻辑使用其他方式重置或更新页面内容。

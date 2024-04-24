@@ -1321,3 +1321,10 @@ session在网络应用中称为“会话控制”，是服务器为了保存用�
 | 堆排序   |    O(nlogn)    |    O(nlogn)    |    O(nlogn)    |    O(1)    | 使用堆数据结构，将数组视为完全二叉树，然后进行排序。         |
 | 希尔排序 | 取决于步长选择 | 取决于步长选择 | 取决于步长选择 |    O(1)    | 通过多次插入排序，每次使用不同的步长，逐渐改进数组的有序性。 |
 | 基数排序 |    O(logRB)    |    O(logRB)    |    O(logRB)    |   O(RB)    | 按照位数（个位、十位、百位等）对数字进行排序，从低位到高位。 |
+
+## [HMR] Waiting for update signal from WDS...
+
+1. **HMR**：全称为 Hot Module Replacement（热模块替换）。这是一种技术，允许开发者在应用运行时替换、添加或删除模块，而无需完全重新加载页面。这大大提高了开发效率，因为你可以实时看到更改的效果。
+2. **WDS**：全称为 Webpack Dev Server（Webpack  开发服务器）。这是一个小型的 Express 服务器，它使用 webpack 与浏览器进行通信，并且利用 sockjs  提供实时重载功能。它主要用于在开发期间提供 assets（由 webpack 构建）。
+
+![image-20240424150054247](D:\Js\assets\image-20240424150054247.png)
