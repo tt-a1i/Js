@@ -956,3 +956,72 @@ Avoided redundant navigation to current location: "/publicApiHub?cateName=%E5%85
    
 
 4. **升级 Vue Router 的使用方式**：如果你确认需要重复导航到同一个路由（例如刷新视图），可以考虑使用 `router.go(0)` 来强制刷新当前页面，或者根据业务逻辑使用其他方式重置或更新页面内容。
+
+## Vue的SetUp函数
+
+在Vue 3中，引入了一个名为 `setup` 的新函数，它是使用组合式API时的一个主要功能。`setup` 函数是组件的入口点，它在组件创建之前执行，允许你定义组件的响应式状态、计算属性、侦听器和其他函数。这标志着Vue对于更具函数风格编程的支持，旨在促进更大程度的代码复用和更清晰的逻辑分离。
+
+### setup函数的基本使用：
+
+`setup` 函数的特点是：
+
+1. 它执行的时机在组件的 `beforeCreate` 和 `created` 生命周期钩子之前。
+
+2. 接收两个参数：
+
+   - `props`：父组件传递的属性，是一个响应式的代理（reactive proxy）。
+
+   - ```
+     context
+     ```
+
+     ：一个普通的JavaScript对象，包含以下属性：
+
+     - `attrs`：包含未注册的`props`属性，它们也是响应式的。
+     - `slots`：父组件传递的插槽。
+     - `emit`：用于触发事件的方法。
+
+3. 应该返回一个对象。该对象的属性和方法将被暴露给组件的其他部分（例如模板或其他选项API），或者返回一个渲染函数。
+
+### 示例代码：
+
+```javascript
+<template>
+  <div>
+    <p>{{ message }}</p>
+    <button @click="changeMessage">Change Message</button>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+
+export default {
+  setup(props, { emit }) {
+    const message = ref("Hello Vue 3!");
+
+    function changeMessage() {
+      message.value = "Message changed.";
+    }
+
+    return {
+      message,
+      changeMessage
+    };
+  }
+}
+</script>
+```
+
+### 在上述示例中：
+
+- 定义了一个响应性的数据 `message` 使用 `ref`，这使得在模板中可以响应该数据的变化。
+- 定义了一个方法 `changeMessage`，用于改变`message`的值。
+- `setup` 函数返回一个对象，包含 `message` 和 `changeMessage`，这些属性和方法在模板中被使用。
+
+### 注意事项：
+
+- 在`setup`中无法访问到组件的`this`上下文，因为`setup`调用时，组件实例尚未创建。
+- 所有Composition API函数（如`ref`, `computed`等）都应该在`setup`内部使用。
+
+通过使用 `setup` 函数，Vue 3的组合式API提供了一种更灵活和模块化的方式来组织代码，同时也保留了对旧有选项API的支持。这使得开发者可以根据具体情况选择最适合的方式编写组件。
