@@ -1390,3 +1390,75 @@ session在网络应用中称为“会话控制”，是服务器为了保存用�
 
 
 TypeScript 为 JavaScript 添加了`类型系统`，并且在开发环境中`通过编译器进行类型检查`，但`这一过程只发生在编译时`。一旦  TypeScript 被编译（转译）成 JavaScript，它就不再具有任何额外的运行时行为；它的运行时表现与普通的 JavaScript  没有区别。
+
+## 数组扁平化(多维转一维数组)
+
+在JavaScript中，将二维数组或者含有嵌套数组的数组转换成一维数组有多种方法。这种操作通常被称为“扁平化”数组。对于数组 `let arr = [1,2,[3,4],5]`，下面是几种常见的方法进行扁平化处理：
+
+### 1. 使用 `Array.prototype.flat()`
+`Array.prototype.flat()` 方法可以创建一个新的数组，其中所有的子数组元素都被递归地按照指定深度连接到新数组中。
+
+```javascript
+let arr = [1, 2, [3, 4], 5];
+let flatArray = arr.flat(); // 默认深度是 1
+console.log(flatArray); // 输出: [1, 2, 3, 4, 5]
+```
+
+### 2. 使用 `Array.prototype.reduce()` 和 `Array.prototype.concat()`
+这种方法利用 `reduce` 来累加每个元素，如果元素是数组就用 `concat` 方法来扩展。
+
+```javascript
+let arr = [1, 2, [3, 4], 5];
+let flatArray = arr.reduce((acc, val) => acc.concat(val), []);
+console.log(flatArray); // 输出: [1, 2, 3, 4, 5]
+```
+
+### 3. 使用递归函数手动扁平化
+如果数组的嵌套层级非常深，可以自定义一个递归函数来处理。
+
+```javascript
+function flatten(arr) {
+    let result = [];
+    arr.forEach((element) => {
+        if (Array.isArray(element)) {
+            result = result.concat(flatten(element)); // 递归扁平化
+        } else {
+            result.push(element);
+        }
+    });
+    return result;
+}
+
+let arr = [1, 2, [3, 4], 5];
+let flatArray = flatten(arr);
+console.log(flatArray); // 输出: [1, 2, 3, 4, 5]
+```
+
+### 4. 使用扩展运算符 `...`
+这种方法和 `reduce` 结合使用，可以有效地展开一层嵌套的数组。
+
+```javascript
+let arr = [1, 2, [3, 4], 5];
+let flatArray = arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? [...val] : val), []);
+console.log(flatArray); // 输出: [1, 2, 3, 4, 5]
+```
+
+### 5. 利用 `toString` 和 `split`
+这是一种比较取巧的方法，可以在一些简单的场景下使用，但它将所有元素转换为字符串，然后再转换回数字。
+
+```javascript
+let arr = [1, 2, [3, 4], 5];
+let flatArray = arr.toString().split(',').map(Number);
+console.log(flat theiray); // 输出: [1, 2, 3, 4, 5]
+```
+
+### 6. 利用 `Array.prototype.flatMap()`
+`flatMap()` 方法首先使用映射函数映射每个元素，然后将结果压平到新数组。它只能扁平一层。
+
+```javascript
+let arr = [1, 2, [3, 4], 5];
+let flatArray = arr.flatMap(x => x);
+console.log(flatArray); // 输出: [1, 2, 3, 4, 5]
+```
+
+这些方法中，推荐使用 `flat()` 方法或是递归方法，因为它们语义清晰，而且 `flat()` 方法是现代JavaScript标准的一部分。其他方法依具体情况选用，尤其考虑到性能和代码的可读性。
