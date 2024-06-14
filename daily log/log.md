@@ -380,3 +380,189 @@ Set-ExecutionPolicy RemoteSigned
 ![2](../assets/2.png)
 
 ![3](../assets/3.png)
+
+## Vue中对数组直接赋值视图中无法获取响应式状态的问题
+
+```javascript
+      <div class="image-container" v-if="showImage">
+        <div
+          v-for="(imgSrc, index) in pdfPreviewImage || []"
+          :key="index"
+          @mouseenter="pdfImageMaskHoverHandler(index, true)"
+          @mouseleave="pdfImageMaskHoverHandler(index, false)"
+        >
+          <div class="pdfImage" style="position: relative">
+            <el-image :src="imgSrc" :alt="'Image ' + index"></el-image>
+            <div class="mask" v-if="pdfImageMaskHoverState[index]">
+              <span>图标1</span>
+              <span>图标2</span>
+              <span>图标3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+```
+
+
+
+对每个图片渲染遮罩层,发现在鼠标进入离开事件中,页面上并不显示相应的显示隐藏,而且vue调试工具中对应的状态也未发生改变
+
+创建pdfImageMaskHoverHandler方法进行输出调试发现控制台也会输出对应状态变更
+
+![img](../assets/2db2b8cac8cc4271ae2adf3f3a734ae3.png)
+
+
+
+排查原因:Vue 无法侦测到通过直接修改数组索引的方式来改变数组元素。也就是说，当使用 this.pdfImageMaskHoverState[index] = status 时，Vue 并不会触发视图更新。
+
+解决办法:使用 Vue 提供的能够触发视图更新的数组方法，例如 splice、$set 等。
+
+解决方案:
+
+```javascript
+pdfImageMaskHoverHandler(index, status) {
+      this.$set(this.pdfImageMaskHoverState, index, status);
+      console.log(
+        `Mask state at index ${index}: ${this.pdfImageMaskHoverState[index]}`
+      );
+   }
+```
+
+
+
+## 通过模拟el-image的点击事件来从外部方法实现图片预览
+
+##### 模版代码:目的是通过鼠标悬浮在渲染的图片上后点击按钮来放大图片预览
+
+![image-20240605162816493](../assets/image-20240605162816493.png)
+
+```vue
+<div class="image-container" v-if="showImage">
+        <div
+          v-for="(imgSrc, index) in pdfPreviewImage || []"
+          :key="index"
+          @mouseenter="pdfImageMaskHoverHandler(index, true)"
+          @mouseleave="pdfImageMaskHoverHandler(index, false)"
+        >
+          <div class="pdfImage" style="position: relative">
+            <el-image
+              :src="imgSrc"
+              :alt="'Image ' + index"
+              :preview-src-list="pdfPreviewImage"
+              ref="elImage"
+            ></el-image>
+            <div class="mask" v-if="pdfImageMaskHoverState[index]">
+              <!--              <span>图标1</span>-->
+              <span @click="enlargeImage(imgSrc, index)">
+                <svg
+                  t="1717568515011"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="5303"
+                  id="mx_n_1717568515012"
+                  width="35"
+                  height="35"
+                >
+                  <path></path>
+                  <path></path>
+                </svg>
+              </span>
+              <span>
+                <svg
+                  t="1717568160939"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="3654"
+                  width="35"
+                  height="35"
+                >
+                  <path></path>
+                </svg>
+              </span>
+            </div>
+          </div>
+```
+
+##### 方法实现:通过访问el-image的实例并触发点击
+
+![image-20240605162901581](../assets/image-20240605162901581.png)
+
+## v-html渲染排版错乱的问题
+
+![e1de39bef86d4741f546e932c5948c4](../assets/e1de39bef86d4741f546e932c5948c4.png)
+
+##### 数据内容
+
+```html
+<html>
+<body>
+<table border="1">
+    <tr>
+        <td></td>
+        <td>现 订 标 准</td>
+        <td>最 鞭 标 准<br>( 发 布 7<br>生 效 日 期</td>
+        <td>要 修 订 , Ed 备 注</td>
+        <td>受 影 响 的 & 文</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td> 更 新 测 试 程 序 包 括 关<br>于 孔 洞 间 隙 或 开 口 的<br>量 度 V 形 或 不 规 刑 形<br>状 孔 洞 间 隔 或
+            开<br>口 床 HI<br>RR 向 上 或 向 下 的<br>静 态<br>态 负 载 床 架 耐 用 测<br>试 以 及 相 关 图 表
+        </td>
+        <td>5.3 和 5.4</td>
+    </tr>
+    <tr>
+        <td>英 历 人 菊 笑 土 学 助</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>(i)<br>英 厉 人</td>
+        <td>及 美 国 材 料<br>试 验 学 介<br>些 标<br>淅<br>ASTM<br>F1004-13<br>蝉 嗣 脚 筒 及</td>
+        <td>美 材 试 国 料 验<br>学 a<br>云 标 淅<br>ASTM F1004-<br>16b<br>1(2016 年 月 )<br>多 劣 历 获 尿 脚 茹</td>
+        <td> 修 照 文 及 词 条 订 件<br>修 订 校 正 和 化 规<br>定<br> 修 订 般 规 定 和 伯 能 规<br>定<br> 修 订 测 试
+            方 法 包 括 测<br>试 籼 具 的 规 定 测 试 指<br>引 | 以 及 不 同 机 制 的 各<br>项 测 试<br> 修 订 标 记 和
+            卷 标 规 定<br>以 及 明 书 包 括 在 警<br>企<br>口 和 说 明 书 的 项 目 中 使<br>用 的 文 字 和 征 号
+        </td>
+        <td>2 和<br> 4.5<br> 5 和 6<br> 7<br> 8 和</td>
+    </tr>
+    <tr>
+        <td>(i)</td>
+        <td>美 国 材 料 及<br>试 验 学 介<br>些 标<br>淅<br>ASTM F404-<br>14a</td>
+        <td>美 国 材 料 及 试 验<br>学 a<br>云 标 淅<br>ASTM F404-16a<br>(2016 年 3 月 )</td>
+        <td> 修 订 苑 围 和 词 条<br> 修 订 产 巳<br>R 佐 能 规 定 包<br>括 稳 定 度 系 紧 系 统<br>被 劣 胸 部 系 紧 采
+            统 室<br>出 部 分 和 有 关 图
+        </td>
+        <td>1 和<br> 6.5 6.8<br>6.9 和 6.13</td>
+    </tr>
+</table>
+</body>
+</html>
+```
+
+##### ==问题原因==
+
+问题在于你的 CSS 样式定义在 `scoped` 属性的作用域下，而 `v-html` 指令插入的 HTML 内容并不在该作用域内，因此无法应用这些样式。
+
+你有两种解决方法：
+
+**方法一：去掉 `scoped` 属性**
+
+去掉 `<style lang="less" scoped>` 中的 `scoped` 属性，这样 CSS 样式就会变成全局样式，对 `v-html` 插入的内容也生效。
+
+**方法二：使用深度作用选择器**
+
+在 `scoped` 属性的作用域下，使用深度作用选择器(`/deep/`) 可以将样式应用到子组件的根元素以及所有子元素。
+
+**选择方法的建议:**
+
+- 如果你的项目中没有其他地方使用了相同的 class 名称 (`my-table`)，那么方法一 (去掉 `scoped`) 更简单。
+- 如果你的项目中其他地方也使用了相同的 class 名称，那么为了避免样式冲突，建议使用方法二 (深度作用选择器) 将样式限制在当前组件内。
