@@ -126,3 +126,81 @@ Start-Process "notepad.exe"
 - 如果脚本没有执行，检查脚本路径和任务设置是否正确。
 
 使用任务计划程序可以使您的脚本在没有任何手动介入的情况下在启动时自动执行。如果您希望更改脚本的行为，只需修改保存的 `.ps1` 脚本文件即可。请确保您的脚本没有错误，并且在预期的执行环境中能正常运行。
+
+
+
+你遇到的错误是因为在 `<script setup>` 语法糖中，`this` 关键字的行为与传统 Vue 组件中的不同。在 `<script setup>` 中，`this` 指向的是 setup 函数的返回值，而不是组件实例。
+
+由于 `$store` 是 Vuex 插件注入到组件实例上的属性，所以你不能直接使用 `this.$store`。
+
+**解决方案**：
+
+1. **直接导入 `useStore` 函数**：
+
+   ```javascript
+   import { defineComponent, inject, nextTick, ref, reactive, watch, onUnmounted, getCurrentInstance, useStore } from '@vue/composition-api';
+   
+   export default defineComponent({
+     setup(props, { root }) {
+       // ... other code
+   
+       const store = useStore(); // 获取 store 实例
+   
+       const sumbit = () => {
+         // ... other code
+         store.commit("updateCancelModelAnswer", true); 
+         // ... other code
+       }
+   
+       // ... other code
+     }
+   });
+   ```
+
+2. **使用 `root` 属性**：
+
+   ```javascript
+   export default defineComponent({
+     setup(props, { root }) { 
+       // ... other code
+   
+       const sumbit = () => {
+         // ... other code
+         root.$store.commit("updateCancelModelAnswer", true); // 使用 root.$store
+         // ... other code
+       }
+   
+       // ... other code
+     }
+   });
+   ```
+
+这两种方法都可以让你在 `<script setup>` 中正确地访问到 Vuex store 实例，并调用 `commit` 方法。
+
+
+
+那为什么下面的这样写就不报错
+
+
+
+你说的没错！在 `handleChange` 函数中，`this.$store` 确实可以正常工作，这是因为 `handleChange` 函数是被 `el-upload` 组件内部调用的，它的 `this` 指向的是 `el-upload` 组件实例，而不是 `<script setup>` 中的 `setup` 函数返回值。
+
+为了更清楚地说明，我画了一张图：
+
+```
++------------------------+     +------------------------+
+|                        |     |                        |
+|     el-upload 组件     |     |     <script setup>    |
+|                        |     |                        |
++------------------------+     +------------------------+
+| this: el-upload 实例 |     |  this: setup 返回值   |
+|                        |     |                        |
+| - handleChange()       |     |                        |
+|                        |     |                        |
++------------------------+     +------------------------+
+```
+
+- 当 `el-upload` 组件触发 `handleChange` 事件时，它会调用你定义的 `handleChange` 函数，并将 `this` 指向 `el-upload` 组件实例。
+- 由于 `el-upload` 组件实例是传统的 Vue 组件实例，所以它拥有 `$store` 属性，因此 `this.$store` 可以正常工作。
+
+**总结**: `this` 指向取决于函数的调用上下文。在 `<script setup>` 中，你需要特别注意 `this` 的行为。如果函数是在 `<script setup>` 外部被调用的，那么 `this` 可能不会指向你期望的对象。在这种情况下，你需要使用 `useStore` 函数或 `root` 属性来访问 Vuex store 实例。

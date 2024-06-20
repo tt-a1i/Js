@@ -654,3 +654,1165 @@ npx standard --fix
 - [Airbnb JavaScript 风格指南](https://github.com/airbnb/javascript)
 - [Idiomatic.JS](https://github.com/rwaldron/idiomatic.js)
 - [StandardJS](https://standardjs.com/)
+
+## Babel
+
+### 核心功能
+
+1. **语法转换**：Babel 可以把使用最新标准编写的 JavaScript 代码转换成老版本浏览器也能执行的代码。
+2. **源码映射**：Babel 支持 Source Maps，可以把转换后的代码映射回原始源代码，便于调试。
+3. **插件化**：Babel 通过插件系统工作，用户可以根据需要添加或删除特定的转换插件。
+
+### 如何工作
+
+- **解析**：将代码字符串解析成抽象语法树（AST），这一过程涉及词法分析和语法分析。
+- **转换**：对 AST 进行遍历，并应用各种转换插件，对树结构进行修改。
+- **生成**：将修改后的 AST 转换回代码字符串，同时可以生成 source map。
+
+### 插件和预设
+
+Babel 自身不包含转换规则。转换功能主要依赖于插件实现。这些插件可以单独使用，也可以组合成预设（preset）。例如：
+
+- **@babel/preset-env**：这是最常用的预设之一，它能根据配置的目标环境自动确定需要使用的 Babel 插件。
+- **@babel/preset-react**：转换 React 的 JSX 语法。
+- **@babel/preset-typescript**：用于转换 TypeScript 代码为 JavaScript。
+
+### 配置 Babel
+
+Babel 的配置可以通过 `.babelrc` 文件或者在 `package.json` 中的 `babel` 属性来进行。常用配置选项包括：
+
+- **presets**：使用的预设列表。
+- **plugins**：使用的插件列表。
+- **env**：允许配置特定环境的选项。
+
+### 使用场景
+
+- **前端项目构建**：结合 Webpack, Rollup 等构建工具使用，转译新版 JavaScript 使其在旧浏览器上运行。
+- **开发框架和库**：React、Vue 等框架在发布版本时，经常使用 Babel 来确保它们的代码可以在多种环境中运行。
+- **Node.js 应用**：尽管最新版本的 Node.js 支持较新的 ECMAScript 规范，但在某些情况下仍可能需要转译特定的新特性。
+
+## Polyfill
+
+Polyfill 是一种 JavaScript 代码片段，用于为旧版本的浏览器提供现代浏览器支持的功能。随着 Web 标准的快速发展，新的 API 和 CSS 属性经常被引入。然而，不是所有浏览器都能及时更新支持这些新标准。为了解决这个问题，开发者使用 polyfill 来模拟这些新特性，使得在不支持某些特性的旧浏览器上也能运行使用这些新特性的代码。
+
+### Polyfill 的工作原理
+
+当页面在浏览器中加载时，polyfill 代码会首先检查浏览器是否支持某个特定的功能。如果不支持，polyfill 会添加缺失的功能，让开发者能像在支持该功能的浏览器中那样使用它。这通常涉及到 JavaScript 的功能补充，有时也包括 CSS 的某些方面。
+
+### Polyfill 的使用场景
+
+- **兼容性处理:** 浏览器的兼容性是最主要的使用场景，尤其是在企业环境中，可能仍需要支持旧版Internet Explorer等浏览器。
+- **新特性预览:** 开发者可以使用 polyfill 预览并尝试新的 Web 标准特性，即使这些特性尚未在所有浏览器中普遍可用。
+
+### 实施Polyfill
+
+1. **确定需求:** 确定需要Polyfill的特定功能。这通常基于目标用户群体所使用的浏览器种类和版本。
+2. **查找或创建适当的 Polyfill:** 网上有许多开源的 polyfill 脚本，例如 [Polyfill.io](https://polyfill.io/) 是一个动态的服务，根据用户的浏览器自动提供所需的 polyfill。
+3. **集成到项目中:** 将 polyfill 脚本包含在你的项目中。这可以通过直接将代码添加到你的 JavaScript 文件中，或者通过使用模块导入。
+4. **测试:** 在不同的浏览器和设备上进行测试，确保 polyfill 正确工作并不会引入新的问题。
+
+### 优缺点
+
+**优点：**
+
+- **提高兼容性:** 允许开发者使用最新的 Web 技术，同时保持对旧浏览器的支持。
+- **灵活性高:** 开发者可以选择只包含他们需要的特性。
+
+**缺点：**
+
+- **增加负载:** 引入 polyfill 可能会增加页面的加载时间和执行时间，因为需要加载额外的代码。
+- **可能的冲突和错误:** Polyfill 可能与现有的代码或其他库冲突，导致错误或不预期的行为。
+
+Polyfill 是现代前端开发中不可或缺的工具，尤其是在需要支持多种浏览器的情况下。通过合理使用polyfill，可以确保 web 应用或网站达到更广泛的用户兼容性和更好的用户体验。
+
+## Objerct
+
+#### [计算属性](https://zh.javascript.info/object#ji-suan-shu-xing)
+
+当创建一个对象时，我们可以在对象字面量中使用方括号。这叫做 **计算属性**。
+
+例如：
+
+```javascript
+let fruit = prompt("Which fruit to buy?", "apple");
+
+let bag = {
+  [fruit]: 5, // 属性名是从 fruit 变量中得到的
+};
+
+alert( bag.apple ); // 5 如果 fruit="apple"
+```
+
+可以在方括号中使用更复杂的表达式：
+
+```javascript
+let fruit = 'apple';
+let bag = {
+  [fruit + 'Computers']: 5 // bag.appleComputers = 5
+};
+```
+
+#### [属性值简写](https://zh.javascript.info/object#shu-xing-zhi-jian-xie)
+
+```javascript
+function makeUser(name, age) {
+  return {
+    name, // 与 name: name 相同
+    age,  // 与 age: age 相同
+    // ...
+  };
+}
+```
+
+```javascript
+let user = {
+  name,  // 与 name:name 相同
+  age: 30
+};
+```
+
+#### [属性名称限制](https://zh.javascript.info/object#shu-xing-ming-cheng-xian-zhi)
+
+变量名不能是编程语言的某个保留字，如 “for”、“let”、“return” 等……
+
+但对象的属性名并不受此限制：
+
+```javascript
+// 这些属性都没问题
+let obj = {
+  for: 1,
+  let: 2,
+  return: 3
+};
+
+alert( obj.for + obj.let + obj.return );  // 6
+```
+
+属性名可以是任何字符串或者 symbol（一种特殊的标志符类型，将在后面介绍）。
+
+其他类型会被自动地转换为字符串。
+
+例如，当数字 `0` 被用作对象的属性的键时，会被转换为字符串 `"0"`：
+
+```javascript
+let obj = {
+  0: "test" // 等同于 "0": "test"
+};
+
+// 都会输出相同的属性（数字 0 被转为字符串 "0"）
+alert( obj["0"] ); // test
+alert( obj[0] ); // test (相同的属性)
+```
+
+这里有个小陷阱：一个名为 `__proto__` 的属性。我们不能将它设置为一个非对象的值：
+
+```javascript
+let obj = {};
+obj.__proto__ = 5; // 分配一个数字
+alert(obj.__proto__); // [object Object] —— 值为对象，与预期结果不同
+```
+
+对象有顺序吗？换句话说，如果我们遍历一个对象，我们获取属性的顺序是和属性添加时的顺序相同吗？这靠谱吗？
+
+简短的回答是：“有特别的顺序”：整数属性会被进行排序，其他属性则按照创建的顺序显示。
+
+```javascript
+let codes = {
+  "49": "Germany",
+  "41": "Switzerland",
+  "44": "Great Britain",
+  // ..,
+  "1": "USA"
+};
+
+for(let code in codes) {
+  alert(code); // 1, 41, 44, 49
+}
+```
+
+### 深拷贝
+
+在JavaScript中，实现深度克隆（deep cloning）的功能并不是内置的，但可以通过多种方式实现，比如使用递归、库函数等。克隆一个对象时，主要问题是如何处理非原始值（即对象或数组），以及如何避免循环引用导致的无限递归。以下是几种实现 `cloneDeep` 方法的方式：
+
+#### 方法 1: 使用递归
+
+这是一种直接的方式，通过递归来遍历对象或数组的所有键，依次克隔它们的值。这种方法需要特别处理数组和对象，同时要注意避免循环引用。
+
+```javascript
+function cloneDeep(obj, hash = new WeakMap()) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    if (obj instanceof Date) {
+        return new Date(obj);
+    }
+    if (obj instanceof RegExp) {
+        return new RegExp(obj);
+    }
+
+    // 检查是否有循环引用
+    if (hash.has(obj)) {
+        return hash.get(obj);
+    }
+    
+    // 处理数组和对象
+    let cloneObj = new obj.constructor();
+    hash.set(obj, cloneObj);
+
+    Object.keys(obj).forEach(key => {
+        cloneObj[key] = cloneDeep(obj[key], hash);
+    });
+
+    return cloneObj;
+}
+```
+
+##### 函数定义
+
+```javascript
+function cloneDeep(obj, hash = new WeakMap()) {
+```
+
+这是函数声明。函数名为 `cloneDeep`，接受两个参数：`obj`（要克隆的对象）和 `hash`（默认参数为一个新的 `WeakMap` 对象）。 `WeakMap` 用于跟踪原始对象到克隆对象的映射，这有助于处理循环引用的问题。
+
+##### 判断基本条件
+
+```javascript
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+```
+
+如果传入的 `obj` 是 `null` 或者不是对象类型（比如数字、字符串或布尔值等），函数直接返回该值。因为这些类型在JavaScript中是按值传递，不需要深拷贝。
+
+##### 特殊对象处理
+
+```javascript
+    if (obj instanceof Date) {
+ ==        return new Date(obj);
+    }
+    if (obj instanceof RegExp) {
+        return new RegExp(obj);
+    }
+```
+
+对于日期和正则表达式对象，需要用特定的方式来创建一个新的实例。对于 `Date` 对象，使用其构造函数并传入原始日期对象；对于 `RegExp` 对象，也通过其构造函数来创建一个新的相同表达式的实例。
+
+##### 检查循环引用
+
+```javascript
+    if (hash.has(obj)) {
+        return hash.get(obj);
+    }
+```
+
+这里检查 `hash`（一个 `WeakMap`）是否已经包含了当前对象。如果是，说明之前已经访问过这个对象，存在循环引用，函数直接返回之前存储的克隆对象，避免无限递归。
+
+##### 克隆对象或数组
+
+```javascript
+    let cloneObj = new obj.constructor();
+    hash.set(obj, cloneObj);
+```
+
+通过调用对象原来的构造函数创建一个新的空对象（或数组），保持原对象的原型链。然后将原始对象和新创建的克隆对象存储到 `hash` 中，以便后续的循环引用检测。
+
+##### 属性拷贝
+
+```javascript
+    Object.keys(obj).forEach(key => {
+        cloneObj[key] = cloneDeep(obj[key], hash);
+    });
+```
+
+使用 `Object.keys()` 获取原对象的所有自身属性（不包括原型链上的属性）。对每个属性，递归调用 `cloneDeep` 函数来确保属性值也被深拷贝，然后将拷贝后的值赋给新对象的相应属性。
+
+##### 返回结果
+
+```javascript
+    return cloneObj;
+}
+```
+
+函数返回新创建的克隆对象。
+
+
+
+#### 方法 2: 使用 `JSON.parse` 和 `JSON.stringify`
+
+这是实现深拷贝的一种非常简单的方法，但是它有一些限制，比如不能复制函数、RegExp、Date、循环引用等。
+
+```javascript
+function cloneDeep(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+```
+
+#### 方法 3: 使用库
+
+如果你在一个大型项目中，可能会考虑使用成熟的第三方库来处理复杂的深拷贝情况，例如 `lodash`。
+
+```javascript
+// 使用 lodash 的 cloneDeep 方法
+import cloneDeep from 'lodash/cloneDeep';
+let newObj = cloneDeep(oldObj);
+```
+
+`lodash` 的 `cloneDeep()` 方法已经非常优化且处理了很多边缘情况，包拧循环引用、特殊对象等。
+
+#### 总结
+
+- 对于简单的情况，可以使用 `JSON.parse` 和 `JSON.stringify`，但要注意其限制。
+- 对于更复杂的数据结构或需要处理函数、日期等数据类型，使用递归方法或 `lodash` 等库会更适合。
+- 总是考虑到循环引用的问题，使用 `WeakMap` 或其他方法来避免这种情况。
+
+## 如何让 a == 1 && a == 2 && a==3 的值为true？
+
+在 JavaScript 中，对象与基本数据类型比较时，对象将通过内部方法转换为基本类型。方法取决于运算的具体场景，包括 `valueOf`、`toString` 和 `Symbol.toPrimitive`。这个特性可以被用来实现类似 `a==1 && a==2 && a==3` 为 `true` 的情况。下面我会详细解释这三种实现方式。
+
+### 使用 Symbol.toPrimitive
+
+```javascript
+var a = { value : 0 };
+a[Symbol.toPrimitive] = function(hint) {
+    console.log(hint); // default
+    return this.value += 1;
+}
+console.log(a == 1 && a == 2 && a == 3); // true
+```
+
+- `Symbol.toPrimitive` 是一个内置的 Symbol 值，它是一个可以指定对象被转换为原始值时的行为的函数。
+- 当对象 `a` 在表达式任何需要原始类型的场合被使用时（例如和数字比较时），JS 引擎会调用 `a[Symbol.toPrimitive]`。
+- `hint` 参数通常有三个值："number"、"string" 和 "default"。在这里因为和数字进行比较，所以它通常是 "default"。
+- 在函数内部，我们使 `this.value` 自增（先返回后增加），所以每次比较 `a` 与一个数时，`a` 的值依次为 1、2、3，使得表达式 `a == 1 && a == 2 && a == 3` 返回 `true`。
+
+### 使用 valueOf
+
+```javascript
+var a = { value : 0 };
+a.valueOf = function() {
+    return this.value += 1;
+};
+console.log(a == 1 && a == 2 && a == 3); // true
+```
+
+- `valueOf` 方法定义了对象如何被转换到相应的原始值。
+- 类似于 `Symbol.toPrimitive` 的情况，`a.valueOf()` 被调用来将 `a` 转换为一个原始值进行比较。
+- 每次对象 `a` 比较时，由于调用 `valueOf` 方法，`this.value` 自增，所以依次返回 1, 2, 3。
+
+### 使用 toString
+
+```javascript
+var a = { value : 0 };
+a.toString = function() {
+    return this.value += 1;
+};
+console.log(a == 1 && a == 2 && a == 3); // true
+```
+
+- 当 JavaScript 需要将一个对象表示为字符串时，会调用 `toString` 方法。
+- 尽管我们通常考虑 `toString` 用于生成字符串，但这里我们利用它来返回一个增加的数字。
+- 因此，每次比较时，`toString` 方法被调用，使得 `this.value` 像之前的示例一样依次自增。
+
+以上三种方法都利用了 JavaScript 在进行类型强制转换时，对象会尝试转换为相应的原始类型的特性。这些特性可以让我们在 `a` 被比较时，控制它的值以通过连续不同的比较。
+
+## 数据类型
+
+一个原始值：
+
+- 是原始类型中的一种值。
+- 在 JavaScript 中有 7 种原始类型：`string`，`number`，`bigint`，`boolean`，`symbol`，`null` 和 `undefined`。
+
+一个对象：
+
+- 能够存储多个值作为属性。
+
+
+
+```javascript
+let str = "Hello";
+
+alert( str.toUpperCase() ); // HELLO
+```
+
+很简单，对吧？以下是 `str.toUpperCase()` 中实际发生的情况：
+
+1. 字符串 `str` 是一个原始值。因此，在访问其属性时，会创建一个包含字符串字面值的特殊对象，并且具有可用的方法，例如 `toUpperCase()`。
+2. 该方法运行并返回一个新的字符串（由 `alert` 显示）。
+3. 特殊对象被销毁，只留下原始值 `str`。
+
+所以原始类型可以提供方法，但它们依然是轻量级的。
+
+JavaScript 引擎高度优化了这个过程。它甚至可能跳过创建额外的对象。但是它仍然必须遵守规范，并且表现得好像它创建了一样。
+
+
+
+```javascript
+let str = "Hello";
+
+str.test = 5; // (*)
+
+alert(str.test);
+```
+
+根据你是否开启了严格模式 `use strict`，会得到如下结果：
+
+1. `undefined`（非严格模式）
+2. 报错（严格模式）。
+
+为什么？让我们看看在 `(*)` 那一行到底发生了什么：
+
+1. 当访问 `str` 的属性时，一个“对象包装器”被创建了。
+2. 在严格模式下，向其写入内容会报错。
+3. 否则，将继续执行带有属性的操作，该对象将获得 `test` 属性，但是此后，“对象包装器”将消失，因此在最后一行，`str` 并没有该属性的踪迹。
+
+### 数字类型
+
+#### 数字的两种类型
+
+1. 常规数字以 64 位的格式 [IEEE-754](https://en.wikipedia.org/wiki/IEEE_754) 存储，也被称为“双精度浮点数”
+2. BigInt 用于表示任意长度的整数。常规整数不能安全地超过 `(253-1)` 或小于 `-(253-1)`
+
+假如我们需要表示 10 亿。显然，我们可以这样写：
+
+```javascript
+let billion = 1000000000;
+```
+
+我们也可以使用下划线 `_` 作为分隔符：
+
+```javascript
+let billion = 1_000_000_000;
+```
+
+这里的下划线 `_` 扮演了“[语法糖](https://en.wikipedia.org/wiki/Syntactic_sugar)”的角色，使得数字具有更强的可读性。JavaScript 引擎会直接忽略数字之间的 `_`，所以 上面两个例子其实是一样的。
+
+##### `num.toString(base)` 
+
+返回在给定 `base` 进制数字系统中 `num` 的字符串表示形式,默认是10。
+
+举个例子：
+
+```javascript
+let num = 255;
+
+alert( num.toString(16) );  // ff
+alert( num.toString(2) );   // 11111111
+```
+
+
+
+2个点调用方法
+
+```javascript
+123..toString(8) // '173'
+```
+
+如果我们放置一个点：`123.toString(8)`，那么就会出现一个 error，因为 JavaScript 语法隐含了第一个点之后的部分为小数部分。如果我们再放一个点，那么 JavaScript 就知道小数部分为空，现在使用该方法。
+
+也可以写成 `(123).toString(8)`
+
+#### 舍入
+
+```
+Math.floor
+```
+
+向下舍入：`3.1` 变成 `3`，`-1.1` 变成 `-2`。
+
+```
+Math.ceil
+```
+
+向上舍入：`3.1` 变成 `4`，`-1.1` 变成 `-1`。
+
+```
+Math.round
+```
+
+向最近的整数舍入：`3.1` 变成 `3`，`3.6` 变成 `4`，中间值 `3.5` 变成 `4`。
+
+`Math.trunc`（IE 浏览器不支持这个方法）
+
+移除小数点后的所有内容而没有舍入：`3.1` 变成 `3`，`-1.1` 变成 `-1`。
+
+
+
+将数字舍入到小数点后两位，我们可以将数字乘以 `100`，调用舍入函数，然后再将其除回。
+
+```javascript
+let num = 1.23456;
+
+alert( Math.round(num * 100) / 100 ); // 1.23456 -> 123.456 -> 123 -> 1.23
+```
+
+函数 [toFixed(n)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed) 将数字舍入到小数点后 `n` 位，并以==字符串==形式返回结果
+
+如果小数部分比所需要的短，则在结尾添加零
+
+```javascript
+let num = 12.34;
+alert( num.toFixed(5) ); // "12.34000"，在结尾添加了 0，以达到小数点后五位
+```
+
+我们可以使用一元加号或 `Number()` 调用，将其转换为数字，例如 `+ num.toFixed(5)`
+
+
+
+#### `Object.is`
+
+它类似于 `===` 一样对值进行比较，但它对于两种边缘情况更可靠：
+
+1. 它适用于 `NaN`：`Object.is(NaN, NaN) === true`，这是件好事。
+2. 值 `0` 和 `-0` 是不同的：`Object.is(0, -0) === false`，从技术上讲这是对的，因为在内部，数字的符号位可能会不同，即使其他所有位均为零。
+
+在所有其他情况下，`Object.is(a, b)` 与 `a === b` 相同。
+
+#### **parseInt(str, radix) 的第二个参数**
+
+`parseInt()` 函数具有可选的第二个参数。它指定了数字系统的基数，因此 `parseInt` 还可以解析十六进制数字、二进制数字等的字符串：
+
+```javascript
+alert( parseInt('0xff', 16) ); // 255
+alert( parseInt('ff', 16) ); // 255，没有 0x 仍然有效
+
+alert( parseInt('2n9c', 36) ); // 123456
+```
+
+### 字符串
+
+`length` **是一个属性**
+
+请注意 `str.length` 是一个数字属性，而不是函数。后面不需要添加括号。
+
+#### 字符串中查找子字符串
+
+#####  [str.indexOf(substr, pos)](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf)。
+
+它从给定位置 `pos` 开始，在 `str` 中查找 `substr`，如果没有找到，则返回 `-1`，否则返回匹配成功的位置。
+
+可选的第二个参数允许我们从一个给定的位置开始检索。
+
+```javascript
+let str = 'Widget with id';
+
+alert( str.indexOf('Widget') ); // 0，因为 'Widget' 一开始就被找到
+alert( str.indexOf('widget') ); // -1，没有找到，检索是大小写敏感的
+
+alert( str.indexOf("id") ); // 1，"id" 在位置 1 处（……idget 和 id）
+```
+
+
+
+##### [str.lastIndexOf(substr, position)](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/String/lastIndexOf)
+
+它从字符串的末尾开始搜索到开头
+
+
+
+##### [按位（bitwise）NOT 技巧](https://zh.javascript.info/string#an-wei-bitwisenot-ji-qiao)
+
+这里使用的一个老技巧是 [bitwise NOT](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_NOT) `~` 运算符。它将数字转换为 32-bit 整数（如果存在小数部分，则删除小数部分），然后对其二进制表示形式中的所有位均取反。
+
+实际上，这意味着一件很简单的事儿：对于 32-bit 整数，`~n` 等于 `-(n+1)`。
+
+例如：
+
+```javascript
+alert( ~2 ); // -3，和 -(2+1) 相同
+alert( ~1 ); // -2，和 -(1+1) 相同
+alert( ~0 ); // -1，和 -(0+1) 相同
+alert( ~-1 ); // 0，和 -(-1+1) 相同
+```
+
+正如我们看到这样，只有当 `n == -1` 时，`~n` 才为零（适用于任何 32-bit 带符号的整数 `n`）。
+
+因此，仅当 `indexOf` 的结果不是 `-1` 时，检查 `if ( ~str.indexOf("...") )` 才为真。换句话说，当有匹配时。
+
+人们用它来简写 `indexOf` 检查：
+
+```javascript
+let str = "Widget";
+
+if (~str.indexOf("Widget")) {
+  alert( 'Found it!' ); // 正常运行
+}
+```
+
+
+
+##### [str.includes(substr, pos)](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+
+ 根据 `str` 中是否包含 `substr` 来返回 `true/false`
+
+`str.includes` 的第二个可选参数是开始搜索的起始位置
+
+
+
+##### [str.startsWith](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith) 和 [str.endsWith](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith) 
+
+功能与其名称所表示的意思相同：
+
+```javascript
+alert( "Widget".startsWith("Wid") ); // true，"Widget" 以 "Wid" 开始
+alert( "Widget".endsWith("get") ); // true，"Widget" 以 "get" 结束
+```
+
+
+
+#### [获取子字符串](https://zh.javascript.info/string#huo-qu-zi-zi-fu-chuan)
+
+##### str.slice(start , end)
+
+返回字符串从 `start` 到（但不包括）`end` 的部分。
+
+例如：
+
+```javascript
+let str = "stringify";
+alert( str.slice(0, 5) ); // 'strin'，从 0 到 5 的子字符串（不包括 5）
+alert( str.slice(0, 1) ); // 's'，从 0 到 1，但不包括 1，所以只有在 0 处的字符
+```
+
+如果没有第二个参数，`slice` 会一直运行到字符串末尾：
+
+```javascript
+let str = "stringify";
+alert( str.slice(2) ); // 从第二个位置直到结束
+```
+
+`start/end` 也有可能是负值。它们的意思是起始位置从字符串结尾计算：
+
+```javascript
+let str = "stringify";
+
+// 从右边的第四个位置开始，在右边的第一个位置结束
+alert( str.slice(-4, -1) ); // 'gif'
+```
+
+
+
+##### str.substring(start , end)
+
+返回字符串从 `start` 到（但不包括）`end` 的部分。
+
+这与 `slice` 几乎相同，但它允许 `start` 大于 `end`。
+
+例如：
+
+```javascript
+let str = "stringify";
+
+// 这些对于 substring 是相同的
+alert( str.substring(2, 6) ); // "ring"
+alert( str.substring(6, 2) ); // "ring"
+
+// ……但对 slice 是不同的：
+alert( str.slice(2, 6) ); // "ring"（一样）
+alert( str.slice(6, 2) ); // ""（空字符串）
+```
+
+不支持负参数（不像 slice），它们被视为 `0`。
+
+
+
+##### str.substr(start , length)
+
+返回字符串从 `start` 开始的给定 `length` 的部分。
+
+与以前的方法相比，这个允许我们指定 `length` 而不是结束位置：
+
+```javascript
+let str = "stringify";
+alert( str.substr(2, 4) ); // 'ring'，从位置 2 开始，获取 4 个字符
+```
+
+第一个参数可能是负数，从结尾算起：
+
+```javascript
+let str = "stringify";
+alert( str.substr(-4, 2) ); // 'gi'，从第 4 位获取 2 个字符
+```
+
+
+
+##### 对比
+
+| 方法                    | 选择方式……                                | 负值参数            |
+| :---------------------- | :---------------------------------------- | :------------------ |
+| `slice(start, end)`     | 从 `start` 到 `end`（不含 `end`）         | 允许                |
+| `substring(start, end)` | 从 `start` 到 `end`（不含 `end`）         | 负值被视为 `0`      |
+| `substr(start, length)` | 从 `start` 开始获取长为 `length` 的字符串 | 允许 `start` 为负数 |
+
+### 数组
+
+#### [使用 “at” 获取最后一个元素](https://zh.javascript.info/array#shi-yong-at-huo-qu-zui-hou-yi-ge-yuan-su)
+
+```javascript
+let fruits = ["Apple", "Orange", "Plum"];
+
+// 与 fruits[fruits.length-1] 相同
+alert( fruits.at(-1) ); // Plum
+```
+
+`arr.at(i)`：
+
+- 如果 `i >= 0`，则与 `arr[i]` 完全相同。
+- 对于 `i` 为负数的情况，它则从数组的尾部向前数。
+
+`push` 和 `unshift` 方法都可以一次添加多个元素
+
+本质上讲，数组仍然是一个对象,JavaScript 引擎尝试把这些元素一个接一个地存储在连续的内存区域，而且还有一些其它的优化，以使数组运行得非常快
+
+#### [toString](https://zh.javascript.info/array#tostring)
+
+数组有自己的 `toString` 方法的实现，会返回以逗号隔开的元素列表。
+
+例如：
+
+```javascript
+let arr = [1, 2, 3];
+
+alert( arr ); // 1,2,3
+alert( String(arr) === '1,2,3' ); // true
+```
+
+#### 动态规划最大子数组
+
+```javascript
+let nums = [-1, 2, 3, -9, 11]
+function getMaxSubSum(nums) {
+  if (nums.length === 0) return 0;
+
+  const dp = new Array(nums.length);
+  dp[0] = nums[0]; // base case
+  for (let i = 1; i < nums.length; i++) {
+    dp[i] = Math.max(nums[i], nums[i] + dp[i - 1]);
+  }
+  return Math.max(...dp, 0);
+}
+
+console.log(getMaxSubSum(nums))
+```
+
+#### splice
+
+[arr.splice](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/splice) 方法可以说是处理数组的瑞士军刀。它可以做所有事情：添加，删除和插入元素。
+
+语法是：
+
+```javascript
+arr.splice(start[, deleteCount, elem1, ..., elemN])
+```
+
+它从索引 `start` 开始修改 `arr`：删除 `deleteCount` 个元素并在当前位置插入 `elem1, ..., elemN`。最后返回被删除的元素所组成的数组。
+
+让我们从删除开始：
+
+```javascript
+let arr = ["I", "study", "JavaScript"];
+
+arr.splice(1, 1); // 从索引 1 开始删除 1 个元素
+
+alert( arr ); // ["I", "JavaScript"]
+```
+
+简单，对吧？从索引 `1` 开始删除 `1` 个元素。（译注：当只填写了 `splice` 的 `start` 参数时，将删除从索引 `start` 开始的所有数组项）
+
+删除了 3 个元素，并用另外两个元素替换它们：
+
+```javascript
+let arr = ["I", "study", "JavaScript", "right", "now"];
+
+// 删除数组的前三项，并使用其他内容代替它们
+arr.splice(0, 3, "Let's", "dance");
+
+alert( arr ) // 现在 ["Let's", "dance", "right", "now"]
+```
+
+`splice` 返回了被删除的元素所组成的数组
+
+```javascript
+let arr = ["I", "study", "JavaScript", "right", "now"];
+
+// 删除前两个元素
+let removed = arr.splice(0, 2);
+```
+
+splice改变原数组
+
+
+
+我们可以将 `deleteCount` 设置为 `0`，`splice` 方法就能够插入元素而不用删除任何元素：
+
+```javascript
+let arr = ["I", "study", "JavaScript"];
+
+// 从索引 2 开始
+// 删除 0 个元素
+// 然后插入 "complex" 和 "language"
+arr.splice(2, 0, "complex", "language");
+
+alert( arr ); // "I", "study", "complex", "language", "JavaScript"
+```
+
+负向索引都是被允许的。它们从数组末尾计算位置，如下所示：
+
+```javascript
+let arr = [1, 2, 5];
+
+// 从索引 -1（尾端前一位）,尾端插入直接arr.length
+// 删除 0 个元素，
+// 然后插入 3 和 4
+arr.splice(-1, 0, 3, 4);
+
+alert( arr ); // 1,2,3,4,5
+```
+
+#### [slice](https://zh.javascript.info/array-methods#slice)
+
+[arr.slice](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) 方法比 `arr.splice` 简单得多。
+
+语法是：
+
+```javascript
+arr.slice([start], [end])
+```
+
+它会返回一个新数组，将所有从索引 `start` 到 `end`（不包括 `end`）的数组项复制到一个新的数组。`start` 和 `end` 都可以是负数，在这种情况下，从末尾计算索引。
+
+它和字符串的 `str.slice` 方法有点像，就是把子字符串替换成子数组。
+
+例如：
+
+```javascript
+let arr = ["t", "e", "s", "t"];
+
+alert( arr.slice(1, 3) ); // e,s（复制从位置 1 到位置 3 的元素）
+
+alert( arr.slice(-2) ); // s,t（复制从位置 -2 到尾端的元素）
+```
+
+我们也可以不带参数地调用它：`arr.slice()` 会创建一个 `arr` 的副本。其通常用于获取副本，以进行不影响原始数组的进一步转换。
+
+#### [遍历：forEach](https://zh.javascript.info/array-methods#bian-li-foreach)
+
+[arr.forEach](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach) 方法允许为数组的每个元素都运行一个函数。
+
+语法：
+
+```javascript
+arr.forEach(function(item, index, array) {
+  // ... do something with item
+});
+```
+
+
+
+方法 `includes` 
+
+的一个次要但值得注意的特性是，它可以正确处理 `NaN`，这与 `indexOf` 不同：
+
+```javascript
+const arr = [NaN];
+alert( arr.indexOf(NaN) ); // -1（错，应该为 0）
+alert( arr.includes(NaN) );// true（正确）
+```
+
+这是因为 `includes` 是在比较晚的时候才被添加到 JavaScript 中的，并且在内部使用了更新了的比较算法。
+
+#### [arr.find](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
+
+```javascript
+let users = [
+  {id: 1, name: "John"},
+  {id: 2, name: "Pete"},
+  {id: 3, name: "Mary"}
+];
+
+let user = users.find(item => item.id == 1);
+
+alert(user.name); // John
+```
+
+
+
+`find` 方法搜索的是使函数返回 `true` 的第一个（单个）元素。
+
+如果需要匹配的有很多，我们可以使用
+
+#### [arr.filter(fn)](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
+
+```javascript
+let users = [
+  {id: 1, name: "John"},
+  {id: 2, name: "Pete"},
+  {id: 3, name: "Mary"}
+];
+
+// 返回前两个用户的数组
+let someUsers = users.filter(item => item.id < 3);
+
+alert(someUsers.length); // 2
+```
+
+#### [arr.map](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/map) 
+
+对数组的每个元素都调用函数，并返回结果数组。
+
+```javascript
+let result = arr.map(function(item, index, array) {
+  // 返回新值而不是当前元素
+})
+```
+
+例如，在这里我们将每个元素转换为它的字符串长度：
+
+```javascript
+let lengths = ["Bilbo", "Gandalf", "Nazgul"].map(item => item.length);
+alert(lengths); // 5,7,6
+```
+
+#### [arr.sort](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
+
+对数组进行 **原位（in-place）** 排序，更改元素的顺序。(译注：原位是指在此数组内，而非生成一个新数组。)
+
+默认按每位字符大小排序
+
+```javascript
+arr.sort( (a, b) => a - b );
+a - b 升序
+b - a 降序
+```
+
+#### [arr.reverse](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse) 
+
+方法用于颠倒 `arr` 中元素的顺序
+
+修改原数组
+
+#### split
+
+```javascript
+let names = 'Bilbo, Gandalf, Nazgul';
+
+let arr = names.split(', ');
+
+for (let name of arr) {
+  alert( `A message to ${name}.` ); // A message to Bilbo（和其他名字）
+}
+```
+
+`split` 方法有一个可选的第二个数字参数 —— 对数组长度的限制。如果提供了，那么额外的元素会被忽略。但实际上它很少使用：
+
+```javascript
+let arr = 'Bilbo, Gandalf, Nazgul, Saruman'.split(', ', 2);
+
+alert(arr); // Bilbo, Gandalf
+```
+
+**拆分为字母**
+
+调用带有空参数 `s` 的 `split(s)`，会将字符串拆分为字母数组：
+
+```javascript
+let str = "test";
+
+alert( str.split('') ); // t,e,s,t
+```
+
+#### [arr.join(glue)](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Array/join) 
+
+与 `split` 相反。它会在它们之间创建一串由 `glue` 粘合的 `arr` 项。
+
+例如：
+
+```javascript
+let arr = ['Bilbo', 'Gandalf', 'Nazgul'];
+
+let str = arr.join(';'); // 使用分号 ; 将数组粘合成字符串
+
+alert( str ); // Bilbo;Gandalf;Nazgul
+```
+
+#### [reduce/reduceRight](https://zh.javascript.info/array-methods#reducereduceright)
+
+#### 练习题
+
+##### [将 border-left-width 转换成 borderLeftWidth](https://zh.javascript.info/array-methods#jiang-borderleftwidth-zhuan-huan-cheng-borderleftwidth)
+
+```javascript
+function camelize (str) {
+  return str.split('-').map((arr, index) => index === 0 ? arr : arr[0].toUpperCase() + arr.slice(1)).join('')
+}
+```
+
+
+
+##### [过滤范围](https://zh.javascript.info/array-methods#guo-lv-fan-wei)
+
+```javascript
+function filterRangeInPlace(arr, a, b){
+  for (let i = 0; i < arr.length; i++) {
+    if(!(arr[i] >= a && arr[i] <= b)){
+      arr.splice(i, 1)
+      i--;
+    }
+  }
+}
+```
+
+##### [创建一个可扩展的 calculator](https://zh.javascript.info/array-methods#chuang-jian-yi-ge-ke-kuo-zhan-de-calculator)
+
+
+
+##### [获取平均年龄](https://zh.javascript.info/array-methods#huo-qu-ping-jun-nian-ling)
+
+```javascript
+let john = { name: "John", age: 25 };
+let pete = { name: "Pete", age: 30 };
+let mary = { name: "Mary", age: 29 };
+
+let arr = [ john, pete, mary ];
+function getAverageAge(arr){
+  return arr.reduce((sum, curr) => {
+    return sum + curr.age;//写成大括号的形式要return,也可以箭头函数不带大括号,会自动return
+  }, 0) / arr.length
+}
+
+console.log( getAverageAge(arr) ); 
+```
+
+
+
+##### ==[从数组创建键（值）对象](https://zh.javascript.info/array-methods#cong-shu-zu-chuang-jian-jian-zhi-dui-xiang)==
+
+```javascript
+假设我们收到了一个用户数组，形式为：{id:..., name:..., age:... }。
+
+创建一个函数 groupById(arr) 从该数组创建对象，以 id 为键（key），数组项为值。
+
+例如:
+
+let users = [
+  {id: 'john', name: "John Smith", age: 20},
+  {id: 'ann', name: "Ann Smith", age: 24},
+  {id: 'pete', name: "Pete Peterson", age: 31},
+];
+
+let usersById = groupById(users);
+
+/*
+// 调用函数后，我们应该得到：
+
+usersById = {
+  john: {id: 'john', name: "John Smith", age: 20},
+  ann: {id: 'ann', name: "Ann Smith", age: 24},
+  pete: {id: 'pete', name: "Pete Peterson", age: 31},
+}
+*/
+```
+
+```javascript
+function groupById(array) {
+  return array.reduce((obj, value) => {
+    obj[value.id] = value;
+    return obj;
+  }, {})
+}
+```
+
+
+
+### Map and Set（映射和集合）
+
+[Map](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/Map) 是一个带键的数据项的集合，就像一个 `Object` 一样。 但是它们最大的差别是 `Map` 允许任何类型的键（key）。
+
+#### 它的方法和属性如下：
+
+- `new Map()` —— 创建 map。
+- `map.set(key, value)` —— 根据键存储值。
+- `map.get(key)` —— 根据键来返回值，如果 `map` 中不存在对应的 `key`，则返回 `undefined`。
+- `map.has(key)` —— 如果 `key` 存在则返回 `true`，否则返回 `false`。
+- `map.delete(key)` —— 删除指定键的值。
+- `map.clear()` —— 清空 map。
+- `map.size` —— 返回当前元素个数。
+
+#### [Map 迭代](https://zh.javascript.info/map-set#map-die-dai)
+
+如果要在 `map` 里使用循环，可以使用以下三个方法：
+
+- `map.keys()` —— 遍历并返回一个包含所有键的可迭代对象，
+- `map.values()` —— 遍历并返回一个包含所有值的可迭代对象，
+- `map.entries()` —— 遍历并返回一个包含所有实体 `[key, value]` 的可迭代对象，`for..of` 在默认情况下使用的就是这个。
+
+#### `Map` 和 `Set` 区别
+
+是 JavaScript 中两种不同的内置对象,它们有以下区别:
+
+1. 存储方式:
+   - `Map` 对象存储的是键值对,每个键对应一个值。键可以是任意类型,包括对象、函数等。
+   - `Set` 对象存储的是唯一的值,不允许重复。`Set` 中的元素没有特定的顺序。
+2. 键的类型:
+   - `Map` 对象的键可以是任意类型,包括对象、函数等。
+   - `Set` 对象的元素本身就是键,不存在单独的键。
+3. 元素的顺序:
+   - `Map` 对象中的元素按照插入顺序进行存储和迭代。
+   - `Set` 对象中的元素没有特定的顺序,每次迭代的顺序可能不同。
+4. 方法和属性:
+   - `Map` 对象提供了一些方法和属性,如 `set(key, value)`、`get(key)`、`has(key)`、`delete(key)`、`clear()`、`size` 等。
+   - `Set` 对象提供了一些方法和属性,如 `add(value)`、`has(value)`、`delete(value)`、`clear()`、`size` 等。
+5. 用途:
+   - `Map` 对象适用于需要存储键值对、进行快速查找、更新和删除操作的场景。
+   - `Set` 对象适用于需要存储唯一值、进行快速成员检查和删除操作的场景。
+
+### [WeakMap](https://zh.javascript.info/weakmap-weakset#weakmap)
+
+`WeakMap` 和 `Map` 的第一个不同点就是，`WeakMap` 的键必须是对象，不能是原始值：
+
+```javascript
+let weakMap = new WeakMap();
+
+let obj = {};
+
+weakMap.set(obj, "ok"); // 正常工作（以对象作为键）
+
+// 不能使用字符串作为键
+weakMap.set("test", "Whoops"); // Error，因为 "test" 不是一个对象
+```
+
+`WeakMap` 的主要应用场景是 **额外数据的存储**。
+
+假如我们正在处理一个“属于”另一个代码的一个对象，也可能是第三方库，并想存储一些与之相关的数据，那么这些数据就应该与这个对象共存亡 —— 这时候 `WeakMap` 正是我们所需要的利器。
+
+如果我们在 weakMap 中使用一个对象作为键，并且没有其他对这个对象的引用 —— 该对象将会被从内存（和map）中自动清除。
+
+`WeakMap` 不支持迭代以及 `keys()`，`values()` 和 `entries()` 方法。所以没有办法获取 `WeakMap` 的所有键或值。
+
+我们将这些数据放到 `WeakMap` 中，并使用该对象作为这些数据的键，那么当该对象被垃圾回收机制回收后，这些数据也会被自动清除。
+
+另外一个常见的例子是缓存。我们可以存储（“缓存”）函数的结果，以便将来对同一个对象的调用可以重用这个结果。
+
+### WeakSet
+
+`WeakSet` 的表现类似：
+
+- 与 `Set` 类似，但是我们只能向 `WeakSet` 添加对象（而不能是原始值）。
+- 对象只有在其它某个（些）地方能被访问的时候，才能留在 `WeakSet` 中。
+- 跟 `Set` 一样，`WeakSet` 支持 `add`，`has` 和 `delete` 方法，但不支持 `size` 和 `keys()`，并且不可迭代。
+
+变“弱（weak）”的同时，它也可以作为额外的存储空间。但并非针对任意数据，而是针对“是/否”的事实。`WeakSet` 的元素可能代表着有关该对象的某些信息。
+
+#### [总结](https://zh.javascript.info/weakmap-weakset#zong-jie)
+
+`WeakMap` 是类似于 `Map` 的集合，它仅允许对象作为键，并且一旦通过其他方式无法访问这些对象，垃圾回收便会将这些对象与其关联值一同删除。
+
+`WeakSet` 是类似于 `Set` 的集合，它仅存储对象，并且一旦通过其他方式无法访问这些对象，垃圾回收便会将这些对象删除。
+
+它们的主要优点是它们对对象是弱引用，所以被它们引用的对象很容易地被垃圾收集器移除。
+
+这是以不支持 `clear`、`size`、`keys`、`values` 等作为代价换来的……
+
+`WeakMap` 和 `WeakSet` 被用作“主要”对象存储之外的“辅助”数据结构。一旦将对象从主存储器中删除，如果该对象仅被用作 `WeakMap` 或 `WeakSet` 的键，那么该对象将被自动清除。
+
+### Object.keys，values，entries
