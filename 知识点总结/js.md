@@ -458,6 +458,79 @@ if (1) {  console.log("true"); }// 输出 "true"
 - `Array.prototype.slice()`, `Array.prototype.concat()`
 - 使用拓展运算符实现的复制
 
+在JavaScript中，浅拷贝（Shallow Copy）和深拷贝（Deep Copy）是两种不同的复制对象的方法，它们之间的主要区别在于如何处理嵌套的对象或数组。
+
+1. 浅拷贝（Shallow Copy）:
+
+浅拷贝会创建一个新对象，其属性值是原始对象属性值的一份精确拷贝。如果属性是基本类型，拷贝的就是基本类型的值；如果属性是引用类型，拷贝的就是内存地址。
+
+特点：
+
+- 只复制对象的第一层属性
+- 如果属性是基本类型，拷贝其值
+- 如果属性是引用类型，拷贝其内存地址（两个对象共享同一个内存地址）
+
+实现浅拷贝的方法：
+
+```javascript
+// 使用Object.assign()
+let obj = { a: 1, b: { c: 2 } };
+let newObj = Object.assign({}, obj);
+
+// 使用展开运算符
+let newObj2 = { ...obj };
+
+// 使用Array.slice() (用于数组)
+let arr = [1, 2, [3, 4]];
+let newArr = arr.slice();
+```
+
+1. 深拷贝（Deep Copy）:
+
+深拷贝会递归复制所有层级的属性，创建一个完全独立的新对象，包括嵌套的对象和数组。
+
+特点：
+
+- 递归复制所有层级的属性
+- 完全独立的新对象，修改新对象不会影响原对象
+- 处理循环引用可能会导致栈溢出
+
+实现深拷贝的方法：
+
+```javascript
+// 使用JSON.parse() 和 JSON.stringify() (有局限性，不能处理函数、undefined等)
+let obj = { a: 1, b: { c: 2 } };
+let newObj = JSON.parse(JSON.stringify(obj));
+
+// 递归实现
+function deepCopy(obj) {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+  
+  let newObj = Array.isArray(obj) ? [] : {};
+  
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      newObj[key] = deepCopy(obj[key]);
+    }
+  }
+  
+  return newObj;
+}
+
+// 使用第三方库如lodash
+const _ = require('lodash');
+let newObj = _.cloneDeep(obj);
+```
+
+总结：
+
+- 浅拷贝只复制对象的第一层属性，而深拷贝递归复制所有层级的属性。
+- 浅拷贝更快，但可能导致意外的副作用（当修改嵌套对象时）。
+- 深拷贝创建完全独立的新对象，但可能较慢，且需要注意循环引用问题。
+- 选择使用哪种方法取决于你的具体需求和对象结构。
+
 ## 闭包
 
 1. **函数嵌套：** 闭包通常是在函数内部定义的函数，形成了函数的嵌套结构。

@@ -1815,4 +1815,379 @@ weakMap.set("test", "Whoops"); // Error，因为 "test" 不是一个对象
 
 `WeakMap` 和 `WeakSet` 被用作“主要”对象存储之外的“辅助”数据结构。一旦将对象从主存储器中删除，如果该对象仅被用作 `WeakMap` 或 `WeakSet` 的键，那么该对象将被自动清除。
 
-### Object.keys，values，entries
+## [Object.keys，values，entries ](https://zh.javascript.info/keys-values-entries)
+
+
+
+## 解构赋值
+
+[解构赋值 (javascript.info)](https://zh.javascript.info/destructuring-assignment)
+
+可以通过添加额外的逗号来丢弃数组中不想要的元素：
+
+```javascript
+// 不需要第二个元素
+let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+
+alert( title ); // Consul
+```
+
+在上面的代码中，数组的第二个元素被跳过了，第三个元素被赋值给了 `title` 变量。数组中剩下的元素也都被跳过了（因为在这没有对应给它们的变量）。
+
+**等号右侧可以是任何可迭代对象**
+
+……实际上，我们可以将其与任何可迭代对象一起使用，而不仅限于数组：
+
+```javascript
+let [a, b, c] = "abc"; // ["a", "b", "c"]
+let [one, two, three] = new Set([1, 2, 3]);
+```
+
+**交换变量值的技巧**
+
+使用解构赋值来交换两个变量的值是一个著名的技巧：
+
+```javascript
+let guest = "Jane";
+let admin = "Pete";
+
+// 让我们来交换变量的值：使得 guest = Pete，admin = Jane
+[guest, admin] = [admin, guest];
+
+alert(`${guest} ${admin}`); // Pete Jane（成功交换！）
+```
+
+如果数组比左边的列表长，那么“其余”的数组项会被省略
+
+如果我们还想收集其余的数组项 —— 我们可以使用三个点 `"..."` 来再加一个参数以获取其余数组项：
+
+```javascript
+let [name1, name2, ...rest] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+```
+
+如果数组比左边的变量列表短，这里不会出现报错。缺少对应值的变量都会被赋 `undefined`：
+
+```javascript
+let [firstName, surname] = [];
+```
+
+如果我们想要一个“默认”值给未赋值的变量，我们可以使用 `=` 来提供：
+
+```javascript
+// 默认值
+let [name = "Guest", surname = "Anonymous"] = ["Julius"];
+
+alert(name);    // Julius（来自数组的值）
+alert(surname); // Anonymous（默认值被使用了）
+```
+
+变量的顺序并不重要，下面这个代码也是等价的：
+
+```javascript
+// 改变 let {...} 中元素的顺序
+let {height, width, title} = { title: "Menu", height: 200, width: 100 }
+console.log(height) // 200
+console.log(width) // 100
+console.log(title) // Menu
+```
+
+如果我们想把一个属性赋值给另一个名字的变量，比如把 `options.width` 属性赋值给名为 `w` 的变量，那么我们可以使用冒号来设置变量名称：
+
+```javascript
+let options = {
+  title: "Menu",
+  width: 100,
+  height: 200
+};
+
+// { sourceProperty: targetVariable }
+let {width: w, height: h, title} = options;
+
+// width -> w
+// height -> h
+// title -> title
+
+alert(title);  // Menu
+alert(w);      // 100
+alert(h);      // 200
+```
+
+## JSON 方法
+
+[JSON 方法，toJSON (javascript.info)](https://zh.javascript.info/json)
+
+JSON (JavaScript Object Notation) 是一种轻量级的数据交换格式。它具有以下特点和用途：
+
+1. 定义：
+   - 由Douglas Crockford提出，源于JavaScript，但现在已是语言无关的格式。
+   - 使用人类可读的文本来传输由键值对构成的数据对象。
+2. 语法：
+   - 数据在名称/值对中
+   - 数据由逗号分隔
+   - 花括号保存对象
+   - 方括号保存数组
+3. 数据类型：
+   - 数字（整数或浮点数）
+   - 字符串（在双引号中）
+   - 布尔值（true 或 false）
+   - 数组（在方括号中）
+   - 对象（在花括号中）
+   - null
+4. 优点：
+   - 轻量级和易读
+   - 易于解析和生成
+   - 语言无关，可用于多种编程语言
+   - 数据格式比XML更小
+5. 应用场景：
+   - Web API的数据传输
+   - 配置文件
+   - 数据存储（如NoSQL数据库）
+   - 前后端数据交换
+6. 相关方法（在JavaScript中）：
+   - JSON.stringify(): 将JavaScript对象转换为JSON字符串
+   - JSON.parse(): 将JSON字符串解析为JavaScript对象
+7. 安全性：
+   - 不执行代码，只是数据格式，因此比执行JavaScript更安全
+8. 限制：
+   - 不支持函数、日期、undefined
+   - 不能表示循环引用的数据结构
+
+如果在对象内定义toJson方法,对对象调用JSON.stringfy会使用toJson方法
+
+
+
+编写 `replacer` 函数，移除引用 `meetup` 的属性，并将其他所有属性序列化：
+
+```javascript
+let room = {
+  number: 23
+};
+
+let meetup = {
+  title: "Conference",
+  occupiedBy: [{name: "John"}, {name: "Alice"}],
+  place: room
+};
+
+room.occupiedBy = meetup;
+meetup.self = meetup;
+
+alert( JSON.stringify(meetup, function replacer(key, value) {
+  return (key != "" && value == meetup) ? undefined : value;
+}));
+
+/*
+{
+  "title":"Conference",
+  "occupiedBy":[{"name":"John"},{"name":"Alice"}],
+  "place":{"number":23}
+}
+*/
+```
+
+在这个 `replacer` 函数中，`key != ""` 的检查是为了避免将整个 `meetup` 对象替换为 `undefined`。这是因为当 `JSON.stringify` 开始处理顶级对象时，它会首先调用 `replacer` 函数，此时的 `key` 是一个空字符串，`value` 是整个 `meetup` 对象。
+
+让我们详细解释一下：
+
+1. `JSON.stringify` 在开始序列化时，会首先调用 `replacer` 函数，传入一个空字符串作为 key，和整个要序列化的对象作为 value。
+2. 如果没有 `key != ""` 这个条件，当处理顶级对象时，`replacer` 函数会返回 `undefined`，因为 `value == meetup` 为真。
+3. 返回 `undefined` 会导致整个对象被跳过，结果就是什么都不会被序列化。
+4. 通过添加 `key != ""` 条件，我们确保只有在处理对象的属性时才考虑循环引用的问题，而不会影响到顶级对象本身。
+
+所以，这个条件的作用是：
+
+- 当 `key` 是空字符串时（即处理顶级对象），直接返回 `value`。
+- 当 `key` 不是空字符串时（即处理对象的属性），检查是否存在循环引用，如果存在则返回 `undefined`。
+
+这样，我们就可以正确地处理循环引用，同时保留顶级对象的结构。
+
+## [Rest 参数 `...`](https://zh.javascript.info/rest-parameters-spread#rest-can-shu)
+
+**Rest 参数必须放到参数列表的末尾**
+
+Rest 参数会收集剩余的所有参数，因此下面这种用法没有意义，并且会导致错误：
+
+```javascript
+function f(arg1, ...rest, arg2) { // arg2 在 ...rest 后面？！
+  // error
+}
+```
+
+`...rest` 必须写在参数列表最后。
+
+## [“arguments” 变量](https://zh.javascript.info/rest-parameters-spread#arguments-bian-liang)
+
+有一个名为 `arguments` 的特殊类数组对象可以在函数中被访问，该对象以参数在参数列表中的索引作为键，存储所有参数。
+
+例如：
+
+```javascript
+function showName() {
+  alert( arguments.length );
+  alert( arguments[0] );
+  alert( arguments[1] );
+
+  // 它是可遍历的
+  // for(let arg of arguments) alert(arg);
+}
+
+// 依次显示：2，Julius，Caesar
+showName("Julius", "Caesar");
+
+// 依次显示：1，Ilya，undefined（没有第二个参数）
+showName("Ilya");
+```
+
+在过去，JavaScript 中不支持 rest 参数语法，而使用 `arguments` 是获取函数所有参数的唯一方法。现在它仍然有效，我们可以在一些老代码里找到它。
+
+但缺点是，尽管 `arguments` 是一个类数组，也是可迭代对象，但它终究不是数组。它不支持数组方法，因此我们不能调用 `arguments.map(...)` 等方法。
+
+此外，它始终包含所有参数，我们不能像使用 rest 参数那样只截取参数的一部分。
+
+因此，当我们需要这些功能时，最好使用 rest 参数。
+
+**箭头函数没有 `"arguments"`**
+
+## [Spread 语法](https://zh.javascript.info/rest-parameters-spread#spread-syntax)
+
+```javascript
+let arr = [3, 5, 1];
+
+alert( Math.max(...arr) ); // 5（spread 语法把数组转换为参数列表）
+```
+
+我们甚至还可以将 spread 语法与常规值结合使用：
+
+```javascript
+let arr1 = [1, -2, 3, 4];
+let arr2 = [8, 3, -8, 1];
+
+alert( Math.max(1, ...arr1, 2, ...arr2, 25) ); // 25
+```
+
+我们还可以使用 spread 语法来合并数组：
+
+```javascript
+let arr = [3, 5, 1];
+let arr2 = [8, 9, 15];
+
+let merged = [0, ...arr, 2, ...arr2];
+
+alert(merged); // 0,3,5,1,2,8,9,15（0，然后是 arr，然后是 2，然后是 arr2）
+```
+
+可以用 spread 语法这样操作任何可迭代对象。
+
+例如，在这儿我们使用 spread 语法将字符串转换为字符数组：
+
+```javascript
+let str = "Hello";
+
+alert( [...str] ); // H,e,l,l,o
+```
+
+还可以使用 `Array.from` 来实现，因为该方法会将一个可迭代对象（如字符串）转换为数组：
+
+```javascript
+let str = "Hello";
+
+// Array.from 将可迭代对象转换为数组
+alert( Array.from(str) ); // H,e,l,l,o
+```
+
+运行结果与 `[...str]` 相同。
+
+不过 `Array.from(obj)` 和 `[...obj]` 存在一个细微的差别：
+
+- `Array.from` 适用于类数组对象也适用于可迭代对象。
+- Spread 语法只适用于可迭代对象。
+
+因此，对于将一些“东西”转换为数组的任务，`Array.from` 往往更通用。
+
+
+
+==类数组对象==（Array-like object）的概念：
+
+类数组对象是指那些看起来像数组，但实际上不是数组的对象。它们具有以下特征：
+
+1. 有 length 属性，表示元素的数量。
+2. 可以通过索引访问元素（如 obj[0], obj[1] 等）。
+3. 不具有数组的内置方法（如 push, pop, forEach 等）。
+
+常见的类数组对象例子包括：
+
+1. DOM 方法返回的 NodeList（如 document.querySelectorAll('div')）。
+2. 函数内部的 arguments 对象。
+3. 字符串（虽然它是可迭代的，但也可以被视为类数组对象）。
+
+使用...进行深拷贝,创建新的副本不会影响拷贝对象的属性
+
+[复制 array/object](https://zh.javascript.info/rest-parameters-spread#fu-zhi-arrayobject)
+
+## 闭包 [函数大军](https://zh.javascript.info/closure#han-shu-da-jun)
+
+## var
+
+var只有全局作用域和函数作用域
+
+声明提升
+
+可以先使用再声明
+
+```javascript
+function sayHi() {
+  phrase = "Hello";
+
+  alert(phrase);
+
+  var phrase;
+}
+sayHi();
+```
+
+
+
+声明会提升,赋值不会被提升
+
+## js中_proto_和__proto__的区别
+
+在 JavaScript 中，`_proto_` 和 `__proto__` 是两个不同的概念，尽管它们看起来很相似。让我们来解释一下它们的区别：
+
+1. `__proto__`
+
+   - `__proto__` 是对象实例上的一个属性，指向该对象的原型。
+   - 它是非标准的，但大多数现代浏览器都支持它。
+   - 它允许你直接访问和修改对象的原型链。
+   - 在现代 JavaScript 中，推荐使用 `Object.getPrototypeOf()` 和 `Object.setPrototypeOf()` 来替代直接使用 `__proto__`。
+
+   例子：
+
+   ```javascript
+   let obj = {};
+   console.log(obj.__proto__ === Object.prototype); // true
+   ```
+
+2. `_proto_`
+
+   - `_proto_` 只是一个普通的属性名，没有特殊的语言意义。
+   - 它可以用作对象的普通属性，没有内置的特殊行为。
+   - 使用单下划线前缀通常是一种命名约定，表示这是一个"私有"或内部使用的属性，但这只是一种习惯，并不提供真正的私有性。
+
+   例子：
+
+   ```javascript
+   let obj = {
+     _proto_: 'This is just a regular property'
+   };
+   console.log(obj._proto_); // 'This is just a regular property'
+   ```
+
+主要区别：
+
+1. 特殊性：`__proto__` 是一个特殊的属性，用于访问对象的原型；而 `_proto_` 只是一个普通的属性名。
+2. 功能：`__proto__` 用于原型链操作；`_proto_` 没有特殊功能。
+3. 标准化：`__proto__` 虽然广泛支持，但不是 ECMAScript 标准的一部分；`_proto_` 作为属性名完全符合标准。
+4. 使用场景：`__proto__` 用于原型操作（虽然不推荐直接使用）；`_proto_` 可能被用作命名约定中的"私有"属性。
+5. 双下划线 vs 单下划线：`__proto__` 使用双下划线；`_proto_` 使用单下划线。
+
+总之，`__proto__` 是一个特殊的属性，用于原型链操作，而 `_proto_` 只是一个普通的属性名，没有特殊意义。在实际开发中，应避免直接使用 `__proto__`，而是使用 `Object.getPrototypeOf()` 等标准方法。
