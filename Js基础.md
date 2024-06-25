@@ -2149,7 +2149,7 @@ sayHi();
 
 声明会提升,赋值不会被提升
 
-## js中_proto_和__proto__的区别
+## js中下划线_proto_和__proto__的区别
 
 在 JavaScript 中，`_proto_` 和 `__proto__` 是两个不同的概念，尽管它们看起来很相似。让我们来解释一下它们的区别：
 
@@ -2191,3 +2191,28 @@ sayHi();
 5. 双下划线 vs 单下划线：`__proto__` 使用双下划线；`_proto_` 使用单下划线。
 
 总之，`__proto__` 是一个特殊的属性，用于原型链操作，而 `_proto_` 只是一个普通的属性名，没有特殊意义。在实际开发中，应避免直接使用 `__proto__`，而是使用 `Object.getPrototypeOf()` 等标准方法。
+
+## Promise
+
+[Promise API (javascript.info)](https://zh.javascript.info/promise-api)
+
+`Promise` 类有 6 种静态方法：
+
+1. `Promise.all(promises)` —— 等待所有 promise 都 resolve 时，返回存放它们结果的数组。如果给定的任意一个 promise 为 reject，那么它就会变成 `Promise.all` 的 error，所有其他 promise 的结果都会被忽略。
+
+2. ```
+   Promise.allSettled(promises)
+   ```
+
+   （ES2020 新增方法）—— 等待所有 promise 都 settle 时，并以包含以下内容的对象数组的形式返回它们的结果：
+
+   - `status`: `"fulfilled"` 或 `"rejected"`
+   - `value`（如果 fulfilled）或 `reason`（如果 rejected）。
+
+3. `Promise.race(promises)` —— 等待第一个 settle 的 promise，并将其 result/error 作为结果返回。
+
+4. `Promise.any(promises)`（ES2021 新增方法）—— 等待第一个 fulfilled 的 promise，并将其结果作为结果返回。如果所有 promise 都 rejected，`Promise.any` 则会抛出 [`AggregateError`](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/AggregateError) 错误类型的 error 实例。
+
+5. `Promise.resolve(value)` —— 使用给定 value 创建一个 resolved 的 promise。
+
+6. `Promise.reject(error)` —— 使用给定 error 创建一个 rejected 的 promise。
