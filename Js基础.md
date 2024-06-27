@@ -2216,3 +2216,282 @@ sayHi();
 5. `Promise.resolve(value)` —— 使用给定 value 创建一个 resolved 的 promise。
 
 6. `Promise.reject(error)` —— 使用给定 error 创建一个 rejected 的 promise。
+
+## 模块
+
+#### [重新导出](https://zh.javascript.info/import-export#zhong-xin-dao-chu)
+
+```none
+auth/
+    index.js
+    user.js
+    helpers.js
+    tests/
+        login.js
+    providers/
+        github.js
+        facebook.js
+        ...
+```
+
+我们希望通过单个入口暴露包的功能。
+
+换句话说，想要使用我们的包的人，应该只从“主文件” `auth/index.js` 导入。
+
+像这样：
+
+```javascript
+import {login, logout} from 'auth/index.js'
+```
+
+“主文件”，`auth/index.js` 导出了我们希望在包中提供的所有功能。
+
+这样做是因为，其他使用我们包的开发者不应该干预其内部结构，不应该搜索我们包的文件夹中的文件。我们只在 `auth/index.js` 中导出必要的部分，并保持其他内容“不可见”。
+
+由于实际导出的功能分散在 package 中，所以我们可以将它们导入到 `auth/index.js`，然后再从中导出它们：
+
+```javascript
+// 📁 auth/index.js
+
+// 导入 login/logout 然后立即导出它们
+import {login, logout} from './helpers.js';
+export {login, logout};
+
+// 将默认导出导入为 User，然后导出它
+import User from './user.js';
+export {User};
+...
+```
+
+现在使用我们 package 的人可以 `import {login} from "auth/index.js"`。
+
+语法 `export ... from ...` 只是下面这种导入-导出的简写：
+
+```javascript
+// 📁 auth/index.js
+// 重新导出 login/logout
+export {login, logout} from './helpers.js';
+
+// 将默认导出重新导出为 User
+export {default as User} from './user.js';
+...
+```
+
+`export ... from` 与 `import/export` 相比的显着区别是重新导出的模块在当前文件中不可用。所以在上面的 `auth/index.js` 示例中，我们不能使用重新导出的 `login/logout` 函数。
+
+#### [重新导出默认导出](https://zh.javascript.info/import-export#zhong-xin-dao-chu-mo-ren-dao-chu)
+
+重新导出时，默认导出需要单独处理。
+
+## Proxy
+
+一个 `Proxy` 对象包装另一个对象并拦截诸如读取/写入属性和其他操作，可以选择自行处理它们，或者透明地允许该对象处理它们。
+
+#### get捕捉器
+
+```javascript
+let dictionary = {
+  'Hello': 'Hola',
+  'Bye': 'Adiós'
+};
+
+dictionary = new Proxy(dictionary, {
+  get(target, phrase) { // 拦截读取属性操作
+    if (phrase in target) { //如果词典中有该短语
+      return target[phrase]; // 返回其翻译
+    } else {
+      // 否则返回未翻译的短语
+      return phrase;
+    }
+  }
+});
+
+// 在词典中查找任意短语！
+// 最坏的情况也只是它们没有被翻译。
+alert( dictionary['Hello'] ); // Hola
+alert( dictionary['Welcome to Proxy']); // Welcome to Proxy（没有被翻译）
+```
+
+#### set捕捉器
+
+```javascript
+let numbers = [];
+
+numbers = new Proxy(numbers, { // (*)
+  set(target, prop, val) { // 拦截写入属性操作
+    if (typeof val == 'number') {
+      target[prop] = val;
+      return true;
+    } else {
+      return false;
+    }
+  }
+});
+
+numbers.push(1); // 添加成功
+numbers.push(2); // 添加成功
+alert("Length is: " + numbers.length); // 2
+
+numbers.push("test"); // TypeError（proxy 的 'set' 返回 false）
+
+alert("This line is never reached (error in the line above)");
+```
+
+## [Reflect](https://zh.javascript.info/proxy#reflect)
+
+`Reflect` 是一个内建对象，可简化 `Proxy` 的创建。
+
+## 自定义数据属性
+
+自定义数据属性（Custom Data Attributes）是 HTML5 引入的一个特性，允许开发者在 HTML 元素上存储额外的信息。这些属性非常灵活，可以用于各种目的，比如存储配置信息、状态数据或者用于 JavaScript 操作的标识符。
+
+以下是关于自定义数据属性的详细解释：
+
+1. 语法：
+
+   - 所有的自定义数据属性都以 "data-" 前缀开始
+   - 后面跟随自定义的名称
+   - 例如：`data-user-id`, `data-color`, `data-size`
+
+2. 命名规则：
+
+   - 属性名应该全部小写
+   - 可以包含字母、数字、连字符（-）、点（.）、冒号（:）和下划线（_）
+   - 不应该包含任何大写字母
+
+3. 使用示例：
+
+   ```html
+   <div id="user" data-user-id="123" data-role="admin">John Doe</div>
+   ```
+
+4. 在 JavaScript 中访问：
+
+   - 使用
+
+      
+
+     ```
+     getAttribute()
+     ```
+
+      
+
+     方法：
+
+     ```javascript
+     let el = document.getElementById('user');
+     let userId = el.getAttribute('data-user-id');
+     ```
+
+   - 使用
+
+      
+
+     ```
+     dataset
+     ```
+
+      
+
+     属性（更现代的方法）：
+
+     ```javascript
+     let el = document.getElementById('user');
+     let userId = el.dataset.userId;
+     ```
+
+     注意：使用
+
+      
+
+     ```
+     dataset
+     ```
+
+      
+
+     时，属性名会被转换为驼峰命名法
+
+5. 在 CSS 中使用： 可以使用属性选择器来选择具有特定数据属性的元素：
+
+   ```css
+   [data-role="admin"] {
+     background-color: yellow;
+   }
+   ```
+
+6. 优点：
+
+   - 允许存储自定义数据而不违反 HTML 标准
+   - 提供了一种清晰的方式来区分自定义属性和标准 HTML 属性
+   - 可以轻松地通过 JavaScript 访问
+   - 不会影响页面的呈现
+
+7. 常见用途：
+
+   - 存储元素的初始状态或配置
+   - 用于 JavaScript 库或框架的数据绑定
+   - 存储用于动画或交互效果的参数
+   - 为 A/B 测试存储变体信息
+
+8. 注意事项：
+
+   - 不应用于存储敏感或安全相关的数据，因为它们在 HTML 中是可见的
+   - 过度使用可能导致 HTML 变得臃肿和难以维护
+
+9. 浏览器支持： 几乎所有现代浏览器都支持自定义数据属性
+
+自定义数据属性提供了一种灵活、标准化的方式来在 HTML 元素上附加额外信息，这些信息可以被 JavaScript 和 CSS 轻松访问和操作，使得前端开发更加灵活和强大。
+
+## 事件委托
+
+事件委托（Event Delegation）是一种常用的 JavaScript 事件处理模式。它利用了事件冒泡的机制，允许我们将事件监听器添加到一个父元素上，来管理所有子元素（甚至是动态添加的子元素）的某类事件。这种方法可以大大简化我们的代码，提高性能，并且使动态元素的事件处理变得更加容易。
+
+下面我们来详细介绍事件委托：
+
+1. 工作原理
+
+事件委托的工作原理基于事件冒泡。当一个事件在 DOM 元素上触发时，它会首先在该元素上触发，然后冒泡到其父元素，一直到达文档的根节点。
+
+通过在父元素上设置事件监听器，我们可以捕获子元素上发生的事件，并根据需要进行处理。
+
+1. 优点
+
+   a. 内存占用更少：不需要为每个子元素都添加事件监听器。 b. 动态元素处理：可以处理动态添加的元素，无需为新元素单独绑定事件。 c. 代码更简洁：减少了重复的事件绑定代码。 d. 提高性能：减少了事件监听器的数量，尤其在有大量子元素的情况下更明显。
+
+2. 实现方法
+
+基本的实现步骤如下：
+
+a. 在父元素上添加事件监听器。 b. 在事件处理函数中，使用 event.target 确定实际触发事件的元素。 c. 根据需要对特定的子元素进行操作。
+
+1. 示例代码
+
+```html
+<ul id="parent-list">
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+</ul>
+
+<script>
+document.getElementById('parent-list').addEventListener('click', function(e) {
+  if(e.target && e.target.nodeName == "LI") {
+    console.log("List item ", e.target.textContent, " was clicked!");
+  }
+});
+</script>
+```
+
+在这个例子中，我们在父元素 `<ul>` 上添加了点击事件监听器，而不是在每个 `<li>` 上都添加。当任何列表项被点击时，事件会冒泡到 `<ul>`，然后我们检查 `event.target` 是否是一个 `<li>` 元素，如果是，我们就知道一个列表项被点击了。
+
+1. 注意事项
+
+   a. 并非所有事件都冒泡（如 focus、blur 等），对这些事件使用事件委托可能会失效。 b. 过度使用可能导致代码复杂化，特别是当需要处理多层嵌套和复杂的条件判断时。 c. 在处理大量事件或复杂 DOM 结构时，可能需要考虑性能影响。
+
+2. 应用场景
+
+   a. 列表项的点击处理 b. 表格行的事件处理 c. 动态添加的元素的事件处理 d. 表单中多个相似输入框的验证
+
+总之，事件委托是一种强大的事件处理模式，能够简化代码、提高性能，特别适用于需要处理大量相似元素或动态
