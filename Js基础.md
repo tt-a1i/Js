@@ -1815,231 +1815,683 @@ weakMap.set("test", "Whoops"); // Error，因为 "test" 不是一个对象
 
 `WeakMap` 和 `WeakSet` 被用作“主要”对象存储之外的“辅助”数据结构。一旦将对象从主存储器中删除，如果该对象仅被用作 `WeakMap` 或 `WeakSet` 的键，那么该对象将被自动清除。
 
-### Object.keys，values，entries
+## [Object.keys，values，entries ](https://zh.javascript.info/keys-values-entries)
 
-## 函数对象
 
-[函数对象，NFE (javascript.info)](https://zh.javascript.info/function-object)
 
-#### name属性
+## 解构赋值
 
-一个函数的名字可以通过属性 “name” 来访问：
+[解构赋值 (javascript.info)](https://zh.javascript.info/destructuring-assignment)
+
+可以通过添加额外的逗号来丢弃数组中不想要的元素：
 
 ```javascript
-function sayHi() {
-  alert("Hi");
-}
+// 不需要第二个元素
+let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
 
-alert(sayHi.name); // sayHi
+alert( title ); // Consul
 ```
 
-#### length属性
+在上面的代码中，数组的第二个元素被跳过了，第三个元素被赋值给了 `title` 变量。数组中剩下的元素也都被跳过了（因为在这没有对应给它们的变量）。
 
-还有另一个内建属性 “length”，它返回函数入参的个数，比如：
+**等号右侧可以是任何可迭代对象**
+
+……实际上，我们可以将其与任何可迭代对象一起使用，而不仅限于数组：
 
 ```javascript
-function f1(a) {}
-function f2(a, b) {}
-function many(a, b, ...more) {}
-
-alert(f1.length); // 1
-alert(f2.length); // 2
-alert(many.length); // 2
+let [a, b, c] = "abc"; // ["a", "b", "c"]
+let [one, two, three] = new Set([1, 2, 3]);
 ```
 
-#### 自定义属性
+**交换变量值的技巧**
 
-我们也可以添加我们自己的属性。
-
-这里我们添加了 `counter` 属性，用来跟踪总的调用次数：
+使用解构赋值来交换两个变量的值是一个著名的技巧：
 
 ```javascript
-function sayHi() {
-  alert("Hi");
+let guest = "Jane";
+let admin = "Pete";
 
-  // 计算调用次数
-  sayHi.counter++;
-}
-sayHi.counter = 0; // 初始值
+// 让我们来交换变量的值：使得 guest = Pete，admin = Jane
+[guest, admin] = [admin, guest];
 
-sayHi(); // Hi
-sayHi(); // Hi
-
-alert( `Called ${sayHi.counter} times` ); // Called 2 times
+alert(`${guest} ${admin}`); // Pete Jane（成功交换！）
 ```
 
-**属性不是变量**
+如果数组比左边的列表长，那么“其余”的数组项会被省略
 
-被赋值给函数的属性，比如 `sayHi.counter = 0`，**不会** 在函数内定义一个局部变量 `counter`。换句话说，属性 `counter` 和变量 `let counter` 是毫不相关的两个东西。
-
-我们可以把函数当作对象，在它里面存储属性，但是这对它的执行没有任何影响。变量不是函数属性，反之亦然。它们之间是平行的。
-
-如果函数是通过函数表达式的形式被声明的（不是在主代码流里），并且附带了名字，那么它被称为命名函数表达式（Named Function Expression）。这个名字可以用于在该函数内部进行自调用，例如递归调用等。
-
-此外，函数可以带有额外的属性。很多知名的 JavaScript 库都充分利用了这个功能。
-
-#### 例题
+如果我们还想收集其余的数组项 —— 我们可以使用三个点 `"..."` 来再加一个参数以获取其余数组项：
 
 ```javascript
-function sum(a) {
-
-  let currentSum = a;
-
-  function f(b) {
-    currentSum += b;
-    return f;
-  }
-
-  f.toString = function() {
-    return currentSum;
-  };
-
-  return f;
-}
-
-alert( sum(1)(2) ); // 3
-alert( sum(5)(-1)(2) ); // 6
-alert( sum(6)(-1)(-2)(-3) ); // 0
-alert( sum(0)(1)(2)(3)(4)(5) ); // 15
+let [name1, name2, ...rest] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
 ```
 
-
-
-这段代码定义了一个 `sum` 函数，该函数可以用于连续累加数值并返回累加的结果。
-
-##### 函数解析
-
-1. **sum 函数定义**
-
-   ```javascript
-   function sum(a) {
-     let currentSum = a;
-   ```
-   `sum` 函数接收一个初始值 `a`，并初始化 `currentSum` 为 `a`。
-
-2. **内部函数 f 的定义**
-
-   ```javascript
-     function f(b) {
-       currentSum += b;
-       return f;
-     }
-   ```
-   函数 `f` 接收一个参数 `b`，将 `b` 加到 `currentSum` 上，并返回函数 `f` 自身。这样做的好处是可以链式调用 `f` 函数。
-
-3. **f 函数的 toString 方法**
-
-   ```javascript
-     f.toString = function() {
-       return currentSum;
-     };
-   ```
-   重写了 `f` 函数的 `toString` 方法，使其返回 `currentSum` 的值。在 JavaScript 中，当一个函数被转换成字符串时（例如 `alert` 函数），JavaScript 会自动调用函数的 `toString` 方法来获取其字符串表示。
-
-4. **返回函数 f**
-
-   ```javascript
-     return f;
-   }
-   ```
-   `sum` 函数返回内部定义的函数 `f`。
-
-##### 使用示例
-
-现在我们来看几个使用示例：
+如果数组比左边的变量列表短，这里不会出现报错。缺少对应值的变量都会被赋 `undefined`：
 
 ```javascript
-alert( sum(1)(2) ); // 3
-alert( sum(5)(-1)(2) ); // 6
-alert( sum(6)(-1)(-2)(-3) ); // 0
-alert( sum(0)(1)(2)(3)(4)(5) ); // 15
+let [firstName, surname] = [];
 ```
 
-- `sum(1)(2)`：首先调用 `sum(1)` 返回 `f` 函数，然后 `(2)` 调用 `f(2)`，累加到 `1`，返回 `3`。
-- `sum(5)(-1)(2)`：首先调用 `sum(5)` 返回 `f` 函数，接着 `(-1)` 调用 `f(-1)`，累加到 `5`，再 `(2)` 调用 `f(2)`，累加到 `6`，返回 `6`。
-- `sum(6)(-1)(-2)(-3)`：依次累加 `-1`，`-2`，`-3` 到 `6`，返回 `0`。
-- `sum(0)(1)(2)(3)(4)(5)`：依次累加 `1`，`2`，`3`，`4`，`5` 到 `0`，返回 `15`。
-
-##### 总结
-
-这段代码利用了 JavaScript 的函数嵌套和闭包特性，通过返回函数本身并且重写 `toString` 方法，实现了一种链式调用的效果，可以连续进行数值累加，并且在最终调用 `toString` 方法时返回累加结果。
-
-## call,apply,bind
-
-#### [防抖装饰器](https://zh.javascript.info/call-apply-decorators#fang-dou-zhuang-shi-qi)
+如果我们想要一个“默认”值给未赋值的变量，我们可以使用 `=` 来提供：
 
 ```javascript
-function debounce(func, ms) {
-  let timeout;
-  return function() {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, arguments), ms);
-  };
-}
+// 默认值
+let [name = "Guest", surname = "Anonymous"] = ["Julius"];
+
+alert(name);    // Julius（来自数组的值）
+alert(surname); // Anonymous（默认值被使用了）
 ```
 
-为什么只能是arguments不能是args
-
-在 `debounce` 函数中，使用 `arguments` 而不是 `args` 是因为 `arguments` 是一个特殊的对象，它包含了调用该函数时传入的所有参数。`arguments` 是 JavaScript 函数的内置对象，`每个函数调用都会创建`一个对应的 `arguments` 对象。
-
-##### 使用 `arguments` 的原因
-
-1. **`arguments` 对象**:
-   - `arguments` 是一个类数组对象，包含调用函数时传入的所有参数。
-   - 在 `debounce` 返回的匿名函数中，`arguments` 代表了这个匿名函数被调用时所传入的所有参数。
-2. **`apply` 方法**:
-   - `fn.apply(this, arguments)` 调用 `fn`，并将当前上下文 `this` 和 `arguments`（即传入的所有参数）传递给 `fn`。
-   - 这样可以确保 `fn` 被调用时，参数和上下文与调用匿名函数时的一致。
+变量的顺序并不重要，下面这个代码也是等价的：
 
 ```javascript
-使用 args
-function debounce(fn, delay){
-    let timeId;
-    return function (...args){
-        clearTimeout(timeId)
-        timeId = setTimeout(() => fn.apply(this, args), delay)
-    }
-}
+// 改变 let {...} 中元素的顺序
+let {height, width, title} = { title: "Menu", height: 200, width: 100 }
+console.log(height) // 200
+console.log(width) // 100
+console.log(title) // Menu
 ```
 
-为什么需要在return后的参数内写...args，直接在apply后面写...args不行吗
-
-- 使用 `...args` 捕获参数是显式的方法，符合 ES6 的语法，适用于现代 JavaScript 编程风格。
-- `arguments` 是内置对象，自动可用，适用于不使用 ES6 语法的场景。
-
-你不能直接在 `apply` 后面使用 `...args`，因为你需要先捕获这些参数，`...args` 语法需要在函数参数列表中声明。两种方式（`arguments` 和 `...args`）都能正确工作，只是语法上有所不同。
-
-#### [修复丢失了 "this" 的函数](https://zh.javascript.info/bind#xiu-fu-diu-shi-le-this-de-han-shu)
+如果我们想把一个属性赋值给另一个名字的变量，比如把 `options.width` 属性赋值给名为 `w` 的变量，那么我们可以使用冒号来设置变量名称：
 
 ```javascript
-function askPassword(ok, fail) {
-  let password = prompt("Password?", '');
-  if (password == "rockstar") ok();
-  else fail();
-}
-
-let user = {
-  name: 'John',
-
-  loginOk() {
-    alert(`${this.name} logged in`);
-  },
-
-  loginFail() {
-    alert(`${this.name} failed to log in`);
-  },
-
+let options = {
+  title: "Menu",
+  width: 100,
+  height: 200
 };
 
-askPassword(user.loginOk.bind(user), user.loginFail.bind(user));
+// { sourceProperty: targetVariable }
+let {width: w, height: h, title} = options;
+
+// width -> w
+// height -> h
+// title -> title
+
+alert(title);  // Menu
+alert(w);      // 100
+alert(h);      // 200
 ```
 
-``askPassword(user.loginOk, user.loginFail);这样写为什么会发生错误``
+## JSON 方法
 
-最右一行 `askPassword(user.loginOk, user.loginFail);` 会发生错误，因为在 JavaScript 中，当你将对象的方法作为回调函数传递时，方法的上下文（即 `this` 的值）会丢失。`this` 的值会在执行时默认指向全局对象（在浏览器中为 `window`），而不是原来的对象 `user`。
+[JSON 方法，toJSON (javascript.info)](https://zh.javascript.info/json)
 
-具体来说，当 `askPassword` 调用 `ok()` 或 `fail()` 时，`this` 不再指向 `user` 对象，因此 `this.name` 会是 `undefined` 或引发错误。
+JSON (JavaScript Object Notation) 是一种轻量级的数据交换格式。它具有以下特点和用途：
 
-##### 解决方法
+1. 定义：
+   - 由Douglas Crockford提出，源于JavaScript，但现在已是语言无关的格式。
+   - 使用人类可读的文本来传输由键值对构成的数据对象。
+2. 语法：
+   - 数据在名称/值对中
+   - 数据由逗号分隔
+   - 花括号保存对象
+   - 方括号保存数组
+3. 数据类型：
+   - 数字（整数或浮点数）
+   - 字符串（在双引号中）
+   - 布尔值（true 或 false）
+   - 数组（在方括号中）
+   - 对象（在花括号中）
+   - null
+4. 优点：
+   - 轻量级和易读
+   - 易于解析和生成
+   - 语言无关，可用于多种编程语言
+   - 数据格式比XML更小
+5. 应用场景：
+   - Web API的数据传输
+   - 配置文件
+   - 数据存储（如NoSQL数据库）
+   - 前后端数据交换
+6. 相关方法（在JavaScript中）：
+   - JSON.stringify(): 将JavaScript对象转换为JSON字符串
+   - JSON.parse(): 将JSON字符串解析为JavaScript对象
+7. 安全性：
+   - 不执行代码，只是数据格式，因此比执行JavaScript更安全
+8. 限制：
+   - 不支持函数、日期、undefined
+   - 不能表示循环引用的数据结构
 
-为了确保 `this` 在方法被调用时仍然指向 `user` 对象，我们可以使用 `Function.prototype.bind` 方法来显式绑定 `this` 值。`bind` 方法创建一个新的函数，在调用时将其 `this` 关键字设置为提供的值。
+如果在对象内定义toJson方法,对对象调用JSON.stringfy会使用toJson方法
+
+
+
+编写 `replacer` 函数，移除引用 `meetup` 的属性，并将其他所有属性序列化：
+
+```javascript
+let room = {
+  number: 23
+};
+
+let meetup = {
+  title: "Conference",
+  occupiedBy: [{name: "John"}, {name: "Alice"}],
+  place: room
+};
+
+room.occupiedBy = meetup;
+meetup.self = meetup;
+
+alert( JSON.stringify(meetup, function replacer(key, value) {
+  return (key != "" && value == meetup) ? undefined : value;
+}));
+
+/*
+{
+  "title":"Conference",
+  "occupiedBy":[{"name":"John"},{"name":"Alice"}],
+  "place":{"number":23}
+}
+*/
+```
+
+在这个 `replacer` 函数中，`key != ""` 的检查是为了避免将整个 `meetup` 对象替换为 `undefined`。这是因为当 `JSON.stringify` 开始处理顶级对象时，它会首先调用 `replacer` 函数，此时的 `key` 是一个空字符串，`value` 是整个 `meetup` 对象。
+
+让我们详细解释一下：
+
+1. `JSON.stringify` 在开始序列化时，会首先调用 `replacer` 函数，传入一个空字符串作为 key，和整个要序列化的对象作为 value。
+2. 如果没有 `key != ""` 这个条件，当处理顶级对象时，`replacer` 函数会返回 `undefined`，因为 `value == meetup` 为真。
+3. 返回 `undefined` 会导致整个对象被跳过，结果就是什么都不会被序列化。
+4. 通过添加 `key != ""` 条件，我们确保只有在处理对象的属性时才考虑循环引用的问题，而不会影响到顶级对象本身。
+
+所以，这个条件的作用是：
+
+- 当 `key` 是空字符串时（即处理顶级对象），直接返回 `value`。
+- 当 `key` 不是空字符串时（即处理对象的属性），检查是否存在循环引用，如果存在则返回 `undefined`。
+
+这样，我们就可以正确地处理循环引用，同时保留顶级对象的结构。
+
+## [Rest 参数 `...`](https://zh.javascript.info/rest-parameters-spread#rest-can-shu)
+
+**Rest 参数必须放到参数列表的末尾**
+
+Rest 参数会收集剩余的所有参数，因此下面这种用法没有意义，并且会导致错误：
+
+```javascript
+function f(arg1, ...rest, arg2) { // arg2 在 ...rest 后面？！
+  // error
+}
+```
+
+`...rest` 必须写在参数列表最后。
+
+## [“arguments” 变量](https://zh.javascript.info/rest-parameters-spread#arguments-bian-liang)
+
+有一个名为 `arguments` 的特殊类数组对象可以在函数中被访问，该对象以参数在参数列表中的索引作为键，存储所有参数。
+
+例如：
+
+```javascript
+function showName() {
+  alert( arguments.length );
+  alert( arguments[0] );
+  alert( arguments[1] );
+
+  // 它是可遍历的
+  // for(let arg of arguments) alert(arg);
+}
+
+// 依次显示：2，Julius，Caesar
+showName("Julius", "Caesar");
+
+// 依次显示：1，Ilya，undefined（没有第二个参数）
+showName("Ilya");
+```
+
+在过去，JavaScript 中不支持 rest 参数语法，而使用 `arguments` 是获取函数所有参数的唯一方法。现在它仍然有效，我们可以在一些老代码里找到它。
+
+但缺点是，尽管 `arguments` 是一个类数组，也是可迭代对象，但它终究不是数组。它不支持数组方法，因此我们不能调用 `arguments.map(...)` 等方法。
+
+此外，它始终包含所有参数，我们不能像使用 rest 参数那样只截取参数的一部分。
+
+因此，当我们需要这些功能时，最好使用 rest 参数。
+
+**箭头函数没有 `"arguments"`**
+
+## [Spread 语法](https://zh.javascript.info/rest-parameters-spread#spread-syntax)
+
+```javascript
+let arr = [3, 5, 1];
+
+alert( Math.max(...arr) ); // 5（spread 语法把数组转换为参数列表）
+```
+
+我们甚至还可以将 spread 语法与常规值结合使用：
+
+```javascript
+let arr1 = [1, -2, 3, 4];
+let arr2 = [8, 3, -8, 1];
+
+alert( Math.max(1, ...arr1, 2, ...arr2, 25) ); // 25
+```
+
+我们还可以使用 spread 语法来合并数组：
+
+```javascript
+let arr = [3, 5, 1];
+let arr2 = [8, 9, 15];
+
+let merged = [0, ...arr, 2, ...arr2];
+
+alert(merged); // 0,3,5,1,2,8,9,15（0，然后是 arr，然后是 2，然后是 arr2）
+```
+
+可以用 spread 语法这样操作任何可迭代对象。
+
+例如，在这儿我们使用 spread 语法将字符串转换为字符数组：
+
+```javascript
+let str = "Hello";
+
+alert( [...str] ); // H,e,l,l,o
+```
+
+还可以使用 `Array.from` 来实现，因为该方法会将一个可迭代对象（如字符串）转换为数组：
+
+```javascript
+let str = "Hello";
+
+// Array.from 将可迭代对象转换为数组
+alert( Array.from(str) ); // H,e,l,l,o
+```
+
+运行结果与 `[...str]` 相同。
+
+不过 `Array.from(obj)` 和 `[...obj]` 存在一个细微的差别：
+
+- `Array.from` 适用于类数组对象也适用于可迭代对象。
+- Spread 语法只适用于可迭代对象。
+
+因此，对于将一些“东西”转换为数组的任务，`Array.from` 往往更通用。
+
+
+
+==类数组对象==（Array-like object）的概念：
+
+类数组对象是指那些看起来像数组，但实际上不是数组的对象。它们具有以下特征：
+
+1. 有 length 属性，表示元素的数量。
+2. 可以通过索引访问元素（如 obj[0], obj[1] 等）。
+3. 不具有数组的内置方法（如 push, pop, forEach 等）。
+
+常见的类数组对象例子包括：
+
+1. DOM 方法返回的 NodeList（如 document.querySelectorAll('div')）。
+2. 函数内部的 arguments 对象。
+3. 字符串（虽然它是可迭代的，但也可以被视为类数组对象）。
+
+使用...进行深拷贝,创建新的副本不会影响拷贝对象的属性
+
+[复制 array/object](https://zh.javascript.info/rest-parameters-spread#fu-zhi-arrayobject)
+
+## 闭包 [函数大军](https://zh.javascript.info/closure#han-shu-da-jun)
+
+## var
+
+var只有全局作用域和函数作用域
+
+声明提升
+
+可以先使用再声明
+
+```javascript
+function sayHi() {
+  phrase = "Hello";
+
+  alert(phrase);
+
+  var phrase;
+}
+sayHi();
+```
+
+
+
+声明会提升,赋值不会被提升
+
+## js中下划线_proto_和__proto__的区别
+
+在 JavaScript 中，`_proto_` 和 `__proto__` 是两个不同的概念，尽管它们看起来很相似。让我们来解释一下它们的区别：
+
+1. `__proto__`
+
+   - `__proto__` 是对象实例上的一个属性，指向该对象的原型。
+   - 它是非标准的，但大多数现代浏览器都支持它。
+   - 它允许你直接访问和修改对象的原型链。
+   - 在现代 JavaScript 中，推荐使用 `Object.getPrototypeOf()` 和 `Object.setPrototypeOf()` 来替代直接使用 `__proto__`。
+
+   例子：
+
+   ```javascript
+   let obj = {};
+   console.log(obj.__proto__ === Object.prototype); // true
+   ```
+
+2. `_proto_`
+
+   - `_proto_` 只是一个普通的属性名，没有特殊的语言意义。
+   - 它可以用作对象的普通属性，没有内置的特殊行为。
+   - 使用单下划线前缀通常是一种命名约定，表示这是一个"私有"或内部使用的属性，但这只是一种习惯，并不提供真正的私有性。
+
+   例子：
+
+   ```javascript
+   let obj = {
+     _proto_: 'This is just a regular property'
+   };
+   console.log(obj._proto_); // 'This is just a regular property'
+   ```
+
+主要区别：
+
+1. 特殊性：`__proto__` 是一个特殊的属性，用于访问对象的原型；而 `_proto_` 只是一个普通的属性名。
+2. 功能：`__proto__` 用于原型链操作；`_proto_` 没有特殊功能。
+3. 标准化：`__proto__` 虽然广泛支持，但不是 ECMAScript 标准的一部分；`_proto_` 作为属性名完全符合标准。
+4. 使用场景：`__proto__` 用于原型操作（虽然不推荐直接使用）；`_proto_` 可能被用作命名约定中的"私有"属性。
+5. 双下划线 vs 单下划线：`__proto__` 使用双下划线；`_proto_` 使用单下划线。
+
+总之，`__proto__` 是一个特殊的属性，用于原型链操作，而 `_proto_` 只是一个普通的属性名，没有特殊意义。在实际开发中，应避免直接使用 `__proto__`，而是使用 `Object.getPrototypeOf()` 等标准方法。
+
+## Promise
+
+[Promise API (javascript.info)](https://zh.javascript.info/promise-api)
+
+`Promise` 类有 6 种静态方法：
+
+1. `Promise.all(promises)` —— 等待所有 promise 都 resolve 时，返回存放它们结果的数组。如果给定的任意一个 promise 为 reject，那么它就会变成 `Promise.all` 的 error，所有其他 promise 的结果都会被忽略。
+
+2. ```
+   Promise.allSettled(promises)
+   ```
+
+   （ES2020 新增方法）—— 等待所有 promise 都 settle 时，并以包含以下内容的对象数组的形式返回它们的结果：
+
+   - `status`: `"fulfilled"` 或 `"rejected"`
+   - `value`（如果 fulfilled）或 `reason`（如果 rejected）。
+
+3. `Promise.race(promises)` —— 等待第一个 settle 的 promise，并将其 result/error 作为结果返回。
+
+4. `Promise.any(promises)`（ES2021 新增方法）—— 等待第一个 fulfilled 的 promise，并将其结果作为结果返回。如果所有 promise 都 rejected，`Promise.any` 则会抛出 [`AggregateError`](https://developer.mozilla.org/zh/docs/Web/JavaScript/Reference/Global_Objects/AggregateError) 错误类型的 error 实例。
+
+5. `Promise.resolve(value)` —— 使用给定 value 创建一个 resolved 的 promise。
+
+6. `Promise.reject(error)` —— 使用给定 error 创建一个 rejected 的 promise。
+
+## 模块
+
+#### [重新导出](https://zh.javascript.info/import-export#zhong-xin-dao-chu)
+
+```none
+auth/
+    index.js
+    user.js
+    helpers.js
+    tests/
+        login.js
+    providers/
+        github.js
+        facebook.js
+        ...
+```
+
+我们希望通过单个入口暴露包的功能。
+
+换句话说，想要使用我们的包的人，应该只从“主文件” `auth/index.js` 导入。
+
+像这样：
+
+```javascript
+import {login, logout} from 'auth/index.js'
+```
+
+“主文件”，`auth/index.js` 导出了我们希望在包中提供的所有功能。
+
+这样做是因为，其他使用我们包的开发者不应该干预其内部结构，不应该搜索我们包的文件夹中的文件。我们只在 `auth/index.js` 中导出必要的部分，并保持其他内容“不可见”。
+
+由于实际导出的功能分散在 package 中，所以我们可以将它们导入到 `auth/index.js`，然后再从中导出它们：
+
+```javascript
+// 📁 auth/index.js
+
+// 导入 login/logout 然后立即导出它们
+import {login, logout} from './helpers.js';
+export {login, logout};
+
+// 将默认导出导入为 User，然后导出它
+import User from './user.js';
+export {User};
+...
+```
+
+现在使用我们 package 的人可以 `import {login} from "auth/index.js"`。
+
+语法 `export ... from ...` 只是下面这种导入-导出的简写：
+
+```javascript
+// 📁 auth/index.js
+// 重新导出 login/logout
+export {login, logout} from './helpers.js';
+
+// 将默认导出重新导出为 User
+export {default as User} from './user.js';
+...
+```
+
+`export ... from` 与 `import/export` 相比的显着区别是重新导出的模块在当前文件中不可用。所以在上面的 `auth/index.js` 示例中，我们不能使用重新导出的 `login/logout` 函数。
+
+#### [重新导出默认导出](https://zh.javascript.info/import-export#zhong-xin-dao-chu-mo-ren-dao-chu)
+
+重新导出时，默认导出需要单独处理。
+
+## Proxy
+
+一个 `Proxy` 对象包装另一个对象并拦截诸如读取/写入属性和其他操作，可以选择自行处理它们，或者透明地允许该对象处理它们。
+
+#### get捕捉器
+
+```javascript
+let dictionary = {
+  'Hello': 'Hola',
+  'Bye': 'Adiós'
+};
+
+dictionary = new Proxy(dictionary, {
+  get(target, phrase) { // 拦截读取属性操作
+    if (phrase in target) { //如果词典中有该短语
+      return target[phrase]; // 返回其翻译
+    } else {
+      // 否则返回未翻译的短语
+      return phrase;
+    }
+  }
+});
+
+// 在词典中查找任意短语！
+// 最坏的情况也只是它们没有被翻译。
+alert( dictionary['Hello'] ); // Hola
+alert( dictionary['Welcome to Proxy']); // Welcome to Proxy（没有被翻译）
+```
+
+#### set捕捉器
+
+```javascript
+let numbers = [];
+
+numbers = new Proxy(numbers, { // (*)
+  set(target, prop, val) { // 拦截写入属性操作
+    if (typeof val == 'number') {
+      target[prop] = val;
+      return true;
+    } else {
+      return false;
+    }
+  }
+});
+
+numbers.push(1); // 添加成功
+numbers.push(2); // 添加成功
+alert("Length is: " + numbers.length); // 2
+
+numbers.push("test"); // TypeError（proxy 的 'set' 返回 false）
+
+alert("This line is never reached (error in the line above)");
+```
+
+## [Reflect](https://zh.javascript.info/proxy#reflect)
+
+`Reflect` 是一个内建对象，可简化 `Proxy` 的创建。
+
+## 自定义数据属性
+
+自定义数据属性（Custom Data Attributes）是 HTML5 引入的一个特性，允许开发者在 HTML 元素上存储额外的信息。这些属性非常灵活，可以用于各种目的，比如存储配置信息、状态数据或者用于 JavaScript 操作的标识符。
+
+以下是关于自定义数据属性的详细解释：
+
+1. 语法：
+
+   - 所有的自定义数据属性都以 "data-" 前缀开始
+   - 后面跟随自定义的名称
+   - 例如：`data-user-id`, `data-color`, `data-size`
+
+2. 命名规则：
+
+   - 属性名应该全部小写
+   - 可以包含字母、数字、连字符（-）、点（.）、冒号（:）和下划线（_）
+   - 不应该包含任何大写字母
+
+3. 使用示例：
+
+   ```html
+   <div id="user" data-user-id="123" data-role="admin">John Doe</div>
+   ```
+
+4. 在 JavaScript 中访问：
+
+   - 使用
+
+      
+
+     ```
+     getAttribute()
+     ```
+
+      
+
+     方法：
+
+     ```javascript
+     let el = document.getElementById('user');
+     let userId = el.getAttribute('data-user-id');
+     ```
+
+   - 使用
+
+      
+
+     ```
+     dataset
+     ```
+
+      
+
+     属性（更现代的方法）：
+
+     ```javascript
+     let el = document.getElementById('user');
+     let userId = el.dataset.userId;
+     ```
+
+     注意：使用
+
+      
+
+     ```
+     dataset
+     ```
+
+      
+
+     时，属性名会被转换为驼峰命名法
+
+5. 在 CSS 中使用： 可以使用属性选择器来选择具有特定数据属性的元素：
+
+   ```css
+   [data-role="admin"] {
+     background-color: yellow;
+   }
+   ```
+
+6. 优点：
+
+   - 允许存储自定义数据而不违反 HTML 标准
+   - 提供了一种清晰的方式来区分自定义属性和标准 HTML 属性
+   - 可以轻松地通过 JavaScript 访问
+   - 不会影响页面的呈现
+
+7. 常见用途：
+
+   - 存储元素的初始状态或配置
+   - 用于 JavaScript 库或框架的数据绑定
+   - 存储用于动画或交互效果的参数
+   - 为 A/B 测试存储变体信息
+
+8. 注意事项：
+
+   - 不应用于存储敏感或安全相关的数据，因为它们在 HTML 中是可见的
+   - 过度使用可能导致 HTML 变得臃肿和难以维护
+
+9. 浏览器支持： 几乎所有现代浏览器都支持自定义数据属性
+
+自定义数据属性提供了一种灵活、标准化的方式来在 HTML 元素上附加额外信息，这些信息可以被 JavaScript 和 CSS 轻松访问和操作，使得前端开发更加灵活和强大。
+
+## 事件委托
+
+事件委托（Event Delegation）是一种常用的 JavaScript 事件处理模式。它利用了事件冒泡的机制，允许我们将事件监听器添加到一个父元素上，来管理所有子元素（甚至是动态添加的子元素）的某类事件。这种方法可以大大简化我们的代码，提高性能，并且使动态元素的事件处理变得更加容易。
+
+下面我们来详细介绍事件委托：
+
+1. 工作原理
+
+事件委托的工作原理基于事件冒泡。当一个事件在 DOM 元素上触发时，它会首先在该元素上触发，然后冒泡到其父元素，一直到达文档的根节点。
+
+通过在父元素上设置事件监听器，我们可以捕获子元素上发生的事件，并根据需要进行处理。
+
+1. 优点
+
+   a. 内存占用更少：不需要为每个子元素都添加事件监听器。 b. 动态元素处理：可以处理动态添加的元素，无需为新元素单独绑定事件。 c. 代码更简洁：减少了重复的事件绑定代码。 d. 提高性能：减少了事件监听器的数量，尤其在有大量子元素的情况下更明显。
+
+2. 实现方法
+
+基本的实现步骤如下：
+
+a. 在父元素上添加事件监听器。 b. 在事件处理函数中，使用 event.target 确定实际触发事件的元素。 c. 根据需要对特定的子元素进行操作。
+
+1. 示例代码
+
+```html
+<ul id="parent-list">
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+</ul>
+
+<script>
+document.getElementById('parent-list').addEventListener('click', function(e) {
+  if(e.target && e.target.nodeName == "LI") {
+    console.log("List item ", e.target.textContent, " was clicked!");
+  }
+});
+</script>
+```
+
+在这个例子中，我们在父元素 `<ul>` 上添加了点击事件监听器，而不是在每个 `<li>` 上都添加。当任何列表项被点击时，事件会冒泡到 `<ul>`，然后我们检查 `event.target` 是否是一个 `<li>` 元素，如果是，我们就知道一个列表项被点击了。
+
+1. 注意事项
+
+   a. 并非所有事件都冒泡（如 focus、blur 等），对这些事件使用事件委托可能会失效。 b. 过度使用可能导致代码复杂化，特别是当需要处理多层嵌套和复杂的条件判断时。 c. 在处理大量事件或复杂 DOM 结构时，可能需要考虑性能影响。
+
+2. 应用场景
+
+   a. 列表项的点击处理 b. 表格行的事件处理 c. 动态添加的元素的事件处理 d. 表单中多个相似输入框的验证
+
+总之，事件委托是一种强大的事件处理模式，能够简化代码、提高性能，特别适用于需要处理大量相似元素或动态
