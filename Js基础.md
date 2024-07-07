@@ -1816,3 +1816,230 @@ weakMap.set("test", "Whoops"); // Error，因为 "test" 不是一个对象
 `WeakMap` 和 `WeakSet` 被用作“主要”对象存储之外的“辅助”数据结构。一旦将对象从主存储器中删除，如果该对象仅被用作 `WeakMap` 或 `WeakSet` 的键，那么该对象将被自动清除。
 
 ### Object.keys，values，entries
+
+## 函数对象
+
+[函数对象，NFE (javascript.info)](https://zh.javascript.info/function-object)
+
+#### name属性
+
+一个函数的名字可以通过属性 “name” 来访问：
+
+```javascript
+function sayHi() {
+  alert("Hi");
+}
+
+alert(sayHi.name); // sayHi
+```
+
+#### length属性
+
+还有另一个内建属性 “length”，它返回函数入参的个数，比如：
+
+```javascript
+function f1(a) {}
+function f2(a, b) {}
+function many(a, b, ...more) {}
+
+alert(f1.length); // 1
+alert(f2.length); // 2
+alert(many.length); // 2
+```
+
+#### 自定义属性
+
+我们也可以添加我们自己的属性。
+
+这里我们添加了 `counter` 属性，用来跟踪总的调用次数：
+
+```javascript
+function sayHi() {
+  alert("Hi");
+
+  // 计算调用次数
+  sayHi.counter++;
+}
+sayHi.counter = 0; // 初始值
+
+sayHi(); // Hi
+sayHi(); // Hi
+
+alert( `Called ${sayHi.counter} times` ); // Called 2 times
+```
+
+**属性不是变量**
+
+被赋值给函数的属性，比如 `sayHi.counter = 0`，**不会** 在函数内定义一个局部变量 `counter`。换句话说，属性 `counter` 和变量 `let counter` 是毫不相关的两个东西。
+
+我们可以把函数当作对象，在它里面存储属性，但是这对它的执行没有任何影响。变量不是函数属性，反之亦然。它们之间是平行的。
+
+如果函数是通过函数表达式的形式被声明的（不是在主代码流里），并且附带了名字，那么它被称为命名函数表达式（Named Function Expression）。这个名字可以用于在该函数内部进行自调用，例如递归调用等。
+
+此外，函数可以带有额外的属性。很多知名的 JavaScript 库都充分利用了这个功能。
+
+#### 例题
+
+```javascript
+function sum(a) {
+
+  let currentSum = a;
+
+  function f(b) {
+    currentSum += b;
+    return f;
+  }
+
+  f.toString = function() {
+    return currentSum;
+  };
+
+  return f;
+}
+
+alert( sum(1)(2) ); // 3
+alert( sum(5)(-1)(2) ); // 6
+alert( sum(6)(-1)(-2)(-3) ); // 0
+alert( sum(0)(1)(2)(3)(4)(5) ); // 15
+```
+
+
+
+这段代码定义了一个 `sum` 函数，该函数可以用于连续累加数值并返回累加的结果。
+
+##### 函数解析
+
+1. **sum 函数定义**
+
+   ```javascript
+   function sum(a) {
+     let currentSum = a;
+   ```
+   `sum` 函数接收一个初始值 `a`，并初始化 `currentSum` 为 `a`。
+
+2. **内部函数 f 的定义**
+
+   ```javascript
+     function f(b) {
+       currentSum += b;
+       return f;
+     }
+   ```
+   函数 `f` 接收一个参数 `b`，将 `b` 加到 `currentSum` 上，并返回函数 `f` 自身。这样做的好处是可以链式调用 `f` 函数。
+
+3. **f 函数的 toString 方法**
+
+   ```javascript
+     f.toString = function() {
+       return currentSum;
+     };
+   ```
+   重写了 `f` 函数的 `toString` 方法，使其返回 `currentSum` 的值。在 JavaScript 中，当一个函数被转换成字符串时（例如 `alert` 函数），JavaScript 会自动调用函数的 `toString` 方法来获取其字符串表示。
+
+4. **返回函数 f**
+
+   ```javascript
+     return f;
+   }
+   ```
+   `sum` 函数返回内部定义的函数 `f`。
+
+##### 使用示例
+
+现在我们来看几个使用示例：
+
+```javascript
+alert( sum(1)(2) ); // 3
+alert( sum(5)(-1)(2) ); // 6
+alert( sum(6)(-1)(-2)(-3) ); // 0
+alert( sum(0)(1)(2)(3)(4)(5) ); // 15
+```
+
+- `sum(1)(2)`：首先调用 `sum(1)` 返回 `f` 函数，然后 `(2)` 调用 `f(2)`，累加到 `1`，返回 `3`。
+- `sum(5)(-1)(2)`：首先调用 `sum(5)` 返回 `f` 函数，接着 `(-1)` 调用 `f(-1)`，累加到 `5`，再 `(2)` 调用 `f(2)`，累加到 `6`，返回 `6`。
+- `sum(6)(-1)(-2)(-3)`：依次累加 `-1`，`-2`，`-3` 到 `6`，返回 `0`。
+- `sum(0)(1)(2)(3)(4)(5)`：依次累加 `1`，`2`，`3`，`4`，`5` 到 `0`，返回 `15`。
+
+##### 总结
+
+这段代码利用了 JavaScript 的函数嵌套和闭包特性，通过返回函数本身并且重写 `toString` 方法，实现了一种链式调用的效果，可以连续进行数值累加，并且在最终调用 `toString` 方法时返回累加结果。
+
+## call,apply,bind
+
+#### [防抖装饰器](https://zh.javascript.info/call-apply-decorators#fang-dou-zhuang-shi-qi)
+
+```javascript
+function debounce(func, ms) {
+  let timeout;
+  return function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, arguments), ms);
+  };
+}
+```
+
+为什么只能是arguments不能是args
+
+在 `debounce` 函数中，使用 `arguments` 而不是 `args` 是因为 `arguments` 是一个特殊的对象，它包含了调用该函数时传入的所有参数。`arguments` 是 JavaScript 函数的内置对象，`每个函数调用都会创建`一个对应的 `arguments` 对象。
+
+##### 使用 `arguments` 的原因
+
+1. **`arguments` 对象**:
+   - `arguments` 是一个类数组对象，包含调用函数时传入的所有参数。
+   - 在 `debounce` 返回的匿名函数中，`arguments` 代表了这个匿名函数被调用时所传入的所有参数。
+2. **`apply` 方法**:
+   - `fn.apply(this, arguments)` 调用 `fn`，并将当前上下文 `this` 和 `arguments`（即传入的所有参数）传递给 `fn`。
+   - 这样可以确保 `fn` 被调用时，参数和上下文与调用匿名函数时的一致。
+
+```javascript
+使用 args
+function debounce(fn, delay){
+    let timeId;
+    return function (...args){
+        clearTimeout(timeId)
+        timeId = setTimeout(() => fn.apply(this, args), delay)
+    }
+}
+```
+
+为什么需要在return后的参数内写...args，直接在apply后面写...args不行吗
+
+- 使用 `...args` 捕获参数是显式的方法，符合 ES6 的语法，适用于现代 JavaScript 编程风格。
+- `arguments` 是内置对象，自动可用，适用于不使用 ES6 语法的场景。
+
+你不能直接在 `apply` 后面使用 `...args`，因为你需要先捕获这些参数，`...args` 语法需要在函数参数列表中声明。两种方式（`arguments` 和 `...args`）都能正确工作，只是语法上有所不同。
+
+#### [修复丢失了 "this" 的函数](https://zh.javascript.info/bind#xiu-fu-diu-shi-le-this-de-han-shu)
+
+```javascript
+function askPassword(ok, fail) {
+  let password = prompt("Password?", '');
+  if (password == "rockstar") ok();
+  else fail();
+}
+
+let user = {
+  name: 'John',
+
+  loginOk() {
+    alert(`${this.name} logged in`);
+  },
+
+  loginFail() {
+    alert(`${this.name} failed to log in`);
+  },
+
+};
+
+askPassword(user.loginOk.bind(user), user.loginFail.bind(user));
+```
+
+``askPassword(user.loginOk, user.loginFail);这样写为什么会发生错误``
+
+最右一行 `askPassword(user.loginOk, user.loginFail);` 会发生错误，因为在 JavaScript 中，当你将对象的方法作为回调函数传递时，方法的上下文（即 `this` 的值）会丢失。`this` 的值会在执行时默认指向全局对象（在浏览器中为 `window`），而不是原来的对象 `user`。
+
+具体来说，当 `askPassword` 调用 `ok()` 或 `fail()` 时，`this` 不再指向 `user` 对象，因此 `this.name` 会是 `undefined` 或引发错误。
+
+##### 解决方法
+
+为了确保 `this` 在方法被调用时仍然指向 `user` 对象，我们可以使用 `Function.prototype.bind` 方法来显式绑定 `this` 值。`bind` 方法创建一个新的函数，在调用时将其 `this` 关键字设置为提供的值。
