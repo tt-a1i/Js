@@ -566,3 +566,81 @@ pdfImageMaskHoverHandler(index, status) {
 
 - 如果你的项目中没有其他地方使用了相同的 class 名称 (`my-table`)，那么方法一 (去掉 `scoped`) 更简单。
 - 如果你的项目中其他地方也使用了相同的 class 名称，那么为了避免样式冲突，建议使用方法二 (深度作用选择器) 将样式限制在当前组件内。
+
+## el-table的scope，row之类的数据都代表什么吗
+
+在使用 Element UI 的 `<el-table>` 组件时，`scope` 和 `row` 是两个关键概念，特别是在使用自定义模板进行数据绑定和操作时。这些概念帮助你管理和访问表格的数据行。
+
+### scope
+
+`scope` 是一个对象，用于在 `<el-table-column>` 的模板中传递当前行的上下文信息。它是一个包含关于该行的所有必要数据的临时对象，让你可以在模板中访问和操作这些数据。
+
+`scope` 主要包含以下属性：
+
+- **row**: 表示当前行的数据对象。这是你绑定到 `<el-table>` 的 `data` 属性中的其中一个元素。
+- **column**: 包含当前列的定义信息，例如列的名称和其他由 `<el-table-column>` 定义的属性。
+- **$index**: 当前行的索引，基于当前分页。这是行在当前页的顺序索引，从 0 开始。
+- **store**: 有关表格的状态，如排序和过滤状态。这通常不需要手动操作，但在特定情况下，可以通过它访问更深层次的表格状态。
+
+### row
+
+`row` 是 `scope` 对象的一个属性，它直接引用表格数据数组中当前行的单个数据对象。通过 `row`，你可以访问和修改当前行的所有数据。`row` 是对数据源的直接引用，因此对 `row` 的任何修改都会反映在你的数据源和表格界面上。
+
+### 示例
+
+下面是一个使用 `<el-table>` 和 `<el-table-column>` 的简单示例，展示如何使用 `scope` 和 `row`：
+
+```xml
+<template>
+  <el-table :data="tableData" style="width: 100%;">
+    <!-- 定义表格列 -->
+    <el-table-column prop="id" label="ID" width="180">
+    </el-table-column>
+    <el-table-column prop="name" label="Name" width="180">
+    </el-table-column>
+    <el-table-column label="操作">
+      <template slot-scope="scope">
+        <!-- 使用 scope 访问当前行数据 -->
+        <el-button @click="deleteRow(scope.$index, tableData)">删除</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      tableData: [
+        { id: 1, name: 'Apple' },
+        { id: 2, name: 'Banana' }
+      ]
+    };
+  },
+  methods: {
+    deleteRow(index, tableData) {
+      tableData.splice(index, 1);
+    }
+  }
+};
+</script>
+```
+
+在这个例子中：
+
+- `tableData` 是存储表格数据的数组。
+- 每个 `el-table-column` 定义了表格的一列。
+- 通过一个带有 `slot-scope="scope"` 的模板插槽，在最后一个列中定义了一个操作按钮。使用 `scope` 可以访问当前行的索引 (`$index`) 和数据 (`row`)。
+- 对于操作，我们传递了当前行索引和数据数组到 `deleteRow` 方法中，以便从数据源中删除该行。
+
+这样的设计使得 `scope` 和 `row` 在 Element UI 的表格中非常有用，特别是在动态处理行数据和执行行级操作时
+
+## git拉取远程仓库开发流程
+
+git clone 远程仓库
+
+git checkout到最新的分支名
+
+git checkout -b newBranchName 基于最新的分支创建一个新分支
+
+在分支上进行开发，commit和push以后远程仓库就会有最新分支了
