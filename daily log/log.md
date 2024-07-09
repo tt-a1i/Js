@@ -644,3 +644,13 @@ git checkout到最新的分支名
 git checkout -b newBranchName 基于最新的分支创建一个新分支
 
 在分支上进行开发，commit和push以后远程仓库就会有最新分支了
+
+## js复制新数组
+
+1. let arr2 = new Array(...arr)
+2. let arr2 = arr.slice()
+
+直接赋值对新数组的修改会影响原数组
+
+## Math.ceil()向上取整
+

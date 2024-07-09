@@ -1,6 +1,6 @@
-let name = 'a'
+name = 'a'
 let obj = {
     name: 'b',
-    func: () => console.log(name)
+    func: () => console.log(this.name)
 }
 obj.func()
