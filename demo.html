@@ -7,11 +7,14 @@
 </head>
 <body>
     <script>
-        let arr = [1,2,3]
-        let res = [...arr]
-        res.push(5)
-        console.log(arr)
-        console.log(res);
+        let youxi = {
+            name: 'abc',
+            [Symbol('say')]: function(){
+                console.log(111111111);
+            }
+        }
+        console.log(youxi)
+        console.log(youxi.say)
     </script>
 </body>
 </html>
