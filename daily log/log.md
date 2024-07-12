@@ -821,4 +821,49 @@ moveSelection(event) {
 
 - **使用性能更好的CSS属性**：确保使用`transform`而非`top`和`left`直接位移，因为`transform`不会触发布局变动，有助于提高性能。
 
+## 数据精度处理函数
+
+
+
 以上修改可能有助于减少在快速或斜向调整选区时出现的抖动。每种修改的效果可能因浏较器和具体实现的细节而异。实际操作中可能需要结合具体情况进行调整优化。
+
+1. Math.floor() 作用：向下取整，返回小于或等于给定数字的最大整数。 例如：Math.floor(4.7) 返回 4
+2. Math.round() 作用：四舍五入到最接近的整数。 例如：Math.round(4.7) 返回 5，Math.round(4.4) 返回 4
+3. Math.trunc() 作用：去除小数部分，返回整数部分。 例如：Math.trunc(4.7) 返回 4，Math.trunc(-4.7) 返回 -4
+4. Math.sign() 作用：返回数字的符号，正数返回1，负数返回-1，0返回0。 例如：Math.sign(4.7) 返回 1，Math.sign(-4.7) 返回 -1
+5. Math.abs() 作用：返回数字的绝对值。 例如：Math.abs(-4.7) 返回 4.7
+6. toFixed() 作用：将数字格式化为指定小数位数的字符串。 例如：(4.7589).toFixed(2) 返回 "4.76"
+7. parseInt() 作用：将字符串解析为整数。 例如：parseInt("4.7") 返回 4
+8. parseFloat() 作用：将字符串解析为浮点数。 例如：parseFloat("4.7") 返回 4.7
+
+## forEach的返回值
+
+```javascript
+let a = [1, 2, 3]
+let a = a.forEach(n => n * n)
+console.log(a) //undefined
+
+let a = [1, 2, 3]
+a.forEach(n => n * n)
+console.log(a)// [1, 2, 3]
+```
+
+foreach不改变原数组，也不会返回新的数组
+
+## 数组之间的比较
+
+js中数组之间的比较为索引值的比较
+
+```javascript
+let a = [1, 2, 3]
+let b = [1, 2, 3]
+console.log(a == b) //false
+```
+
+## 判断是否为小数
+
+```javascript
+n % 2 === 0
+// 小数取模不为0
+```
+
