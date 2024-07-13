@@ -7,14 +7,10 @@
 </head>
 <body>
     <script>
-        let youxi = {
-            name: 'abc',
-            [Symbol('say')]: function(){
-                console.log(111111111);
-            }
+        async function test(){
+            return 1
         }
-        console.log(youxi)
-        console.log(youxi.say)
+        console.log(test());
     </script>
 </body>
 </html>

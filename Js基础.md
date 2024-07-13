@@ -2495,3 +2495,10 @@ document.getElementById('parent-list').addEventListener('click', function(e) {
    a. 列表项的点击处理 b. 表格行的事件处理 c. 动态添加的元素的事件处理 d. 表单中多个相似输入框的验证
 
 总之，事件委托是一种强大的事件处理模式，能够简化代码、提高性能，特别适用于需要处理大量相似元素或动态
+
+## 判断是否整数
+
+```javascript
+Number.isInteger()
+```
+
