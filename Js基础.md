@@ -2502,3 +2502,20 @@ document.getElementById('parent-list').addEventListener('click', function(e) {
 Number.isInteger()
 ```
 
+## this例题
+
+```javascript
+function f() {
+    console.log( this ); // ?
+}
+
+let user = {
+    g: f.bind(null)
+};
+user.g();
+```
+
+在JavaScript中，`this` 的值取决于函数的调用方式。当你使用 `f.bind(null)` 创建一个新的函数 `g` 时，`this` 的值会被绑定到 `null`。然而，在非严格模式下，如果 `this` 的值是 `null` 或 `undefined`，它会被自动替换为全局对象（在浏览器环境中是 `window`）
+
+![image-20240714215827328](F:\360MoveData\Users\28018\Desktop\知识点图片\image-20240714215827328.png)
+
