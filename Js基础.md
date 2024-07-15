@@ -2517,4 +2517,104 @@ user.g();
 
 在JavaScript中，`this` 的值取决于函数的调用方式。当你使用 `f.bind(null)` 创建一个新的函数 `g` 时，`this` 的值会被绑定到 `null`。然而，在非严格模式下，如果 `this` 的值是 `null` 或 `undefined`，它会被自动替换为全局对象（在浏览器环境中是 `window`）
 
-![image-20240714215827328](F:\Js\assets\image-20240714215827328.png)
+![image-20240714215827328](F:\360MoveData\Users\28018\Desktop\知识点图片\image-20240714215827328.png)
+
+## 如何对一个数组内的字符串进行比较，按照每一位的ascll码值来进行比较，可以通过sort函数实现吗
+
+是的，可以使用 JavaScript 的 `sort()` 函数来实现按照 ASCII 码值对数组中的字符串进行排序。以下是一个实现这个功能的例子：
+
+```javascript
+function compareStrings(a, b) {
+    const minLength = Math.min(a.length, b.length);
+    
+    for (let i = 0; i < minLength; i++) {
+        if (a.charCodeAt(i) !== b.charCodeAt(i)) {
+            return a.charCodeAt(i) - b.charCodeAt(i);
+        }
+    }
+    
+    // 如果前面的字符都相同，则较短的字符串排在前面
+    return a.length - b.length;
+}
+
+let arr = ["hello", "Hello", "apple", "Zebra", "banana", "1234"];
+
+arr.sort(compareStrings);
+
+console.log(arr);
+```
+
+这段代码做了以下几件事：
+
+1. 定义了一个 `compareStrings` 函数，该函数比较两个字符串。
+2. 在 `compareStrings` 函数中，我们逐字符比较两个字符串：
+   - 使用 `charCodeAt()` 方法获取每个字符的 ASCII 码值。
+   - 如果在某个位置发现不同，就返回这两个字符 ASCII 码值的差。
+   - 如果较短的字符串是较长字符串的前缀，那么较短的字符串会排在前面。
+3. 使用 `sort()` 方法对数组进行排序，并将 `compareStrings` 函数作为比较函数传入。
+
+运行这段代码后，数组 `arr` 将按照每个字符的 ASCII 码值排序。输出结果应该是：
+
+```
+["1234", "Hello", "Zebra", "apple", "banana", "hello"]
+```
+
+这种排序方式有以下特点：
+
+- 数字会排在最前面（因为数字字符的 ASCII 码值最小）。
+- 大写字母会排在小写字母之前。
+- 如果两个字符串的前面部分完全相同，较短的字符串会排在前面。
+
+如果你想要忽略大小写进行排序，可以在比较之前将字符串转换为小写：
+
+```javascript
+function compareStrings(a, b) {
+    a = a.toLowerCase();
+    b = b.toLowerCase();
+    // ... 剩余的比较逻辑保持不变
+}
+```
+
+这样可以确保 "Hello" 和 "hello" 被视为相等。
+
+
+
+```javascript
+function twoSort(s) {
+  return s.sort()[0].split('').join('***');
+}
+```
+
+#### 为什么这段代码也同样可以工作
+
+s.sort()和这个函数实现的功能是一样的吗
+
+你提出了一个很好的问题。实际上，`s.sort()` 和我们之前讨论的自定义排序函数在某些情况下可能会产生不同的结果。让我解释一下：
+
+1. `s.sort()` （JavaScript 默认排序）：
+   - 当不带参数使用时，`sort()` 方法将数组元素转换为字符串，然后比较它们的 UTF-16 代码单元值序列。
+   - 对于字符串数组，这通常会产生一个按字典序排列的结果。
+   - 然而，这种排序方式有一些特殊情况需要注意：
+     - 数字会被转换为字符串进行比较，可能导致非直观的结果（如 "10" 会排在 "2" 前面）。
+     - 大写字母总是排在小写字母之前。
+2. 自定义的 `compareStrings` 函数：
+   - 这个函数逐字符比较 ASCII 码值。
+   - 它可以更精确地控制排序行为，例如可以轻松修改以忽略大小写。
+   - 对于纯字母和数字的字符串，结果通常与 `s.sort()` 相同。
+
+主要区别：
+
+1. 数字处理：
+   - `s.sort()`: "10" 会排在 "2" 前面。
+   - 自定义函数：会按照字符的 ASCII 值比较，"2" 会排在 "10" 前面。
+2. 非 ASCII 字符：
+   - `s.sort()`: 能正确处理 Unicode 字符。
+   - 自定义函数：可能无法正确处理非 ASCII 字符，除非进行修改。
+3. 灵活性：
+   - `s.sort()`: 行为固定。
+   - 自定义函数：可以根据需要进行调整，如忽略大小写、自定义排序规则等。
+
+总结： 虽然在许多常见情况下，`s.sort()` 和自定义的 `compareStrings` 函数可能会产生相同的结果，但它们的底层实现和某些特殊情况的处理是不同的。选择使用哪种方法取决于你的具体需求和你需要处理的数据类型。如果你需要更精确的控制或特殊的排序行为，使用自定义的比较函数会更合适。
+
+#### String.prototype.localeCompare()
+
