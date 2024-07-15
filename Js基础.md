@@ -2517,7 +2517,7 @@ user.g();
 
 在JavaScript中，`this` 的值取决于函数的调用方式。当你使用 `f.bind(null)` 创建一个新的函数 `g` 时，`this` 的值会被绑定到 `null`。然而，在非严格模式下，如果 `this` 的值是 `null` 或 `undefined`，它会被自动替换为全局对象（在浏览器环境中是 `window`）
 
-![image-20240714215827328](F:\360MoveData\Users\28018\Desktop\知识点图片\image-20240714215827328.png)
+![image-20240714215827328](F:\Js\assets\image-20240714215827328-1721047252948-2.png)
 
 ## 如何对一个数组内的字符串进行比较，按照每一位的ascll码值来进行比较，可以通过sort函数实现吗
 
