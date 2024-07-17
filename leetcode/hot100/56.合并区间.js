@@ -6,14 +6,17 @@
 否则，它们重合，我们需要用当前区间的右端点更新数组 merged 中最后一个区间的右端点，将其置为二者的较大值。
 */
 var merge = function (intervals) {
-    intervals = intervals.sort((a, b) => a[0] - b[0])
-    const res = [intervals[0]]
-    for(let i = 1; i < intervals.length; i++){
-        if(intervals[i][0] > res[res.length - 1][1]){
-            res.push(intervals[i])
-        }else{
-            res[res.length - 1][1] = Math.max(intervals[i][1], res[res.length - 1][1])
-        }
-    }
-    return res
-}
+	intervals = intervals.sort((a, b) => a[0] - b[0]);
+	const res = [intervals[0]];
+	for (let i = 1; i < intervals.length; i++) {
+		if (intervals[i][0] > res[res.length - 1][1]) {
+			res.push(intervals[i]);
+		} else {
+			res[res.length - 1][1] = Math.max(
+				intervals[i][1],
+				res[res.length - 1][1]
+			);
+		}
+	}
+	return res;
+};
