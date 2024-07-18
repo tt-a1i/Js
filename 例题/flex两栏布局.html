@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Two Column Layout</title>
+    <style>
+        .container {
+            display: flex;
+        }
+        .sidebar {
+            width: 200px; /* 左边栏固定宽度 */
+            background-color: #f0f0f0;
+        }
+        .content {
+            flex-grow: 1; /* 右边内容块占据剩余空间 */
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            左边栏内容
+        </div>
+        <div class="content">
+            右边内容展示
+        </div>
+    </div>
+</body>
+</html>

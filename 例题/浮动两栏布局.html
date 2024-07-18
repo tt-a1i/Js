@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFC Example</title>
+    <style>
+        .container {
+            overflow: hidden; /* 创建BFC */
+            /* 或者使用其他方法创建BFC，例如：
+            display: flow-root;
+            display: flex;
+            */
+        }
+        .sidebar {
+            float: left;
+            width: 200px;
+            background-color: #f0f0f0;
+        }
+        .content {
+            margin-left: 220px; /* 左边栏宽度加上两边的间距 */
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            左边栏内容
+        </div>
+        <div class="content">
+            右边内容展示
+        </div>
+    </div>
+    <div class="footer">
+        这是页脚内容
+    </div>
+</body>
+</html>
