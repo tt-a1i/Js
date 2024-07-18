@@ -35,3 +35,12 @@ function myPromiseAll(promises){
         })
     })
 }
+const promises1 = [
+    Promise.resolve(1),
+    Promise.resolve(2),
+    Promise.resolve(3)
+  ];
+  
+  myPromiseAll(promises1)
+    .then(results => console.log('Test 1:', results))
+    .catch(error => console.error('Test 1 Error:', error));
