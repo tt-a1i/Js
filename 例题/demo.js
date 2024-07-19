@@ -1,21 +1,21 @@
 function myPromiseAll(promises){
     if(!promises[Symbol.iterator]){
-        throw new TypeError('Argument must be iterable')
+        throw new TypeError('...')
     }
-    const promiseAll = Array.from(promises)
+    const promiseArr = Array.from(promises)
     return new Promise((resolve, reject) => {
         const results = []
         let computed = 0
-        if(promiseAll.length === 0){
+        if(promiseArr.length === 0){
             resolve(results)
             return
         }
-        promiseAll.forEach((promise, index) => {
+        promiseArr.forEach((promise, index) => {
             Promise.resolve(promise)
                 .then(value => {
                     results[index] = value
                     computed++
-                    if(computed === promiseAll.length){
+                    if(computed === promiseArr.length){
                         resolve(results)
                     }
                 })
@@ -25,12 +25,10 @@ function myPromiseAll(promises){
         })
     })
 }
-const promises1 = [
+let promises = [
     Promise.resolve(1),
-    Promise.resolve(2),
-    Promise.resolve(3)
-  ];
-  
-  myPromiseAll(promises1)
-    .then(results => console.log('Test 1:', results))
-    .catch(error => console.error('Test 1 Error:', error));
+    Promise.reject(2)
+]
+myPromiseAll(promises)
+    .then(resolve => console.log('resolve',resolve))
+    .catch(error => console.log('error', error))
