@@ -1,4 +1,21 @@
-let arr = [1,2]
-let res = arr.slice()
-res.push(3)
-console.log(arr, res);
+function throttle(fn, delay){
+    let timer = null
+    return function(...args){
+        if(!timer){
+            fn.apply(this, args)
+            setTimeout(() => {
+                timer = null
+            }, delay)
+        }
+    }
+}
+function debounce(fn, delay){
+    let timer
+    return function(...args){
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+            fn.apply(this, ...args)
+            timer = null
+        }, delay)
+    }
+}
