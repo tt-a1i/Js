@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Throttle Function Test</title>
+<script>
+function throttle(fn, delay){
+    let timer = null;
+    return function(...args){
+        if(!timer){
+            fn.apply(this, args);  // Fix: changed ...args to args in apply() method.
+            timer = setTimeout(() => {
+                timer = null;
+            }, delay);
+        }
+    }
+}
+function debounce(fn, delay){
+    let timer
+    return function(...args){
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+            fn.apply(this, ...args)
+        }, delay)
+    }
+}
+
+function myFunction() {
+    console.log('Function executed at: ' + new Date().toLocaleTimeString());
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const throttledFunction = debounce(myFunction, 2000);
+
+    document.getElementById("testButton").addEventListener("click", function() {
+        throttledFunction();
+    });
+});
+</script>
+</head>
+<body>
+<button id="testButton">Click me repeatedly!</button>
+<p>Open your browser's console to see when the function executes.</p>
+</body>
+</html>
+<!-- ```
+
+### 说明
+1. **HTML**: 页面仅包含一个按钮，用户可以点击它来触发被节流的函数。
+
+2. **JavaScript**:
+    - **`throttle`**: 定义了一个节流函数，保证实际函数（这里的`myFunction`）在指定的延迟（2秒）内最多执行一次。
+    - **`myFunction`**: 这个函数仅打印当前的时间。
+    - **绑定事件**: 为按钮绑定了`click`事件，调用throttle封装的`myFunction`。
+
+3. **测试**: 点击按钮时，期待的表现是无论按钮被点击多快，`myFunction`的输出间隔都至少是2秒。如果在2秒内连续点击按钮，只有第一次点击会立即触发函数，接下来的点击在2秒内将不会触发函数，直到2秒过后。
+
+### 如何运行
+这个HTML文件可以直接在任何现代浏览器中打开。为了看到测试结果，点击按钮并观察浏览器控制台的输出。注意连续快速点击按钮时的输出时间，确保函数调用符合预期的节流行为。 -->

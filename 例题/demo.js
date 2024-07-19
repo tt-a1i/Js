@@ -1,34 +1,14 @@
-function myPromiseAll(promises){
-    if(!promises[Symbol.iterator]){
-        throw new TypeError('...')
-    }
-    const promiseArr = Array.from(promises)
-    return new Promise((resolve, reject) => {
-        const results = []
-        let computed = 0
-        if(promiseArr.length === 0){
-            resolve(results)
-            return
+function throttle(fn, delay){
+    let timer = null
+    return function(...args){
+        if(!timer){
+            fn.apply(this, ...args)
+            timer = setTimeout(() => {
+                timer = null
+            }, delay)
         }
-        promiseArr.forEach((promise, index) => {
-            Promise.resolve(promise)
-                .then(value => {
-                    results[index] = value
-                    computed++
-                    if(computed === promiseArr.length){
-                        resolve(results)
-                    }
-                })
-                .catch(error => {
-                    reject(error)
-                })
-        })
-    })
+    }
 }
-let promises = [
-    Promise.resolve(1),
-    Promise.reject(2)
-]
-myPromiseAll(promises)
-    .then(resolve => console.log('resolve',resolve))
-    .catch(error => console.log('error', error))
+test = () => console.log(1);
+let fn = throttle(test, 3000)
+setTimeout(fn, 500)
