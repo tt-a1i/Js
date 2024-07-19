@@ -204,3 +204,7 @@ Start-Process "notepad.exe"
 - 由于 `el-upload` 组件实例是传统的 Vue 组件实例，所以它拥有 `$store` 属性，因此 `this.$store` 可以正常工作。
 
 **总结**: `this` 指向取决于函数的调用上下文。在 `<script setup>` 中，你需要特别注意 `this` 的行为。如果函数是在 `<script setup>` 外部被调用的，那么 `this` 可能不会指向你期望的对象。在这种情况下，你需要使用 `useStore` 函数或 `root` 属性来访问 Vuex store 实例。
+
+
+
+![image-20240719171253277](assets/image-20240719171253277.png)
