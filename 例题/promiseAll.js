@@ -18,6 +18,8 @@ function myPromiseAll(promises){
         //遍历所有的promise
         promsieArray.forEach((promise, index) => {
             //使用promise.resolve来处理非promise的值
+            //如果不需要处理非promise的值,直接promise.then,可以直接用[1,2,3]这种数组来测试
+            //可以安全地处理promise和非promise值，无需担心调用非promise值上不存在的.then()方法，从而避免引发错误
             Promise.resolve(promise)
                 .then(value => {
                     //结果存储在对应索引位置
@@ -38,9 +40,9 @@ function myPromiseAll(promises){
 const promises1 = [
     Promise.resolve(1),
     Promise.resolve(2),
-    Promise.resolve(3)
+    Promise.reject(3)
   ];
   
   myPromiseAll(promises1)
     .then(results => console.log('Test 1:', results))
-    .catch(error => console.error('Test 1 Error:', error));
+    .catch(error => console.log('Test 1 Error:', error));

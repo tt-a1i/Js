@@ -2052,3 +2052,179 @@ MVVM（Model-View-ViewModel）是一种==软件架构模式==，通常用于构�
 MVVM 的`关键思想`是通过`数据绑定`将`视图和视图模型连接起来`。具体来说，视图通过数据绑定从视图模型获取数据，并将用户的操作传递给视图模型处理。这种双向绑定使得`当视图模型中的数据发生变化时`，视图会`自动更新`，而当视图中的用户操作发生时，视图模型也能即时地响应并更新相关数据或状态。
 
 在前端开发中，MVVM模式被广泛应用于现代框架如Vue.js和Knockout.js等中，它们提供了强大的数据绑定机制和组件化开发的支持，帮助开发者更高效地构建复杂的用户界面。
+
+## JSON.stringfy做深拷贝的缺点
+
+1. 无法处理`函数`
+   - JSON.stringify() 会忽略对象中的函数属性。
+   - 在深拷贝后，所有的函数都会丢失。
+2. 无法处理 undefined
+   - JSON.stringify() 会将 undefined 转换为 null 或完全忽略（如果是对象的属性值）。
+3. 无法处理 Symbol
+   - Symbol 类型的属性会被完全忽略。
+4. 无法处理循环引用
+   - 如果对象中存在循环引用，JSON.stringify() 会抛出错误。
+5. 无法正确处理一些特殊对象
+   - 如 Date 对象会被转换为字符串。
+   - RegExp、Error 对象会被转换为空对象。
+   - Map、Set、WeakMap、WeakSet 等会被转换为空对象。
+6. 无法保持对象的原型链
+   - 所有的原型信息都会丢失，深拷贝后的对象都是普通对象。
+7. NaN 和 Infinity 会被转换为 null
+   - 这可能导致数据的不一致。
+8. 大型数据结构可能会有性能问题
+   - 对于非常大的对象，先将其转换为字符串再解析回对象可能会很慢。
+9. 精度问题
+   - 对于非常大的数字，可能会失去精度。
+10. 无法处理 BigInt
+    - BigInt 类型会导致 JSON.stringify() 抛出错误。
+11. 不能正确处理 getter/setter
+    - 对象的 getter/setter 会被忽略。
+12. 不安全
+    - 如果数据中包含用户输入，使用 JSON.parse() 可能会执行恶意代码。
+
+因为这些限制，在需要完整、准确的深拷贝时，通常建议使用专门的深拷贝函数或库（如 lodash 的 _.cloneDeep()），或者根据具体需求自己实现深拷贝函数。这些方法虽然可能会稍微复杂一些，但能够处理更多的边界情况，提供更可靠的深拷贝结果。
+
+## 检测循环引用
+
+1. 使用 WeakMap（推荐）
+
+这是一种高效且内存友好的方法：
+
+```javascript
+function hasCycle(obj) {
+  const seenObjects = new WeakMap();
+
+  function detect(obj) {
+    if (obj && typeof obj === 'object') {
+      if (seenObjects.has(obj)) {
+        return true;
+      }
+      seenObjects.set(obj, true);
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key) && detect(obj[key])) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  return detect(obj);
+}
+```
+
+WeakMap 允许使用对象作为键，而且不会阻止这些对象被垃圾回收。
+
+1. 使用数组
+
+这种方法简单，但对于大型对象可能会消耗更多内存：
+
+```javascript
+function hasCycle(obj) {
+  const seenObjects = [];
+
+  function detect(obj) {
+    if (obj && typeof obj === 'object') {
+      if (seenObjects.indexOf(obj) !== -1) {
+        return true;
+      }
+      seenObjects.push(obj);
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key) && detect(obj[key])) {
+          return true;
+        }
+      }
+      seenObjects.pop();
+    }
+    return false;
+  }
+
+  return detect(obj);
+}
+```
+
+1. 使用 Set
+
+Set 提供了比数组更高效的查找：
+
+```javascript
+function hasCycle(obj) {
+  const seenObjects = new Set();
+
+  function detect(obj) {
+    if (obj && typeof obj === 'object') {
+      if (seenObjects.has(obj)) {
+        return true;
+      }
+      seenObjects.add(obj);
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key) && detect(obj[key])) {
+          return true;
+        }
+      }
+      seenObjects.delete(obj);
+    }
+    return false;
+  }
+
+  return detect(obj);
+}
+```
+
+1. JSON.stringify 方法（不推荐）
+
+虽然不是专门用于检测循环引用，但 JSON.stringify 在遇到循环引用时会抛出错误：
+
+```javascript
+function hasCycle(obj) {
+  try {
+    JSON.stringify(obj);
+    return false;
+  } catch (err) {
+    return err.message.includes('Converting circular structure to JSON');
+  }
+}
+```
+
+## Vite为什么比webpack快
+
+Vite 比 Webpack 快的原因主要有以下几点:
+
+1. `利用浏览器原生 ES 模块`
+
+Vite 直接利用浏览器原生的 ES 模块功能,`不需要像 Webpack 那样打包所有模块`。开发时 Vite 只需要转换和提供源文件,浏览器负责解析导入。
+
+1. `按需编译`
+
+Vite `只在需要时编译某个模块`,而 `Webpack 需要先构建整个依赖图再编译`。Vite 的按需编译大大减少了不必要的工作。
+
+1. `预构建依赖`
+
+Vite 会预先构建项目的依赖,并`缓存结果`。这样后续启动时可以直接使用缓存,避免重复工作。
+
+1. `esbuild 预构建`
+
+Vite 使用 esbuild 来预构建依赖。`esbuild 使用 Go 编写`,比传统的 JavaScript 构建工具快 10-100 倍。
+
+1. 高效的`热更新`
+
+Vite 的热更新`只需要精确地使已编辑的模块与其最近的 HMR 边界之间的链失活`,`不需要重新构建整个束或刷新页面。`
+
+1. 优化的静态资源处理
+
+Vite `对静态资源如图片等进行了优化处理`,避免不必要的转换。
+
+1. 内置优化
+
+Vite 针对 SPA、库模式等场景提供了内置的优化默认配置。
+
+1. 简化的配置
+
+相比 Webpack,Vite 的配置更加简洁直观,减少了很多复杂性。
+
+1. 利用现代浏览器特性
+
+Vite 面向现代浏览器,可以利用它们的新特性来提升性能。
+
+总的来说,Vite 通过更现代的架构设计和技术选型,在开发环境下实现了显著的性能提升。不过在生产构建时,Vite 和 Webpack 的差异就没那么大了,因为都需要打包优化代码。

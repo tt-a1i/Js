@@ -208,3 +208,233 @@ Start-Process "notepad.exe"
 
 
 ![image-20240719171253277](assets/image-20240719171253277.png)
+
+您提供的三种深拷贝方法都是常见的实现方式，每种方法都有其适用场景和限制。让我们逐一分析：
+
+1. JSON.parse(JSON.stringify(obj))
+   - 优点：简单、快速
+   - 缺点：如您所说，有很多局限性，不能处理函数、undefined、Symbol、循环引用等
+   - 适用：适合简单的数据结构，且不包含特殊类型数据
+2. 递归实现 (deepCopy 函数)
+   - 优点：可以处理嵌套对象和数组
+   - 缺点：
+     - 不能处理循环引用
+     - 不能正确复制特殊对象（如 Date、RegExp、Map、Set 等）
+     - 不能复制对象的原型链
+     - 不能处理 Symbol 类型的键
+   - 改进建议：
+     - 添加循环引用检测
+     - 添加对特殊对象类型的处理
+     - 考虑使用 Object.create() 来保留原型链
+3. 使用 lodash 的 _.cloneDeep()
+   - 优点：
+     - 功能全面，可以处理大多数复杂情况
+     - 包括循环引用、特殊对象类型、Symbol 键等
+     - 经过广泛测试和优化
+   - 缺点：
+     - 需要引入额外的库，增加了项目体积
+   - 适用：复杂的深拷贝需求，尤其是在已经使用 lodash 的项目中
+
+总结：
+
+- 对于简单数据结构，JSON 方法足够
+- 对于稍复杂的情况，可以使用改进后的递归方法
+- 对于非常复杂或关键的深拷贝需求，使用成熟的库如 lodash 是最安全和全面的选择
+
+改进的递归深拷贝函数示例：
+
+```javascript
+function deepCopy(obj, hash = new WeakMap()) {
+  if (Object(obj) !== obj) return obj; // primitives
+  if (hash.has(obj)) return hash.get(obj); // cyclic reference
+  let result;
+  if (obj instanceof Set) {
+    result = new Set(obj); // 处理 Set
+  } else if (obj instanceof Map) {
+    result = new Map(Array.from(obj, ([key, val]) => [key, deepCopy(val, hash)])); // 处理 Map
+  } else if (obj instanceof Date) {
+    result = new Date(obj); // 处理 Date
+  } else if (obj instanceof RegExp) {
+    result = new RegExp(obj.source, obj.flags); // 处理 RegExp
+  } else if (typeof obj === 'function') {
+    return obj; // 处理函数
+  } else {
+    result = Array.isArray(obj) ? [] : Object.create(Object.getPrototypeOf(obj));
+  }
+  hash.set(obj, result);
+  return Object.assign(result, ...Object.keys(obj).map(
+    key => ({ [key]: deepCopy(obj[key], hash) })
+  ));
+}
+```
+
+这个改进版本处理了更多的边界情况，包括循环引用、特殊对象类型和原型链。但即便如此，对于非常复杂的情况，使用经过充分测试的第三方库仍然是更安全的选择。
+
+
+
+检测对象是否存在循环引用是一个重要的问题，特别是在处理深拷贝、序列化或遍历复杂对象时。以下是几种检测循环引用的方法：
+
+1. 使用 WeakMap（推荐）
+
+这是一种高效且内存友好的方法：
+
+```javascript
+function hasCycle(obj) {
+  const seenObjects = new WeakMap();
+
+  function detect(obj) {
+    if (obj && typeof obj === 'object') {
+      if (seenObjects.has(obj)) {
+        return true;
+      }
+      seenObjects.set(obj, true);
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key) && detect(obj[key])) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  return detect(obj);
+}
+```
+
+WeakMap 允许使用对象作为键，而且不会阻止这些对象被垃圾回收。
+
+1. 使用数组
+
+这种方法简单，但对于大型对象可能会消耗更多内存：
+
+```javascript
+function hasCycle(obj) {
+  const seenObjects = [];
+
+  function detect(obj) {
+    if (obj && typeof obj === 'object') {
+      if (seenObjects.indexOf(obj) !== -1) {
+        return true;
+      }
+      seenObjects.push(obj);
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key) && detect(obj[key])) {
+          return true;
+        }
+      }
+      seenObjects.pop();
+    }
+    return false;
+  }
+
+  return detect(obj);
+}
+```
+
+1. 使用 Set
+
+Set 提供了比数组更高效的查找：
+
+```javascript
+function hasCycle(obj) {
+  const seenObjects = new Set();
+
+  function detect(obj) {
+    if (obj && typeof obj === 'object') {
+      if (seenObjects.has(obj)) {
+        return true;
+      }
+      seenObjects.add(obj);
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key) && detect(obj[key])) {
+          return true;
+        }
+      }
+      seenObjects.delete(obj);
+    }
+    return false;
+  }
+
+  return detect(obj);
+}
+```
+
+1. JSON.stringify 方法（不推荐）
+
+虽然不是专门用于检测循环引用，但 JSON.stringify 在遇到循环引用时会抛出错误：
+
+```javascript
+function hasCycle(obj) {
+  try {
+    JSON.stringify(obj);
+    return false;
+  } catch (err) {
+    return err.message.includes('Converting circular structure to JSON');
+  }
+}
+```
+
+这种方法简单但不太可靠，因为它可能会因为其他原因也抛出错误。
+
+使用示例：
+
+```javascript
+const obj1 = { a: 1 };
+const obj2 = { b: obj1 };
+obj1.c = obj2;
+
+console.log(hasCycle(obj1)); // true
+
+const obj3 = { x: 1, y: { z: 2 } };
+console.log(hasCycle(obj3)); // false
+```
+
+总结：
+
+- WeakMap 方法通常是最佳选择，因为它既高效又内存友好。
+- 对于简单情况，Set 或数组方法也可以使用。
+- 避免使用 JSON.stringify 方法，因为它可能会产生误报。
+
+选择哪种方法取决于你的具体需求、性能要求和对象的复
+
+
+
+Vite 比 Webpack 快的原因主要有以下几点:
+
+1. 利用浏览器原生 ES 模块
+
+Vite 直接利用浏览器原生的 ES 模块功能,不需要像 Webpack 那样打包所有模块。开发时 Vite 只需要转换和提供源文件,浏览器负责解析导入。
+
+1. 按需编译
+
+Vite 只在需要时编译某个模块,而 Webpack 需要先构建整个依赖图再编译。Vite 的按需编译大大减少了不必要的工作。
+
+1. 预构建依赖
+
+Vite 会预先构建项目的依赖,并缓存结果。这样后续启动时可以直接使用缓存,避免重复工作。
+
+1. esbuild 预构建
+
+Vite 使用 esbuild 来预构建依赖。esbuild 使用 Go 编写,比传统的 JavaScript 构建工具快 10-100 倍。
+
+1. 高效的热更新
+
+Vite 的热更新只需要精确地使已编辑的模块与其最近的 HMR 边界之间的链失活,不需要重新构建整个束或刷新页面。
+
+1. 优化的静态资源处理
+
+Vite 对静态资源如图片等进行了优化处理,避免不必要的转换。
+
+1. 内置优化
+
+Vite 针对 SPA、库模式等场景提供了内置的优化默认配置。
+
+1. 简化的配置
+
+相比 Webpack,Vite 的配置更加简洁直观,减少了很多复杂性。
+
+1. 利用现代浏览器特性
+
+Vite 面向现代浏览器,可以利用它们的新特性来提升性能。
+
+总的来说,Vite 通过更现代的架构设计和技术选型,在开发环境下实现了显著的性能提升。不过在生产构建时,Vite 和 Webpack 的差异就没那么大了,因为都需要打包优化代码
