@@ -41,3 +41,12 @@ function safeFlatten(array, parentArrays = []) {
     }
     return result
 }
+let a = [1, 2, 3];
+let b = [a, 4];
+a.push(b); // 在数组 a 中添加一个对数组 b 的引用，形成循环
+
+try {
+    console.log(safeFlatten(a));
+} catch (e) {
+    console.log(e.message); // 应打印 "Detected a cycle in array"
+}
