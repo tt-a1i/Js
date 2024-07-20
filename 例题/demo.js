@@ -1,33 +1,14 @@
-function myPromise(promises){
-  if(!promises[Symbol.iterator]){
-    throw new TypeError('must be iterable')
-  }
-  const promiseArr = Array.from(promises)
-
-  return new Promise((resolve, reject) => {
-    const results = []
-    let computed = 0
-    if(promiseArr.length === 0){
-      resolve(results)
-      return
+//this 关键字的指向主要依赖于函数的调用方式，而非仅仅是它在哪里被定义。
+//在你的 debounce 函数示例中，this 的指向并不固定，而是动态取决于函数的调用上下文, 箭头函数没有自己的this
+function debounce(fn, delay){
+  let timer
+  //返回的是一个函数,所以下面的this取决于调用者所处的上下文环境
+  return function(...args){
+    if(timer){
+      clearTimeout(timer)
     }
-    promiseArr.forEach((promise, index) => {
-      Promise.resolve(promise)
-        .then(value => {
-          results[index] = value
-          computed++
-          if(computed === promiseArr.length){
-            resolve(results)
-          }
-        })
-        .catch(error => reject(error))
-    })
-  })
+    timer = setTimeout(() => {
+      fn.apply(this, ...args)
+    }, delay)
+  }
 }
-let promise1 = [
-  Promise.resolve(1),
-  Promise.reject(2)
-]
-myPromise(promise1)
-  .then(value => console.log(value))
-  .catch(error => console.log(error))
