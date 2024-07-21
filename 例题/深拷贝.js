@@ -21,6 +21,7 @@ function deepCopy(obj, map = new WeakMap()) {
       copy = {};
       map.set(obj, copy);
       for (let key in obj) {
+        //hasOwnProperty 确保我们只复制对象自身的属性，而不包括从原型链继承的属性。这可以防止意外复制不应该属于该对象的属性。
         if (obj.hasOwnProperty(key)) {
           copy[key] = deepCopy(obj[key], map); // 递归拷贝每一个属性
         }
