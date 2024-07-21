@@ -216,30 +216,27 @@ Vue.js 实现双向数据绑定的核心机制主要包括两个关键部分：�
 
 ## NextTick
 
-`Vue` 在更新 `DOM` 时是异步执行的。当数据发生变化，`Vue`将开启一个异步更新队列，视图需要等队列中所有数据变化完成之后，再统一进行更新
+Vue的nextTick是一个非常有用的功能,它允许我们`在DOM更新循环结束之后执行延迟回调`。简单来说,当你修改数据后,想要立即使用js操作新的DOM元素,就需要使用nextTick。
+
+`Vue在更新DOM时是异步执行的`。当你`修改响应式状态时`,Vue将`开启一个队列`,并`缓冲在同一事件循环中发生的所有数据改变`。如果同`一个watcher被多次触发`,`只会被推入到队列中一次`。这种`缓冲和去重的机制可以有效的提升性能`。==nextTick会在队列中的所有数据变更完成之后立即调用==。
+
+下面是一些具体的示例:
+
+1. 基本用法:
 
 ```javascript
-举例
-<div id="app"> {{ message }} </div>
-const vm = new Vue({
-  el: '#app',
-  data: {
-    message: '原始值'
+export default {
+  methods: {
+    updateMessage() {
+      this.message = 'Updated'
+      console.log(this.$el.textContent) // 仍然是 'Not updated'
+      this.$nextTick(() => {
+        console.log(this.$el.textContent) // 'Updated'
+      })
+    }
   }
-})
-
-修改message
-this.message = '修改后的值1'
-this.message = '修改后的值2'
-this.message = '修改后的值3
-
-这时候想获取页面最新的DOM节点，却发现获取到的是旧值
-console.log(vm.$el.textContent) // 原始值
+}
 ```
-
-因为`message`数据在发现变化的时候，`vue`并不会立刻去更新`Dom`，而是将修改数据的操作放在了一个异步操作队列中
-
-Vue 在修改数据后，视图不会立刻更新，而是等同一事件循环中的所有数据变化完成之后，再统一进行视图更新。
 
 #### 为什么要有nexttick
 

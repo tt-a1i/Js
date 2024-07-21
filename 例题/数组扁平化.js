@@ -20,6 +20,7 @@ const arr = [1,2,3,[4,5,[6]]]
  */
 /* function reduceFlat(arr){
     return arr.reduce((pre, cur) => {
+        注意这里只能使用concat而不能使用push方法,因为concat方法返回新的数组,push方法返回数组长度
         return Array.isArray(cur) ? pre.concat(reduceFlat(cur)) : pre.concat(cur)
     }, [])
 }
@@ -33,7 +34,7 @@ function safeFlatten(array, parentArrays = []) {
                 throw new Error('Detected a cycle in array')
             }
             parentArrays.push(item)
-            result = result.concat(safeFlatten(item, parentArrays))
+            result.push(...safeFlatten(item, parentArrays))
             parentArrays.pop()
         }else{
             result.push(item)
