@@ -10,11 +10,15 @@ function flat(arr){
 }
 flat([1,2,3,[4,5,[6]]])
 console.log(res); */
-const arr = [1,2,3,[4,5,[6]]]
+// const arr = [1,2,3,[4,5,[6]]]
+
+
 /**
  * flat方法
  */
 /* console.log(arr.flat(Infinity)); */
+
+
 /**
  * reduce
  */
@@ -25,8 +29,11 @@ const arr = [1,2,3,[4,5,[6]]]
     }, [])
 }
 console.log(reduceFlat(arr)); */
+
+
+
 //避免循环引用
-function safeFlatten(array, parentArrays = []) {
+/* function safeFlatten(array, parentArrays = []) {
     let result = []
     for(const item of array){
         if(Array.isArray(item)){
@@ -50,4 +57,32 @@ try {
     console.log(safeFlatten(a));
 } catch (e) {
     console.log(e.message); // 应打印 "Detected a cycle in array"
+} */
+
+
+
+//循环引用扁平化
+function myFlatten(arr, depth = Infinity){
+    const map = new WeakMap()
+    function flatten(arr, depth){
+        if(depth < 1) return arr.slice();
+        if(map.has(arr)) return map.get(arr);
+        const result = []
+        map.set(arr, result)
+        for(const item of arr){
+            if(Array.isArray(item)){
+                result.push(...flatten(item, depth - 1))
+            }else{
+                result.push(item)
+            }
+        }
+        return result
+    }
+    return flatten(arr, depth)
 }
+// 创建一个循环引用的数组
+const arr = [1, 2, [3, 4]];
+arr[2].push(arr);
+
+console.log(myFlatten(arr));
+// 输出: [1, 2, 3, 4]
