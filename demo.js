@@ -1,13 +1,29 @@
-function checkType(data){
-  if(Object.is(data, NaN) == true) return NaN
-  if(Array.isArray(data)) return 'Array'
-  if(data === null) return null
-  return typeof data
+function deepCopy(obj, map = new WeakMap()){
+  if(obj === null || typeof obj !== 'object'){
+    return obj
+  }
+  if(map.has(obj)) return map.get(obj);
+  let copy
+  if(Array.isArray(obj)){
+    copy = []
+    map.set(obj, copy)
+    for(let i = 0; i < obj.length; i++){
+      copy[i] = deepCopy(obj[i], map)
+    }
+  }else{
+    copy = {}
+    map.set(obj, copy)
+    for(let key in obj){
+      if(obj.hasOwnProperty(key)){
+        copy[key] = deepCopy(obj[key], map)
+      }
+    }
+  }
+  return copy
 }
-console.log(checkType(5)); 
-console.log(checkType('hello')); 
-console.log(checkType([1, 2, 3])); 
-console.log(checkType(null)); 
-console.log(checkType(NaN)); 
-console.log(checkType({ name: 'John' })); 
-console.log(checkType(true)); 
+
+const original = { name: "John", friends: ["Jane", "Bob"] };
+original.self = original; // 创建一个循环引用
+const clone = deepCopy(original);
+console.log(clone);
+console.log(clone.self === clone); // true，说明循环引用被正确处理
