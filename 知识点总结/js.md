@@ -2228,3 +2228,118 @@ Vite 针对 SPA、库模式等场景提供了内置的优化默认配置。
 Vite 面向现代浏览器,可以利用它们的新特性来提升性能。
 
 总的来说,Vite 通过更现代的架构设计和技术选型,在开发环境下实现了显著的性能提升。不过在生产构建时,Vite 和 Webpack 的差异就没那么大了,因为都需要打包优化代码。
+
+## 深拷贝的一个问题
+
+### 问题
+
+```javascript
+function deepCopy(obj, map = new WeakMap()) {
+	if (obj === null || typeof obj !== "object") {
+		return obj;
+	}
+	if (map.has(obj)) {
+		return map.get(obj);
+	}
+	let copy;
+	if (Array.isArray(obj)) {
+		copy = [];
+		map.set(obj, copy);
+		for (let i = 0; i < obj.length; i++) {
+			copy[i] = deepCopy(obj[i], map);
+		}
+	} else {
+		copy = {};
+		map.set(obj, copy);
+		for (let key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				copy[key] = deepCopy(obj[key], map);
+			}
+		}
+	}
+	return copy;
+}
+```
+
+
+
+#### 那为什么这段代码不使用改为 Object.prototype.hasOwnProperty.call就没有问题
+
+你提出了一个很好的问题。这段代码中直接使用 `obj.hasOwnProperty(key)` 而不是 `Object.prototype.hasOwnProperty.call(obj, key)` 确实能正常工作，原因如下：
+
+1. 对象的性质： 在这个 `deepCopy` 函数中，我们主要处理的是普通的 JavaScript 对象和数组。这些对象通常都继承自 `Object.prototype`，因此它们自然就拥有 `hasOwnProperty` 方法。
+2. 上下文正确： 当我们使用 `obj.hasOwnProperty(key)` 时，`this` 上下文自动指向 `obj`，这正是我们想要的。
+3. 没有覆盖 `hasOwnProperty`： 在这个例子中，我们假设没有对象覆盖了它自己的 `hasOwnProperty` 方法。
+4. 简单场景： 这个深拷贝函数主要用于处理简单的对象结构，不涉及特殊的对象类型。
+
+然而，使用 `Object.prototype.hasOwnProperty.call(obj, key)` 通常被认为是更安全和更严谨的做法，原因如下：
+
+1. 安全性： 它可以处理那些可能不直接继承自 `Object.prototype` 的对象，或者那些可能覆盖了 `hasOwnProperty` 方法的对象。
+2. 防御性编程： 即使在当前场景中可能不需要，但使用这种方式可以预防将来可能出现的问题，特别是当函数被用于更复杂的对象结构时。
+3. 一致性： 在整个代码库中保持一致的编码风格，可以提高代码的可读性和可维护性。
+4. 避免潜在错误： 在某些极端情况下（例如，某个对象的原型链被修改），直接调用 `obj.hasOwnProperty` 可能会导致错误。
+
+所以，虽然在你给出的简单例子中直接使用 `obj.hasOwnProperty(key)` 不会导致问题，但使用 `Object.prototype.hasOwnProperty.call(obj, key)` 或者更现代的 `Object.hasOwn(obj, key)` 是一种更安全、更可靠的做法，特别是在编写可能被广泛使用的库或框架时。
+
+对于你的具体代码，可以这样修改来提高安全性：
+
+```javascript
+if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    copy[key] = deepCopy(obj[key], map);
+}
+```
+
+或者使用更现代的方法：
+
+```javascript
+if (Object.hasOwn(obj, key)) {
+    copy[key] = deepCopy(obj[key], map);
+}
+```
+
+这些修改不会改变当前代码的行为，但会使其更加健壮，能够处理更多边缘情况。
+
+### if (Object.prototype.hasOwnProperty.call(value, key)) {详细讲述这个方法
+
+改为 `Object.prototype.hasOwnProperty` 而不使用 `.call` 方法可能会导致所有输出都为 false 的原因主要有以下几点：
+
+1. 上下文问题： 当你直接使用 `Object.prototype.hasOwnProperty` 而不是 `.call` 方法时，`hasOwnProperty` 方法中的 `this` 不再指向被检查的对象（`value`），而是指向 `Object.prototype`。这意味着它实际上在检查 `Object.prototype` 是否有特定的属性，而不是检查 `value` 对象。
+2. 属性查找： `for...in` 循环会遍历对象自身的属性和其原型链上的可枚举属性。当你直接使用 `Object.prototype.hasOwnProperty`，它总是返回 `false`，因为你实际上在问 "Object.prototype 是否有名为 [某个属性名] 的自有属性？"，答案几乎总是否定的。
+3. 递归中断： 由于 `hasOwnProperty` 检查总是返回 `false`，`detect` 函数不会递归到对象的嵌套属性中。这意味着即使存在循环引用，函数也无法检测到它，因为它从不深入对象结构。
+4. 丢失安全检查： 使用 `.call` 的一个重要原因是为了安全地处理可能不继承自 `Object.prototype` 的对象，或者那些可能覆盖了 `hasOwnProperty` 方法的对象。去掉 `.call` 就失去了这层保护。
+
+解决方案：
+
+1. 使用原来的 `Object.prototype.hasOwnProperty.call(value, key)`。
+
+2. 使用 ES2022 引入的 `Object.hasOwn(value, key)`：
+
+   ```javascript
+   if (Object.hasOwn(value, key)) {
+     if (detect(value[key])) {
+       return true;
+     }
+   }
+   ```
+
+3. 如果你确定所有对象都是普通对象（继承自 `Object.prototype`），可以使用：
+
+   ```javascript
+   if (value.hasOwnProperty(key)) {
+     if (detect(value[key])) {
+       return true;
+     }
+   }
+   ```
+
+4. 或者，完全移除 `hasOwnProperty` 检查，但这可能会导致检查继承的属性：
+
+   ```javascript
+   for (let key in value) {
+     if (detect(value[key])) {
+       return true;
+     }
+   }
+   ```
+
+使用这些方法中的任何一个都应该能够正确检测循环引用，并给出预期的输出。
