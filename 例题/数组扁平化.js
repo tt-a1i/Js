@@ -65,12 +65,12 @@ try {
 function myFlatten(arr, depth = Infinity){
     const map = new WeakMap()
     function flatten(arr, depth){
-        if(depth < 1) return arr.slice();
-        if(map.has(arr)) return map.get(arr);
+        if(depth < 1) return arr.slice();//返回数组的副本,防止意外修改
+        if(map.has(arr)) return map.get(arr);//防止循环引用
         const result = []
         map.set(arr, result)
         for(const item of arr){
-            if(Array.isArray(item)){
+            if(Array.isArray(item)){//数组扁平化处理
                 result.push(...flatten(item, depth - 1))
             }else{
                 result.push(item)

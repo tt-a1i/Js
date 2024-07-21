@@ -5,7 +5,12 @@ let datatType = function (data){
     if(data === null) return null
     return typeof data
 }
-console.log(datatType(NaN));
-let a = 123
-console.log(a.toFixed(5));
-console.log(parseInt('123as'));
+console.log(checkType(5)); 
+console.log(checkType('hello')); 
+console.log(checkType([1, 2, 3])); 
+console.log(checkType(null)); 
+console.log(checkType(NaN)); 
+console.log(checkType({ name: 'John' })); 
+console.log(checkType(true)); 
+
+

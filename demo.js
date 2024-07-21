@@ -1,16 +1,13 @@
-const obj = {
-    name: 'bar',
-    sayName: function() {
-      let self = this
-      console.log(this.name);
-      console.log(self.name);
-      (function() {
-        console.log(this.name);
-        console.log(self.name);
-      })()
-    }
-  }
-  
-  obj.sayName() // 打印什么
-  const func = obj.sayName
-  func() // 打印什么
+function checkType(data){
+  if(Object.is(data, NaN) == true) return NaN
+  if(Array.isArray(data)) return 'Array'
+  if(data === null) return null
+  return typeof data
+}
+console.log(checkType(5)); 
+console.log(checkType('hello')); 
+console.log(checkType([1, 2, 3])); 
+console.log(checkType(null)); 
+console.log(checkType(NaN)); 
+console.log(checkType({ name: 'John' })); 
+console.log(checkType(true)); 
