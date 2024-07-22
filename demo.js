@@ -1,28 +1,23 @@
-function parseQueryParams(url){
-    const urlObj = new URL(url)
-    const searchParams = urlObj.searchParams
-    const params = {}
-    for(let [key, value] of searchParams){
-        value = decodeURIComponent(value)
-        if(params.hasOwnProperty(key)){
-            if(!Array.isArray(params[key])){
-                params[key] = [params[key]]
+function myFlatten(arr, depth = Infinity) {
+	const map = new WeakMap();
+	function flatten(arr, depth) {
+		if (depth < 1) return arr.slice();
+		if (map.has(arr)) return map.get(arr);
+		const result = [];
+		map.set(arr, result);
+		for (const item of arr) {
+			if (Array.isArray(item)) {
+				result.push(...flatten(item, depth - 1));
+			}else{
+                result.push(item)
             }
-            params[key].push(value)
-        }else{
-            params[key] = value
-        }
-    }
-    return params
+		}
+        return result
+	}
+    return flatten(arr, depth)
 }
-console.log("测试 1: 基本参数");
-console.log(parseQueryParams("https://example.com/path?name=John&age=30"));
+// 创建一个循环引用的数组
+const arr = [1, 2, [3, 4]];
+arr[2].push(arr);
 
-console.log("测试 2: 重复参数");
-console.log(parseQueryParams("https://example.com/search?tag=javascript&tag=programming"));
-
-console.log("测试 3: 编码参数");
-console.log(parseQueryParams("https://example.com/profile?name=John%20Doe&city=New%20York"));
-
-console.log("测试 4: 无参数");
-console.log(parseQueryParams("https://example.com/page"));
+console.log(myFlatten(arr));
