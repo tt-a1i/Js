@@ -1,23 +1,28 @@
-function myFlatten(arr, depth = Infinity) {
-	const map = new WeakMap();
-	function flatten(arr, depth) {
-		if (depth < 1) return arr.slice();
-		if (map.has(arr)) return map.get(arr);
-		const result = [];
-		map.set(arr, result);
-		for (const item of arr) {
-			if (Array.isArray(item)) {
-				result.push(...flatten(item, depth - 1));
-			}else{
-                result.push(item)
-            }
-		}
-        return result
+class ListNode{
+	constructor(val){
+		this.value = val
+		this.next = null
 	}
-    return flatten(arr, depth)
 }
-// 创建一个循环引用的数组
-const arr = [1, 2, [3, 4]];
-arr[2].push(arr);
+function hasCycle(head){
+	let h1 = head, h2 = head
+	while(h1 && h1.next){
+		h1 = h1.next
+		h2 = h2.next.next
+		if(h1 === h2){
+			return true
+		}
+	}
+	return false
+}
+let node1 = new ListNode(1);
+let node2 = new ListNode(2);
+let node3 = new ListNode(3);
+let node4 = new ListNode(4);
 
-console.log(myFlatten(arr));
+node1.next = node2;
+node2.next = node3;
+node3.next = node4;
+node4.next = node2; // 创建一个环
+
+console.log(hasCycle(node1)); 
