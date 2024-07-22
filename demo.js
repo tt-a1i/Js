@@ -1,29 +1,22 @@
-function deepCopy(obj, map = new WeakMap()){
-  if(obj === null || typeof obj !== 'object'){
-    return obj
-  }
-  if(map.has(obj)) return map.get(obj);
-  let copy
-  if(Array.isArray(obj)){
-    copy = []
-    map.set(obj, copy)
-    for(let i = 0; i < obj.length; i++){
-      copy[i] = deepCopy(obj[i], map)
-    }
-  }else{
-    copy = {}
-    map.set(obj, copy)
-    for(let key in obj){
-      if(obj.hasOwnProperty(key)){
-        copy[key] = deepCopy(obj[key], map)
+function myFlatten(arr, depth = Infinity){
+  const map = new WeakMap()
+  function flatten(arr, depth){
+    if(depth < 1) return arr.slice();
+    if(map.has(arr)) return map.get(arr);
+    const result = []
+    map.set(arr, result)
+    for(const item of arr){
+      if(Array.isArray(item)){
+        result.push(...flatten(item, depth - 1))
+      }else{
+        result.push(item)
       }
     }
+    return result
   }
-  return copy
+  return flatten(arr, depth)
 }
+const arr = [1, 2, [3, 4]];
+arr[2].push(arr);
 
-const original = { name: "John", friends: ["Jane", "Bob"] };
-original.self = original; // 创建一个循环引用
-const clone = deepCopy(original);
-console.log(clone);
-console.log(clone.self === clone); // true，说明循环引用被正确处理
+console.log(myFlatten(arr));
