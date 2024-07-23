@@ -1,4 +1,4 @@
-function detectCircularReference(obj) {
+function detectCircularReference1(obj) {
 	const seen = new WeakSet();
 	function detect(value) {
 		if (typeof value !== "object" || value === null) {
@@ -27,6 +27,18 @@ function detectCircularReference(obj) {
 
 	return detect(obj);
 }
+//简写版
+function detectCircularReference(obj, set = new WeakSet()){
+	if(obj === null || typeof obj !== 'object') return false;
+	if(set.has(obj)) return true;
+	set.add(obj);
+	for(let key in obj){
+	  if(Object.prototype.hasOwnProperty.call(obj, key)){
+		if(detectCircularReference(obj[key], set)) return true;
+	  }
+	}
+	return false;
+  }
 
 // 使用示例
 const obj1 = { a: 1, b: 2 };

@@ -62,27 +62,23 @@ try {
 
 
 //循环引用扁平化
-function myFlatten(arr, depth = Infinity){
-    const map = new WeakMap()
-    function flatten(arr, depth){
-        if(depth < 1) return arr.slice();//返回数组的副本,防止意外修改
-        if(map.has(arr)) return map.get(arr);//防止循环引用
-        const result = []
-        map.set(arr, result)
-        for(const item of arr){
-            if(Array.isArray(item)){//数组扁平化处理
-                result.push(...flatten(item, depth - 1))
-            }else{
-                result.push(item)
-            }
-        }
-        return result
+function myFlatten(arr, depth = Infinity, map = new WeakMap()){
+    if(depth < 1) return arr.slice()
+    if(map.has(arr)) return map.get(arr)
+    const result = []
+    map.set(arr, result)
+    for(let item of arr){
+      if(Array.isArray(item)){
+        result.push(...myFlatten(item, depth - 1, map))
+      }else{
+        result.push(item)
+      }
     }
-    return flatten(arr, depth)
-}
-// 创建一个循环引用的数组
-const arr = [1, 2, [3, 4]];
-arr[2].push(arr);
-
-console.log(myFlatten(arr));
-// 输出: [1, 2, 3, 4]
+    return result
+  }
+  // 创建一个循环引用的数组
+  const arr = [1, 2, [3, 4]];
+  arr[2].push(arr);
+  
+  console.log(myFlatten(arr));
+  // 输出: [1, 2, 3, 4]
