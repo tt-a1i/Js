@@ -22,6 +22,7 @@ class EventEmitter {
   }
   // 示例使用
   const emitter = new EventEmitter();
+  
   const greetListener = (name) => {
     console.log(`Hello, ${name}!`);
   };

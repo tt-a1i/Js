@@ -2,6 +2,7 @@ var bar = 'window'
 function say(){
   var bar = '111'
   console.log(bar);// '111' （局部变量 bar）
+  //函数内部的this指向全局
   console.log(this.bar);// 'window' （this 指向全局对象，this.bar 即 window.bar）
 }
 const obj = {
