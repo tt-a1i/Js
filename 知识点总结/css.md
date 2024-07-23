@@ -485,7 +485,7 @@ SCSS 提供了一些编程结构如条件语句和循环，这些可以用来动
      ```scss
      .main {
        border: 2px solid #dcdfe6;
-  
+    
        .pdf-container {
          width: 75%; 
          // ...其他样式
@@ -497,7 +497,7 @@ SCSS 提供了一些编程结构如条件语句和循环，这些可以用来动
      ```scss
      $primary-color: #F56C6C; 
      $secondary-color: #67C23A;
-  
+    
      .total { 
        b {
          &:first-of-type { color: $primary-color; } // 使用变量
@@ -513,7 +513,7 @@ SCSS 提供了一些编程结构如条件语句和循环，这些可以用来动
         background: none;
         cursor: pointer;
       }
-   
+      
       .el-button[type="text"] {
         @include button-style; 
       }
@@ -640,3 +640,4 @@ Tailwind CSS 是一种`功能类优先`的` CSS 框架`，它提供了大量的�
 - **与组件库结合**：可以将 Tailwind 与 React, Vue, Angular 等现代 JavaScript 框架一起使用，创建可重用的 UI 组件。
 
 通过使用 Tailwind CSS，开发者和设计师可以更加专注于构建精美而响应迅速的界面，而无需担心大量的样式维护问题。与传统 CSS 相比，它提供了一种更为高效和可控的方式来处理前端样式问题。
+
