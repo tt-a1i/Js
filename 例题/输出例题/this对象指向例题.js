@@ -11,7 +11,7 @@ const obj = {
     console.log(this.bar);
   }
 }
-say()//111 111
+say()
 obj.say()
 obj.say = say
 obj.say()
