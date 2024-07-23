@@ -13,3 +13,5 @@ var obj = {
 var name = 'window'
 obj.foo1()
 obj.foo2()()
+let fn = obj.foo2()
+fn()
