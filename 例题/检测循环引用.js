@@ -11,10 +11,10 @@ function detectCircularReference1(obj) {
 		seen.add(value);
 
 		for (let key in value) {
-        //Object.prototype.hasOwnProperty.call(obj, key) 可以避免这些问题。
-        //这种方式是在 Object.prototype 上找到原始的 hasOwnProperty 方法，并通过 call 方法将其应用到指定的对象 obj 上，
-        //从而确保能够正确地判断对象自身是否具有指定的属性 key，而不受对象本身属性或原型链的影响。
-        //例子:如果对象 foo 有一个自定义的 hasOwnProperty 方法返回false结果就不正确了
+			//Object.prototype.hasOwnProperty.call(obj, key) 可以避免这些问题。
+			//这种方式是在 Object.prototype 上找到原始的 hasOwnProperty 方法，并通过 call 方法将其应用到指定的对象 obj 上，
+			//从而确保能够正确地判断对象自身是否具有指定的属性 key，而不受对象本身属性或原型链的影响。
+			//例子:如果对象 foo 有一个自定义的 hasOwnProperty 方法返回false结果就不正确了
 			if (Object.prototype.hasOwnProperty.call(value, key)) {
 				if (detect(value[key])) {
 					return true;
@@ -28,17 +28,18 @@ function detectCircularReference1(obj) {
 	return detect(obj);
 }
 //简写版
-function detectCircularReference(obj, set = new WeakSet()){
-	if(obj === null || typeof obj !== 'object') return false;
-	if(set.has(obj)) return true;
+function detectCircularReference(obj, set = new WeakSet()) {
+	if (obj === null || typeof obj !== "object") return false;
+	if (set.has(obj)) return true;
 	set.add(obj);
-	for(let key in obj){
-	  if(Object.prototype.hasOwnProperty.call(obj, key)){
-		if(detectCircularReference(obj[key], set)) return true;
-	  }
+	for (let key in obj) {
+		//可以不写
+		if (Object.prototype.hasOwnProperty.call(obj, key)) {
+			if (detectCircularReference(obj[key], set)) return true;
+		}
 	}
 	return false;
-  }
+}
 
 // 使用示例
 const obj1 = { a: 1, b: 2 };

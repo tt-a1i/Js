@@ -9,6 +9,7 @@ function deepCopy(obj, map = new WeakMap()){
         }
     }else{
         for(let key in obj){
+            //如果你确定你的使用场景中不会涉及复杂的原型链，或者你希望复制所有可枚举属性（包括原型链上的），那么可以安全地去掉 hasOwnProperty 检查。
             if(obj.hasOwnProperty(key)){
                 copy[key] = deepCopy(obj[key], map)
             }
