@@ -11,7 +11,7 @@ function isValid(s){
             stack.push(s[i])
         else{
             // 如果是闭括号，检查栈顶元素是否匹配
-            if(stack.pop() !== map[s[i]]){
+            if(stack.length === 0 || stack.pop() !== map[s[i]]){
                 return false
             }
         }
