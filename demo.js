@@ -1,16 +1,11 @@
-function strLongestLen(s){
-  const map = new Map()
-  let start = 0, maxLen = 0;
-  for(let i = 0; i < s.length; i++){
-    let c = s[i];
-    if(map.has(c)){
-      start = Math.max(start, map.get(c) + 1)
+function repeat(fn, delay, times){
+  let count = 0
+  function func(){
+    if(count++ < times){
+      fn()
+      setTimeout(func, delay)
     }
-    map.set(c, i)
-    maxLen = Math.max(maxLen, i - start + 1)
   }
-  return maxLen
+  func()
 }
-console.log(strLongestLen("abcabcbb")); // 应该输出 3
-console.log(strLongestLen("bbbbb")); // 应该输出 1
-console.log(strLongestLen("pwwkew")); // 应该输出 3
+repeat(() => console.log(1), 1000, 5)
