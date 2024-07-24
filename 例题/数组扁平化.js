@@ -12,12 +12,10 @@ flat([1,2,3,[4,5,[6]]])
 console.log(res); */
 // const arr = [1,2,3,[4,5,[6]]]
 
-
 /**
  * flat方法
  */
 /* console.log(arr.flat(Infinity)); */
-
 
 /**
  * reduce
@@ -29,8 +27,6 @@ console.log(res); */
     }, [])
 }
 console.log(reduceFlat(arr)); */
-
-
 
 //避免循环引用
 /* function safeFlatten(array, parentArrays = []) {
@@ -59,26 +55,24 @@ try {
     console.log(e.message); // 应打印 "Detected a cycle in array"
 } */
 
-
-
 //循环引用扁平化
-function myFlatten(arr, depth = Infinity, map = new WeakMap()){
-    if(depth < 1) return arr.slice()
-    if(map.has(arr)) return map.get(arr)
-    const result = []
-    map.set(arr, result)
-    for(let item of arr){
-      if(Array.isArray(item)){
-        result.push(...myFlatten(item, depth - 1, map))
-      }else{
-        result.push(item)
-      }
-    }
-    return result
-  }
-  // 创建一个循环引用的数组
-  const arr = [1, 2, [3, 4]];
-  arr[2].push(arr);
-  
-  console.log(myFlatten(arr));
-  // 输出: [1, 2, 3, 4]
+function myFlatten(arr, depth = Infinity, map = new WeakMap()) {
+	if (depth < 1) return arr.slice();
+	if (map.has(arr)) return map.get(arr);
+	const result = [];
+	map.set(arr, result);
+	for (let item of arr) {
+		if (Array.isArray(item)) {
+			result.push(...myFlatten(item, depth - 1, map));
+		} else {
+			result.push(item);
+		}
+	}
+	return result;
+}
+// 创建一个循环引用的数组
+const arr = [1, 2, [3, 4]];
+arr[2].push(arr);
+
+console.log(myFlatten(arr));
+// 输出: [1, 2, 3, 4]
