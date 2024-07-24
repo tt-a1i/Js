@@ -16,3 +16,4 @@ const obj = {
   obj.sayName()
   const func = obj.sayName
   func() 
+ 

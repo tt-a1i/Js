@@ -15,3 +15,10 @@ say()
 obj.say()
 obj.say = say
 obj.say()
+/*
+111
+window
+window
+222
+111
+222 */
