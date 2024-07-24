@@ -2800,3 +2800,187 @@ JWT由三部分组成，分别是头部（Header）、载荷（Payload）和签�
 
 JWT和token的区别主要体现在是否需要查询数据库。对了Token来说，服务端验证客户端发送过来的 Token 时，还需要查询数据库获取用户信息，然后验证 Token 是否有效。而JWT则不需要，因为用户的信息及加密信息、过期时间，都存储在JWT里，服务端只需要使用密钥解密进行校验即可，不需要查询或者减少查询数据库。
 
+## async,await输出题
+
+非常好的问题！让我们分析一下这个修改后的代码：
+
+```javascript
+async function f1(){
+    console.log(1);
+}
+async function f2(){
+    console.log(2);
+    await console.log(3);
+    console.log(5);
+}
+function f3(){
+    console.log(4);
+}
+f1()
+f2()
+f3()
+```
+
+输出顺序会是：1, 2, 3, 4, 5
+
+让我详细解释原因：
+
+1. `f1()` 被调用。虽然它是一个异步函数，但它不包含任何 await 语句，所以它会同步执行并立即打印 1。
+
+2. `f2()` 被调用。它首先同步执行并打印 2。
+
+3. 在 f2() 中，遇到 `await console.log(3)`。`console.log(3)` 会立即执行并打印 3，但 `await` 会`暂停 ` `f2()` 函数的剩余部分的执行，并`将控制权交回给调用栈`。
+
+4. `f3()` 被调用，它是一个普通的同步函数，所以立即执行并打印 4。
+
+5. 此时，主调用栈已经清空，但是 `f2()` 函数还有未完成的部分（await 之后的代码，即 `console.log(5)`）。`这部分代码会被放入微任务队列`（microtask queue）。
+
+6. 事件循环`检查微任务队列`，发现 `f2()` 的剩余部分，执行它。这会打印 5。
+
+关键点解析：
+
+- 异步函数 `f1()` 和 `f2()` 的调用是同步开始的，但它们的行为可能是异步的。
+- `await` 关键字会暂停异步函数的执行，让出控制权。
+- `await` 之后的代码会被放入微任务队列，在当前同步代码执行完毕后立即执行。
+- 事件循环会在主调用栈清空后检查并执行微任务队列中的任务。
+
+这个例子很好地展示了 JavaScript 中同步代码、异步函数和事件循环之间的交互。理解这些概念对于准确预测 JavaScript 代码的执行顺序非常重要。
+
+## 涉及对象属性和全局变量的this指向
+
+这是一个很好的问题，涉及到 JavaScript 中的作用域、this 绑定和函数调用方式。让我们逐步分析这段代码：
+
+```javascript
+var bar = 'window'
+
+function say(){
+  var bar = '111'
+  console.log(bar);
+  console.log(this.bar);
+}
+
+const obj = {
+  bar: '222',
+  say(){
+    console.log(bar);
+    console.log(this.bar);
+  }
+}
+
+say()
+obj.say()
+obj.say = say
+obj.say()
+```
+
+让我们分别看每次函数调用的输出：
+
+1. `say()`
+   输出：
+   ```
+   111
+   window
+   ```
+   解释：
+   - 第一个 `console.log(bar)` 输出 '111'，因为它使用的是函数内部定义的局部变量 `bar`。
+   - 第二个 `console.log(this.bar)` 输出 'window'，因为在非严格模式下，独立调用的函数中的 `this` 指向`全局对象`（浏览器中是 window）。
+
+2. `obj.say()`
+   输出：
+   ```
+   window
+   222
+   ```
+   解释：
+   - 第一个 `console.log(bar)` 输出 'window'，因为 obj.say 方法中没有定义局部变量 bar，所以它访问的是全局作用域中的 bar。
+   - 第二个 `console.log(this.bar)` 输出 '222'，因为这里的 this 指向调用该方法的对象 obj。
+
+3. `obj.say = say; obj.say()`
+   输出：
+   ```
+   111
+   222
+   ```
+   解释：
+   - 这里我们将全局的 say 函数赋值给 obj.say。
+   - 第一个 `console.log(bar)` 输出 '111'，因为现在使用的是全局 say 函数，它有自己的局部变量 bar。
+   - 第二个 `console.log(this.bar)` 输出 '222'，因为尽管函数体来自全局 say 函数，但它是作为 obj 的方法被调用的，所以 this 仍然指向 obj。
+
+关键点：
+
+1. 变量查找顺序：首先在当前作用域查找，如果没有找到，则向上级作用域查找，直到全局作用域。
+
+2. this 的绑定：
+   - 对于普通函数调用，this 通常指向全局对象（非严格模式）或 undefined（严格模式）。
+   - 对于方法调用，this 指向调用该方法的对象。
+
+3. 函数赋值：当我们将一个函数赋值给对象的属性时，函数体不变，但 this 绑定会根据调用方式改变。
+
+这个例子很好地展示了 JavaScript 中变量作用域和 this 绑定的复杂性，理解这些概念对于正确预测代码行为至关重要。
+
+## obj中的console.log(bar);为什么没有输出对象的属性bar
+
+您提出了一个非常好的问题。让我详细解释一下为什么 `obj` 中的 `console.log(bar)` 没有输出对象的属性 `bar`，而是输出了全局变量 `bar`。
+
+这涉及到 JavaScript 的`词法作用域`（Lexical Scope）规则。让我们再看一下相关的代码：
+
+```javascript
+var bar = 'window'
+
+const obj = {
+  bar: '222',
+  say(){
+    console.log(bar);
+    console.log(this.bar);
+  }
+}
+```
+
+关键点解析：
+
+1. 词法作用域：
+   JavaScript 使用`词法作用域`，这意味着`变量的作用域`是在`代码编写时`就`确定的`，而`不是在运行时确定`的。
+
+2. `变量查找顺序`：
+   当遇到一个变量时，JavaScript 引擎会按以下顺序查找：
+   - `当前作用域`
+   - `外部作用域`
+   - `全局作用域`
+
+3. `对象不创建新的作用域`：
+   在 JavaScript 中，对象并不创建新的作用域。对象的方法中的变量查找遵循普通的词法作用域规则。
+
+4. `this` 和变量查找的区别：
+   `this.bar` 是在`对象上查找属性`，而直接使用 `bar` 是按照`词法作用域规则查找变量`。
+
+在这个例子中：
+
+- `console.log(bar)` 在 `say` 方法内部。由于 `say` 方法内部没有定义 `bar` 变量，JavaScript 会向外查找，直到找到全局作用域中的 `bar`。
+- `console.log(this.bar)` 则是在当前对象（`this`）上查找 `bar` 属性，因此会找到对象的 `bar` 属性。
+
+如果想要在 `say` 方法中访问对象的 `bar` 属性，可以这样修改：
+
+```javascript
+const obj = {
+  bar: '222',
+  say(){
+    console.log(this.bar);  // 将输出 '222'
+    console.log(this.bar);
+  }
+}
+```
+
+或者，如果你想创建一个闭包来捕获对象的 `bar` 属性：
+
+```javascript
+const obj = {
+  bar: '222',
+  say(){
+    const bar = this.bar;
+    console.log(bar);  // 将输出 '222'
+    console.log(this.bar);
+  }
+}
+```
+
+理解这一点对于避免 JavaScript 中常见的作用域相关错误非常重要。这也展示了为什么在处理对象属性时，使用 `this` 关键字通常是一个好习惯。

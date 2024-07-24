@@ -9,8 +9,10 @@ const obj = {
         console.log(self.name);
       })()
     }
-  }
-  
-  obj.sayName() // 打印什么
+  }//立即执行函数的对象指向全局
+  //普通函数内部的 this 并不指向函数内部。
+  //this 的值取决于函数的调用方式，而不是函数的定义方式。
+  //在大多数情况下（非严格模式下的全局调用），如果没有明确指定，this 会指向全局对象。
+  obj.sayName()
   const func = obj.sayName
-  func() // 打印什么
+  func() 

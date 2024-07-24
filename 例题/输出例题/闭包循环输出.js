@@ -8,7 +8,7 @@ function foo(a){
       console.log(a,i,total)
     }
   }
-}
+}//闭包维护的是变量的引用
 foo(1);
 result[0]() 
 result[1]() 
