@@ -10,6 +10,7 @@ var obj = {
         }
     }
 }
+//箭头函数的this是在创建时确定的,
 var name = 'window'
 obj.foo1()
 obj.foo2()()

@@ -2984,3 +2984,79 @@ const obj = {
 ```
 
 理解这一点对于避免 JavaScript 中常见的作用域相关错误非常重要。这也展示了为什么在处理对象属性时，使用 `this` 关键字通常是一个好习惯。
+
+## ☆this输出
+
+这是一个非常好的问题，涉及到 JavaScript 中的箭头函数、this 绑定和闭包等概念。让我们逐步分析这段代码：
+
+```javascript
+var obj = {
+    name: 'obj',
+    foo1: () => {
+        console.log(this.name);
+    },
+    foo2: function () {
+        console.log(this.name)
+        return () => {
+            console.log(this.name);
+        }
+    }
+}
+var name = 'window'
+obj.foo1()
+obj.foo2()()
+let fn = obj.foo2()
+fn()
+```
+
+让我们分别看每次函数调用的输出：
+
+1. `obj.foo1()`
+   输出：`window`
+
+   原因：
+   - `foo1` 是一个箭头函数。箭头函数`不会创建自己的` `this` 上下文，而是`捕获其所在上下文`的 `this` 值。
+   - 在这个例子中，`foo1` 定义在全局作用域内（即使它是对象的一个属性），所以它的 `this` 指向全局对象（在浏览器中是 window）。
+   - 因此，`this.name` 实际上访问的是全局变量 `name`，即 'window'。
+
+2. `obj.foo2()()`
+   输出：
+   ```
+   obj
+   obj
+   ```
+
+   原因：
+   - `obj.foo2()` 是一个普通函数调用，`this` 指向 `obj`，所以第一个 `console.log(this.name)` 输出 'obj'。
+   - `foo2` 返回一个箭头函数。这个箭头函数捕获了 `foo2` 的 `this` 上下文，也就是 `obj`。
+   - 因此，返回的箭头函数中的 `this.name` 仍然是 'obj'。
+
+3. `let fn = obj.foo2(); fn()`
+   输出：
+   ```
+   obj
+   obj
+   ```
+
+   原因：
+   - `obj.foo2()` 执行时，`this` 指向 `obj`，所以第一个 `console.log(this.name)` 输出 'obj'。
+   - `foo2` 返回的箭头函数被赋值给 `fn`。
+   - 当 `fn()` 执行时，尽管它是在全局作用域下调用的，但由于它是一个箭头函数，它的 `this` 仍然是创建时的 `this`，即 `obj`。
+   - 因此，`fn()` 中的 `console.log(this.name)` 输出 'obj'。
+
+关键点：
+
+1. 箭头函数的 `this`:
+   - `箭头函数不创建自己的 `this` 上下文`，而是`继承外围作用域的 `this` 值`。
+   - `一旦箭头函数被创建`，它的 `this 值就不能被改变`。
+
+2. 普通函数的 `this`:
+   - 普通函数的 `this` 值取决于函数如何被调用。
+
+3. 闭包：
+   - 箭头函数创建了一个闭包，捕获了外部函数的 `this` 值。
+
+4. 全局变量：
+   - 在非严格模式下，全局作用域中声明的变量会成为全局对象（如 window）的属性。
+
+这个例子很好地展示了 JavaScript 中 `this` 绑定的复
