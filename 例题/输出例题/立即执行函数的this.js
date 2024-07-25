@@ -8,7 +8,7 @@ const obj = {
         console.log(this.name);
         console.log(self.name);
       })()
-    }
+    }//bar bar und bar 
   }
   // var name = 'window'
   //立即执行函数的对象指向全局

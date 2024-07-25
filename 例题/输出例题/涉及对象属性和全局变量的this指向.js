@@ -9,7 +9,7 @@ const obj = {
   say(){
     console.log(bar);
     console.log(this.bar);
-  }
+  }//111 win win 222 111 222
 }
 say()
 obj.say()
