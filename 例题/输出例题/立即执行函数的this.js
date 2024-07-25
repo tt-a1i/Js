@@ -7,7 +7,7 @@ const obj = {
       (function() {
         console.log(this.name);
         console.log(self.name);
-      })()//bar  bar window bar undefined und und und
+      })()
     }
   }
   // var name = 'window'
