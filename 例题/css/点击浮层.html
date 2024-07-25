@@ -27,6 +27,13 @@
 				border-radius: 8px;
 				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 			}
+			.triangle {
+				width: 0;
+				height: 0;
+				border-left: 50px solid transparent;
+				border-right: 50px solid transparent;
+				border-bottom: 100px solid black;
+			}
 		</style>
 	</head>
 	<body>
@@ -36,6 +43,7 @@
 				<p>This is the floating layer content.</p>
 			</div>
 		</div>
+		<div class="triangle"></div>
 
 		<script>
 			document.addEventListener("DOMContentLoaded", () => {
