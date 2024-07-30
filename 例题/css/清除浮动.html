@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Float Clearing Demo</title>
+    <style>
+        .container {
+            border: 2px solid black;
+            margin-bottom: 20px;
+        }
+        .float-element {
+            float: left;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            margin: 10px;
+        }
+        .text {
+            background-color: lightgrey;
+        }
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .test{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- clear:both, overflow, ::after加clear:both, 让父元素也浮动, BFC, display:inline-block,详见记录的文档中 -->
+    <h2>Without Clearing Float</h2>
+    <div class="container test">
+        <div class="float-element"></div>
+        <div class="float-element"></div>
+        <div class="text">This is some text content.</div>
+    </div>
+
+    <h2>With Clearing Float (using clearfix)</h2>
+    <div class="container clearfix">
+        <div class="float-element"></div>
+        <div class="float-element"></div>
+        <div class="text">This is some text content.</div>
+    </div>
+</body>/**/
+</html>
