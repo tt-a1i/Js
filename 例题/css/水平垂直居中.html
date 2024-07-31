@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .parent{
+            width: 500px;
+            height: 500px;
+            border: 2px solid green;
+            position: relative;
+        }
+        .child{
+            position: absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-50% ,-50%);
+            width: 30px;
+            height: 30px;
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+    <!--三种方式, 
+        外层flex,justify-content:center, align-items:center
+        外层grid,place-items:center,
+        外层相对定位,内部绝对定位,top:50%, left:50%, transform:translate(-50%,-50%)
+    -->
+    <div class="parent">
+        <div class="child"></div>
+    </div>
+</body>
+</html>
