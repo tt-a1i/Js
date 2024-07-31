@@ -412,16 +412,32 @@ for(let i=0; i<100000; i++){
 
 ## 你了解vue的diff算法吗
 
-`diff` 算法是一种通过同层的树节点进行比较的高效算法
+基本原理
 
-其有两个特点：
+Diff算法的核心思想是通过同层级比较，而不是跨层级比较。这大大减少了需要比较的节点数量，提高了效率。
 
-- 比较只`会在同层级进`行, 不会跨层级比较
-- 在diff比较的过程中，`循环从两边向中间比较`
+比较过程
 
-`diff` 算法在很多场景下都有应用，在 `vue` 中，作用于虚拟 `dom` 渲染成真实 `dom` 的新旧 `VNode` 节点比较
+a. 比较根节点：
 
-`diff`整体策略为：深度优先，同层比较
+- 如果根节点类型不同，直接替换整个树。
+- 如果根节点类型相同，则继续比较子节点。
+
+b. 比较子节点：
+
+- 遍历新旧两个子节点列表。
+- 比较key和节点类型。
+- 当节点类型相同时：
+  - 更新节点的属性。
+  - 然后递归比较子节点。
+- 当节点类型不同时：
+  - 直接替换旧节点。
+
+c. 静态节点优化：对于不会变化的节点（如纯文本节点），可以跳过比较。
+
+key的作用
+
+在列表渲染中，key帮助Diff算法识别哪些元素改变了、添加了或删除了。有了key，Vue可以最小化元素的移动，并且能够重用和重新排序现有元素。
 
 ## Vue项目中有封装过axios吗？主要是封装哪方面的？
 
@@ -1028,3 +1044,97 @@ export default {
 ## 数据请求在created和mouted的区别
 
 `created`是在组件实例一旦创建完成的时候立刻调用，这时候页面`dom`节点并未生成；`mounted`是在页面`dom`节点渲染完毕之后就立刻执行的。触发时机上`created`是比`mounted`要更早的，两者的相同点：都能拿到实例对象的属性和方法。 讨论这个问题本质就是触发的时机，放在`mounted`中的请求有可能导致页面闪动（因为此时页面`dom`结构已经生成），但如果在页面加载前完成请求，则不会出现此情况。建议对页面内容的改动放在`created`生命周期当中。
+
+## vue中响应式是怎么实现的
+
+1. 数据劫持：
+   - Vue 2: 使用Object.defineProperty遍历对象的每个属性，将其转换为getter/setter。
+   - Vue 3: 使用Proxy创建一个对象的代理，拦截并处理对该对象的各种操作。
+2. 依赖收集： 当访问数据时（例如在渲染过程中），系统会记录谁在使用这个数据（即收集依赖）。
+3. 数据更新： 当数据变化时，系统会通知所有依赖该数据的地方进行更新。
+4. 虚拟DOM： Vue使用虚拟DOM来最小化实际DOM操作，提高性能。
+5. 异步更新队列： Vue将数据变化后的视图更新操作推入一个队列中，在下一个事件循环中批量执行，以避免不必要的计算和DOM操作。
+
+## 如何让一个值失去响应式
+
+1. 使用 toRaw()
+
+toRaw() 函数可以返回一个响应式对象的原始版本，这个版本不再是响应式的。
+
+```javascript
+import { ref, toRaw } from 'vue'
+
+const reactiveValue = ref({ count: 0 })
+const rawValue = toRaw(reactiveValue.value)
+
+// rawValue 不再是响应式的
+```
+
+1. 使用 markRaw()
+
+markRaw() 函数可以标记一个对象，使其永远不会转换为响应式对象。
+
+```javascript
+import { markRaw, reactive } from 'vue'
+
+const originalObject = { count: 0 }
+const rawObject = markRaw(originalObject)
+
+// 即使将 rawObject 传递给 reactive，它也不会变成响应式
+const stillRaw = reactive(rawObject)
+// stillRaw 仍然是非响应式的
+```
+
+1. 创建一个普通的副本
+
+对于简单的值或对象，你可以创建一个普通的副本：
+
+```javascript
+import { ref } from 'vue'
+
+const reactiveValue = ref({ count: 0 })
+const nonReactiveValue = { ...reactiveValue.value }
+
+// nonReactiveValue 是一个普通对象，不是响应式的
+```
+
+1. 使用 Object.freeze()
+
+Object.freeze() 可以冻结一个对象，使其属性不可修改，这也会阻止 Vue 将其转换为响应式。
+
+```javascript
+import { reactive } from 'vue'
+
+const originalObject = { count: 0 }
+const frozenObject = Object.freeze(originalObject)
+
+// 即使将 frozenObject 传递给 reactive，它也不会变成响应式
+const stillFrozen = reactive(frozenObject)
+// stillFrozen 仍然是非响应式的
+```
+
+1. 使用普通变量替代 ref 或 reactive
+
+如果你不再需要响应式，可以将值赋给一个普通变量：
+
+```javascript
+import { ref } from 'vue'
+
+const reactiveValue = ref(0)
+let nonReactiveValue = reactiveValue.value
+
+// nonReactiveValue 现在是一个普通变量，不再是响应式的
+```
+
+1. 解构响应式对象
+
+当你解构一个响应式对象时，解构出来的属性会失去响应式：
+
+```javascript
+import { reactive } from 'vue'
+
+const reactiveObject = reactive({ count: 0, text: 'hello' })
+const { count, text } = reactiveObject
+
+// count 和 text 现在是非响应式的普通变量
+```

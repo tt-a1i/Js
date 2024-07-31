@@ -1,13 +1,19 @@
-function func(arr, target){
-    const map = new Map()
-    const res = []
-    for(let i = 0; i < arr.length; i++){
-        if(map.has(target - arr[i])){
-            res.push([target - arr[i], arr[i]])
-        }
-        map.set(arr[i], i)
-    }
-    return res
+function findCommonElements(array1, array2) {
+    const map = new Map(array2.map(item => [item.id, item]))
+    return array1.filter(item => map.has(item.id))
 }
-const arr = [1,3,5,7,8,9]
-console.log(func(arr, 10));
+const array1 = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' },
+    { id: 4, name: 'David' }
+  ];
+  
+  const array2 = [
+    { id: 2, age: 30 },
+    { id: 3, age: 25 },
+    { id: 5, age: 35 }
+  ];
+  
+  const result = findCommonElements(array1, array2);
+  console.log(result);
