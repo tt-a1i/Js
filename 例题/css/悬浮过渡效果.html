@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			.myDiv {
+				/* 初始样式 */
+				height: 100px; /* 假设初始高度为100px */
+				font-size: 14px; /* 初始字体大小 */
+				padding: 10px; /* 添加一些内边距 */
+				background-color: #f0f0f0; /* 背景色，便于观察 */
+
+				/* 过渡效果 */
+				transition: height 0.3s ease, font-size 0.3s ease;
+			}
+
+			.myDiv:hover {
+				/* 鼠标悬停时的样式 */
+				height: 200px; /* 增加100px高度 */
+				font-size: 16px; /* 修改字体大小 */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="myDiv">
+			这是一些示例文本。鼠标悬停时，此 div 的高度会增加，字体也会变大。
+		</div>
+	</body>
+</html>
