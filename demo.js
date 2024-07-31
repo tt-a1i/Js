@@ -1,8 +1,21 @@
-Object.prototype.a = 1
-Function.prototype.b = 2
-function test(){
-
+async function async1 () {
+    await async2()
+    console.log('A')
 }
-var t = new test()
-console.log(t.a);
-console.log(t.b);
+
+async function async2 () {
+    return new Promise((resolve, reject) => {
+        resolve()
+    })
+}
+
+async1()
+
+new Promise((resolve) => {
+    console.log('B')
+    resolve()
+}).then(() => {
+    console.log('C')
+}).then(() => {
+    console.log('D')
+})
