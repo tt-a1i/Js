@@ -6,7 +6,7 @@ const array1 = [
     { id: 11, name: 'Alice' },
     { id: 21, name: 'Bob' },
     { id: 31, name: 'Charlie' },
-    { id: 4, name: 'David' }
+    { id: 41, name: 'David' }
   ];
   
   const array2 = [
