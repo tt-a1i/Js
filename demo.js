@@ -3,7 +3,7 @@ function findCommonElements(array1, array2) {
     return array1.filter(item => map.has(item.id))
 }
 const array1 = [
-    { id: 1, name: 'Alice' },
+    { id: 11, name: 'Alice' },
     { id: 21, name: 'Bob' },
     { id: 31, name: 'Charlie' },
     { id: 4, name: 'David' }
