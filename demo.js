@@ -12,7 +12,7 @@ const array1 = [
   const array2 = [
     { id: 21, age: 30 },
     { id: 31, age: 25 },
-    { id: 5, age: 35 }
+    { id: 51, age: 35 }
   ];
   
   const result = findCommonElements(array1, array2);
