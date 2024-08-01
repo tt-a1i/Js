@@ -4,7 +4,7 @@ function findCommonElements(array1, array2) {
 }
 const array1 = [
     { id: 1, name: 'Alice' },
-    { id: 2, name: 'Bob' },
+    { id: 21, name: 'Bob' },
     { id: 31, name: 'Charlie' },
     { id: 4, name: 'David' }
   ];
