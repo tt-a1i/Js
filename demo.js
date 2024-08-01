@@ -10,7 +10,7 @@ const array1 = [
   ];
   
   const array2 = [
-    { id: 2, age: 30 },
+    { id: 21, age: 30 },
     { id: 3, age: 25 },
     { id: 5, age: 35 }
   ];
