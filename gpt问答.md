@@ -1981,3 +1981,133 @@ server.listen(3000, () => {
    在流式响应中，你可能需要在每次接收新的文本片段时重新运行 Marked，以更新页面内容。
 
 总结：你的理解是正确的。模型输出的内容虽然看起来像普通文本，但实际上包含了 Markdown 格式的标记。这就是为什么可以使用 Marked 这样的库来解析和渲染它，从而在页面上呈现格式化的内容。这种方法允许在保持输出简单性的同时，提供丰富的格式化选项。
+
+## 为什么多模态模型在接收图片时要接收base64格式，只能接收base64吗
+
+多模态模型在处理图像输入时，接收 base64 格式的图像数据有其特殊原因，但并不仅限于必须接收 base64 格式。以下解释为什么使用 base64 格式，以及其他可行的图像输入方法：
+
+### 为什么使用 Base64 格式：
+
+1. **通用性与兼容性**：
+   - Base64 是一种将二进制数据编码为 ASCII 字符串的技术，使得图像数据可以方便地嵌入 JSON 或 XML 等文本格式中，便于传输和处理。
+
+2. **数据传输的简化**：
+   - 在许多网络应用和 API 中，通过 JSON 来传递数据是常见的做法。将图像数据编码为 Base64 使得其可以内嵌在 JSON 中，从而减少了额外的传输步骤和复杂性。
+
+3. **避免文件系统操作**：
+   - 使用 Base64 编码可以避免在网络传输过程中依赖于文件系统操作，使数据传输更加独立和健壮。
+
+### 其他图像输入方法：
+
+1. **传递图像文件路径**：
+   - 如果模型本地化，可以直接传递图像文件路径，然后再由模型所在的环境来读取文件。这种方法避免了图像编码和解码的开销，但需要确保文件路径和访问权限的正确。
+
+2. **二进制图像数据（Multipart Form-Data）**：
+   
+   - 在网络传输中，可以使用 HTTP 的 multipart/form-data 格式来上传图片。这种方法在文件上传操作中非常普遍，尤其在 web 应用中。
+   
+   
+
+### 示例：
+
+1. **Base64 格式**：
+   ```json
+   {
+     "image_data": "/9j/4AAQSkZJRgABAQEAAAABAA..."
+   }
+   ```
+
+2. **图像文件路径**：
+   ```json
+   {
+     "image_path": "/path/to/image.jpg"
+   }
+   ```
+
+3. **Multipart Form-Data 格式**：
+   ```bash
+   curl -X POST -F "image=@/path/to/image.jpg" http://example.com/api/upload
+   ```
+
+## 使用base64的好处
+
+1. ### 1. **通过JSON传递图片数据**
+
+   Base64编码将二进制数据转成纯文本字符串，使得图片数据可以嵌入到JSON对象中。JSON（JavaScript对象表示法）是一种轻量级数据交换格式，广泛用于Web API之间的通信。Base64编码使得非文本数据如图片能通过JSON轻松进行传输，这样在API设计时就不需要引入复杂的多部分表单数据格式。
+
+   **示例**：
+
+   ```json
+   {
+       "name": "example.png",
+       "image": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+   }
+   ```
+
+   ### 2. **跨平台和跨语言的兼容性**
+
+   Base64编码后的数据是纯文本，这使得它非常容易被不同的编程语言和平台处理。无论是Python、Java、JavaScript、C#，还是其他编程语言，都有内置的或者易于使用的库来处理Base64编码，这极大地简化了跨平台和跨语言的开发。
+
+   **示例**（Python和JavaScript）：
+
+   ```python
+   import base64
+   
+   data = open('example.png', 'rb').read()
+   encoded_img = base64.b64encode(data).decode('utf-8')
+   let base64String = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+   ```
+
+   ### 3. **避免传输中的数据损坏**
+
+   在数据传输过程中，某些传输协议或网关、代理服务器可能会对二进制数据进行改动，导致数据损坏。如HTTP传输中的字符集问题或者传输中的数据截断等问题。而Base64编码后的数据是标准的ASCII字符，不容易被这些中间过程改动，从而提升了数据传输的稳定性和可靠性。
+
+   **示例**： 直接传输二进制数据可能会遇到字符集问题，而Base64编码的文本数据则不会：
+
+   ```bash
+   binary_data: \x89PNG\x0D\x0AX\x0C...
+   base64_data: iVBORw0KGgoAAAANSUhEUg...
+   ```
+
+   ### 4. **API简单化**
+
+   Base64编码可以简化API的设计和实现。在处理文件上传时，传统的方法使用多部分表单数据格式（multipart/form-data），这种方法需要更多的开发工作量、配置和处理。而Base64编码则使得直接通过JSON传递图片数据变得更简单和直观，不需要额外的表单处理逻辑。
+
+   **示例**：
+
+   ```javascript
+   // 传统上传方式
+   <form enctype="multipart/form-data">
+       <input type="file" name="file" />
+       <input type="submit" value="Upload" />
+   </form>
+   
+   // 使用Base64编码的方式
+   fetch('/upload', {
+       method: 'POST',
+       headers: {
+           'Content-Type': 'application/json'
+       },
+       body: JSON.stringify({ image: base64String })
+   })
+   ```
+
+   ### 5. **便于存储和日志记录**
+
+   Base64编码的图片数据是纯文本的，因此可以方便地嵌入到日志文件、数据库记录或其他文本文件中。这在调试和记录的时候尤为有用，可以保持数据的完整性。同时，Base64编码的数据可以方便地加载到文本编辑器中查看，而不需要特殊的工具去解释二进制数据。
+
+   **示例**：
+
+   ```json
+   {
+       "timestamp": "2023-01-01T00:00:00Z",
+       "event": "image_upload",
+       "image_data": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+   }
+   ```
+
+   这种方法使得调试和数据存档时，更容易查看、过滤和存储图片数据以及相关的元信息。
+
+### 小结：
+
+虽然 Base64 编码的图像数据是多模态模型接收图像数据的一种常见形式，但并不是唯一的方式。根据使用环境和具体需求，可以选择不同的图像数据传递方法。有些方法可能更适合本地化处理，而有些方法则适合网络传输和远程调用。重要的是选择合适的方式以满足特定应用场景的需求。
