@@ -2739,3 +2739,240 @@ console.log(value === null); // true
    - 如回调函数、Promise、async/await 等。
 4. 定时器和 I/O 操作
    - 这些操作在后台执行,不会阻塞主线程。
+
+## 不同窗口数据共享场景题
+
+### 打开两个相同的页面，例如： 页面1：https://space.bilibili.com/8692067 页面2：https://space.bilibili.com/8692067 你在页面1中点击关注，我们希望第二个页面的未关注变为已关注，也就是第二个页面同步第一个页面的状态，有哪些方法可以做到？
+
+要实现两个相同的网页在一个页面做出操作时同步更新另一个页面，你可以考虑以下几种方法：
+
+### 1. 使用 WebSocket
+WebSocket 可以用于在客户端和服务器之间建立实时的双向通信。当您在页面1点击关注按钮时，可以通过 WebSocket 将此操作发送到服务器，并由服务器通知所有其他打开的相同页面进行更新。
+
+**服务器端 (Node.js 例子):**
+```javascript
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    // 广播给所有其他客户端
+    wss.clients.forEach(function each(client) {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  });
+});
+```
+
+**客户端 (浏览器):**
+```javascript
+const socket = new WebSocket('ws://localhost:8080');
+
+socket.addEventListener('message', function (event) {
+  // 接收到其他页面的消息后更新UI
+  if (event.data === 'follow') {
+    updateFollowStatus();
+  }
+});
+
+document.getElementById('followButton').addEventListener('click', function () {
+  // 点击关注按钮后发送消息给服务器
+  socket.send('follow');
+  updateFollowStatus();
+});
+
+function updateFollowStatus() {
+  // 更新关注状态的函数
+  document.getElementById('followButton').innerText = '已关注';
+}
+```
+
+### 2. 使用 LocalStorage 和 `storage` 事件
+利用浏览器的 localStorage 和 `storage` 事件可以在多个同源的浏览器窗口间同步数据。
+
+**页面1 和 页面2:**
+```javascript
+// 监听storage事件
+window.addEventListener('storage', function (event) {
+  if (event.key === 'followStatus' && event.newValue === 'followed') {
+    updateFollowStatus();
+  }
+});
+
+document.getElementById('followButton').addEventListener('click', function () {
+  localStorage.setItem('followStatus', 'followed');
+  updateFollowStatus();
+});
+
+function updateFollowStatus() {
+  document.getElementById('followButton').innerText = '已关注';
+}
+```
+
+### 3. 使用 Service Worker (广播通信)
+Service Worker 可以用于更高级的场景，通过 `postMessage` 可以在不同客户端之间进行通信。
+
+**Service Worker 注册和利用:**
+```javascript
+// 注册 Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(function(registration) {
+    console.log('Service Worker registered with scope:', registration.scope);
+  });
+}
+
+// 页面1 和 页面2
+navigator.serviceWorker.ready.then(function(registration) {
+  navigator.serviceWorker.addEventListener('message', function(event) {
+    if (event.data === 'follow') {
+      updateFollowStatus();
+    }
+  });
+
+  document.getElementById('followButton').addEventListener('click', function () {
+    navigator.serviceWorker.controller.postMessage('follow');
+    updateFollowStatus();
+  });
+});
+
+function updateFollowStatus() {
+  document.getElementById('followButton').innerText = '已关注';
+}
+```
+
+**Service Worker 文件 (sw.js):**
+```javascript
+self.addEventListener('install', function(event) {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', function(event) {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('message', function(event) {
+  self.clients.matchAll().then(function(clients) {
+    clients.forEach(function(client) {
+      client.postMessage(event.data);
+    });
+  });
+});
+```
+
+### 4. 使用 IndexedDB 和 `idb` 库
+IndexedDB 也是一个可以被多个窗口访问的存储机制，可以用 `idb` 库简化操作。
+
+**安装 idb 库：**
+```bash
+npm install idb
+```
+
+**页面1 和 页面2:**
+```javascript
+import { openDB } from 'idb';
+
+async function initDB() {
+  const db = await openDB('followDB', 1, {
+    upgrade(db) {
+      db.createObjectStore('settings');
+    },
+  });
+
+  return db;
+}
+
+const db = await initDB();
+
+db.get('settings', 'followStatus').then(status => {
+  if (status === 'followed') {
+    updateFollowStatus();
+  }
+});
+
+window.addEventListener('storage', async function(event) {
+  if (event.key === 'followStatus' && event.newValue === 'followed') {
+    updateFollowStatus();
+  }
+});
+
+document.getElementById('followButton').addEventListener('click', async function () {
+  await db.put('settings', 'followed', 'followStatus');
+  localStorage.setItem('followStatus', 'followed');
+  updateFollowStatus();
+});
+
+function updateFollowStatus() {
+  document.getElementById('followButton').innerText = '已关注';
+}
+```
+
+## 定时器轮询区别
+
+### 两种轮询的方式，下面这个每隔5秒它会去执行这个fn2，上面fn1里边它会启动一个定时器，5秒后再次执行这个fn1。这两种轮旋的方式有什么区别呢？
+
+![discuss_1723014901021](assets/discuss_1723014901021.jpeg)
+
+这两种轮询方式在 JavaScript 中的主要区别在于它们的执行机制和时序。让我们逐一分析它们：
+
+### 第一种方式：递归定时器调用
+```javascript
+function fn1() {
+  // ... 其他逻辑执行耗时2s
+  
+  setTimeout(() => {
+    fn1();
+  }, 5000);
+}
+```
+
+#### 特点和分析：
+1. **函数执行完再去排队：**
+   - `fn1` 执行后，会设置一个5秒的定时器，之后函数结束。
+   - 5秒后定时器触发，`fn1` 再次被调用。
+   - 注意，这里的5秒是从`setTimeout`被调用时开始算起，而不是从`fn1`开始执行到再执行之间的总时间。
+
+2. **包括执行时间：**
+   - 如果`fn1`中的逻辑（假设包括耗时2秒的其他逻辑）需要花费大量时间，这会导致每次间隔可能会比预期的5秒长。
+   - 实际上，下一次`fn1` 的调用是上一次执行结束后5秒。
+
+3. **适用场景：**
+   - 适用于需要等待前一次操作完成后再进行下一次操作的情况。
+   - 通常用于递归操作或需要依赖于前一次操作结果的任务调度。
+
+### 第二种方式：独立定时器调用
+```javascript
+setTimeout(() => {
+  fn2();
+}, 5000);
+```
+
+#### 特点和分析：
+1. **独立运行：**
+   - 定时器设置后，不管`fn2`执行需要多久，每隔5秒定时器都会触发。
+   - 这里的5秒是严格意义上的，每隔5秒触发一次，不受到`fn2`执行时间的影响。
+
+2. **并行执行：**
+   - 如果`fn2`执行时间超过5秒，比如`fn2`又花费2秒来完成任务，同时又有下一个定时器在等待，这可能会导致执行的重叠或并行。
+
+3. **适用场景：**
+   - 适用于需要严格固定间隔时间进行触发的任务，例如轮询服务器状态、定时刷新数据等。
+   - 在任务不依赖于前一次执行的结果时效果最佳。
+
+### 实际效果差异
+假设`fn1`及其逻辑执行时间是2秒：
+
+1. **递归定时器：**
+   - 总时间 = 执行时间(2秒) + 间隔时间(5秒) = 每7秒执行一次新的`fn1`。
+   - 充分保证每个定时器间隔5秒是在前一个`fn1`完成后开始。
+
+2. **独立定时器：**
+   - 每隔5秒`fn2`执行一次，不考虑上一次`fn2`执行时间。
+   - 如果执行时间 + 下一次定时器触发间隔时间超过5秒，`fn2`会重叠执行。
+
+### 总结
+- 第一种递归定时器更适合需要逐次操作完成后继续下一次的场景，间隔时间和执行时间加总决定了轮询频率。
+- 第二种独立定时器方式适合需要固定时间段内反复执行的操作，不考虑操作本身的执行时间，从而使得操作具有更严格的时间间隔。
+
+选择使用哪种方式应该依赖于具体的使用场景和对时间间隔的严格性要求。
