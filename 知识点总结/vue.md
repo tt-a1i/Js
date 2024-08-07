@@ -511,30 +511,69 @@ JWT是一种用于安全地传输信息的标准,适用于身份认证和信息�
 
 ## SSR
 
-`Server-Side Rendering` 我们称其为`SSR`，意为`服务端渲染`
+- ### SSR（服务端渲染）概述
 
-指由服务侧完成页面的 `HTML` 结构拼接的页面处理技术，发送到浏览器，然后为其绑定状态与事件，成为完全可交互页面的过程
+  **SSR** 的全称是 **Server-Side Rendering**，即服务端渲染。它是指在服务器端生成 HTML 并将其发送到客户端进行显示的技术。在现代前端开发中，SSR 通常与客户端渲染（CSR, Client-Side Rendering）相对，比起传统的 HTML 页面，现代的 SSR 通常与 JavaScript 框架如 Vue.js、React.js 一起使用。
 
-单页应用页面内容由`JS`渲染出来，这种方式称为客户端渲染,
+  ### SSR 的工作原理
 
-浏览器拿到的仅有宿主元素`#app`，并`没有内容`
+  1. **请求发送到服务器**：
+     用户在浏览器中发起请求，这个请求会被发送到服务器。
+  2. **服务器处理请求**：
+     服务器接收请求后，通过服务器端的框架（如 Nuxt.js、Next.js 等）生成完整的 HTML 内容。
+  3. **返回完整 HTML 页面**：
+     服务器将生成的 HTML 页面发送回浏览器。
+  4. **浏览器解析和显示**：
+     浏览器接收到 HTML 页面后，进行解析并显示给用户，同时加载和执行页面中的 JavaScript 代码来初始化客户端应用。
 
-1. **SEO（搜索引擎优化）**：
-   - `搜索引擎优先爬取页面的 HTML 结构`。
-   - 使用 SSR 时，服务端已经生成了与业务相关的 HTML，有利于 SEO。
-2. **首屏呈现渲染**：
-   - `用户无需等待页面所有 JavaScript 加载完成就可以看到页面视图`。
-   - 压力转移到了服务器，所以需要权衡哪些部分使用服务端渲染，哪些部分交给客户端。
+  ### SSR 的优缺点
 
-##### 缺点:
+  #### 优点
 
-- `复杂度`：整个项目的复杂度
-- `库的支持性`，代码兼容
-- `性能`问题
-  - `每个请求都是n个实例的创建，不然会污染，消耗会变得很大`
-  - 缓存 `node serve`、 `nginx`判断当前用户有没有过期，如果没过期的话就缓存，用刚刚的结果。
-  - 降级：监控`cpu`、内存占用过多，就`spa`，返回单个的壳
-- `服务器负载变大，`相对于前后端分离服务器只需要提供静态资源来说，服务器负载更大，所以要慎重使用
+  1. **更快的首屏渲染**：
+     因为整个 HTML 页面是由服务器生成的，所以浏览器在接收到页面时，用户可以立即看到内容，而不需要等待 JavaScript 完全加载和执行。
+  2. **更好的 SEO**：
+     搜索引擎可以更容易地抓取和索引服务端渲染的完整 HTML 页面，这对 SEO 友好。
+  3. **更好的分享和预览**：
+     完整的 HTML 可以更好地支持社交媒体的预览功能，如在分享链接时显示预览图和描述。
+
+  #### 缺点
+
+  1. **服务器负载增加**：
+     因为每个请求都需要服务器动态生成 HTML，服务器的负载会增加，尤其对于高并发的情况，可能需要更强大的服务器资源。
+  2. **开发复杂度高**：
+     需要处理更多的服务器端逻辑，开发和调试相对于纯粹的客户端渲染会更复杂。
+  3. **响应时间延长**：
+     页面生成的时间存在于服务器端，如果服务器性能不好或者网络延迟较高，可能会导致响应时间变长。
+
+  ### 常见的 SSR 框架
+
+  #### Vue.js
+  - **Nuxt.js**
+    Nuxt.js 是基于 Vue.js 的 SSR 框架，提供了简单易用的配置和开发方式。
+
+  #### React.js
+  - **Next.js**
+    Next.js 是用于 React 的 SSR 框架，支持静态生成和 SSR。
+
+    
+
+  ### 混合渲染模式
+
+  现代的前端开发中，很多应用采用了 **混合渲染** 模式（Hybrid Rendering），结合了 SSR 和 CSR 的优点：
+
+  1. **首屏使用 SSR**：
+     提高首屏加载速度和 SEO 效果。
+     1. SSR 可以显著减少首次内容绘制的时间，因为浏览器接收到的是已经渲染好的 HTML。
+
+  2. **后续页面使用 CSR**：
+     提高页面切换的灵活性和响应速度。
+
+  通过这种方式，可以在保证用户体验的同时，优化服务器资源和复杂度。
+
+  ### 总结
+
+  SSR 是一种强大的技术，特别是在需要高性能和良好 SEO 的网站和应用中。尽管开发复杂度较高，但通过使用合适的框架和工具，可以有效地实现高性能、SEO 友好的 Web 应用。
 
 ## vue项目的目录结构，大型项目怎么划分结构和划分组件
 
@@ -1138,3 +1177,366 @@ const { count, text } = reactiveObject
 
 // count 和 text 现在是非响应式的普通变量
 ```
+
+## vue生命周期特点，什么时候做什么事
+
+Vue 的生命周期可以分为几个主要阶段，每个阶段都有其特点和适合执行的操作。下面我们详细介绍每个阶段的特点和可以执行的操作：
+
+1. 初始化阶段
+
+   beforeCreate:
+   - 特点：实例刚被创建，组件选项对象还未处理
+   - 数据观测和事件配置都未初始化
+   - 可以做：设置一些全局的配置，但基本很少使用
+
+   created:
+   - 特点：实例创建完成，数据观测、计算属性、方法、侦听器已设置
+   - 还未挂载到 DOM，$el 属性不可用
+   - 可以做：
+     - 进行数据初始化
+     - 发送 API 请求
+     - 设置定时器或订阅事件
+
+2. 挂载阶段
+
+   beforeMount:
+   - 特点：模板编译完成，虚拟 DOM 已生成，但还未挂载到实际 DOM
+   - 可以做：
+     - 最后一次修改数据而不触发重新渲染
+     - 访问未挂载的 $refs
+
+   mounted:
+   - 特点：组件已挂载到 DOM，可以访问 $el 和 $refs
+   - 可以做：
+     - 访问和操作 DOM
+     - 初始化需要 DOM 的库（如图表库）
+     - 添加事件监听器
+     - 集成第三方插件
+
+3. 更新阶段
+
+   beforeUpdate:
+   - 特点：数据更新后，DOM 更新之前
+   - 可以做：
+     - 访问更新前的 DOM 状态
+     - 在 DOM 更新前进行额外的状态更改
+
+   updated:
+   - 特点：DOM 已经更新完成
+   - 可以做：
+     - 执行依赖于更新后 DOM 的操作
+     - 但要避免在这里更改状态，可能导致无限循环
+
+4. 卸载阶段
+
+   beforeUnmount (Vue 3) / beforeDestroy (Vue 2):
+   - 特点：组件即将被卸载
+   - 可以做：
+     - 清理定时器
+     - 取消网络请求
+     - 移除事件监听器
+
+   unmounted (Vue 3) / destroyed (Vue 2):
+   - 特点：组件已被卸载
+   - 可以做：
+     - 最后的清理工作
+     - 移除全局事件监听器或订阅
+
+5. 特殊情况
+
+   activated (keep-alive):
+   - 特点：被缓存的组件激活时调用
+   - 可以做：
+     - 重新获取数据
+     - 更新组件状态
+
+   deactivated (keep-alive):
+   - 特点：被缓存的组件停用时调用
+   - 可以做：
+     - 暂停或清理一些操作
+     - 保存组件状态
+
+   errorCaptured:
+   - 特点：捕获来自后代组件的错误
+   - 可以做：
+     - 错误处理和日志记录
+     - 展示错误信息给用户
+
+注意事项：
+1. 在 created 中可以访问数据，但不建议进行 DOM 操作。
+2. mounted 不保证所有子组件也都已经挂载完成，如果需要等待整个视图都渲染完毕，可以使用 $nextTick。
+3. updated 钩子不保证所有子组件也都重新渲染完毕，同样可以使用 $nextTick。
+4. 避免在 updated 中更改数据，可能导致无限循环。
+   1. 在 `updated` 钩子中更改状态可能导致无限循环的原因：
+      1. 触发机制： `updated` 钩子在 DOM 更新完成后被调用。
+      2. 状态改变引发更新： 当你在 `updated` 中改变组件的响应式数据（状态）时，Vue 会检测到这个变化。
+      3. 重新渲染： 数据变化会触发组件的重新渲染。
+      4. 再次调用 `updated`： 重新渲染完成后，`updated` 钩子会再次被调用。
+      5. 循环开始： 如果在新的 `updated` 调用中又改变了状态，这个过程会不断重复。
+
+5. 在 beforeUnmount 和 unmounted 中进行清理工作，避免内存泄漏。
+
+理解这些生命周期钩子的特点和适用场景，可以帮助你更好地组织 Vue 应用的逻辑，提高性能和可维护性。
+
+## vue项目的代码目录结构，什么目录做什么事
+
+一个典型的 Vue 项目的代码目录结构通常如下所示，我会解释每个目录的用途：
+
+```js
+project-root/
+│
+├── public/
+│   ├── index.html
+│   └── favicon.ico
+│
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── views/
+│   ├── router/
+│   ├── store/
+│   ├── services/
+│   ├── utils/
+│   ├── styles/
+│   ├── App.vue
+│   └── main.js
+│
+├── tests/
+│
+├── node_modules/
+│
+├── package.json
+├── vue.config.js
+└── README.md
+```
+
+让我们详细解释每个目录的作用：
+
+1. public/
+   - 存放不需要通过 Webpack 处理的静态资源
+   - index.html 是应用的入口 HTML 文件
+   - favicon.ico 是网站图标
+
+2. src/
+   这是主要的源代码目录，包含以下子目录：
+
+   - assets/: 存放图片、字体等静态资源
+   - components/: 存放可复用的 Vue 组件
+   - views/: 存放页面级的 Vue 组件
+   - router/: 存放路由配置文件
+   - store/: 存放 Vuex 相关文件（状态管理）
+   - services/: 存放 API 调用相关的服务
+   - utils/: 存放通用的工具函数
+   - styles/: 存放全局样式文件
+   - App.vue: 根组件
+   - main.js: 应用的入口文件，用于创建 Vue 实例并挂载
+
+3. tests/
+   - 存放单元测试和集成测试文件
+
+4. node_modules/
+   - 存放项目依赖的 npm 包
+
+5. package.json
+   - 定义项目的依赖和脚本
+
+6. vue.config.js
+   - Vue CLI 的配置文件，用于自定义构建配置
+
+7. README.md
+   - 项目说明文档
+
+其他可能的目录或文件：
+
+8. dist/
+   - 构建后的生产环境文件，通常被 .gitignore 忽略
+
+9. .env files (.env, .env.development, .env.production)
+   - 环境变量配置文件
+
+10. jsconfig.json 或 tsconfig.json
+    - JavaScript 或 TypeScript 配置文件
+
+11. .eslintrc.js 和 .prettierrc
+    - ESLint 和 Prettier 配置文件
+
+12. babel.config.js
+    - Babel 配置文件
+
+这种结构有助于组织和管理代码，使项目更加清晰和可维护。根据项目的具体需求，你可能需要添加或修改一些目录。例如，对于大型项目，你可能会在 src/ 下添加 modules/ 目录来组织不同的功能模块。
+
+记住，好的目录结构应该是直观的、一致的，并且能够随着项目的增长而轻松扩展。
+
+## vue-router原理
+
+### Vue Router 的原理
+
+Vue Router 是 Vue.js 的官方路由管理工具，主要用于在单页面应用（SPA）中实现不同视图组件的切换和管理。它基于浏览器的历史记录（History API）或 URL 的哈希（Hash）部分来管理 URL。以下将详细介绍 Vue Router 的工作原理，包括其初始化、导航过程、模式、导航守卫等关键部分。
+
+### 核心工作原理
+
+#### 1. 初始化
+
+Vue Router 初始化过程中完成以下几项关键任务：
+
+1. **创建 Router 实例**：
+   当你创建一个 VueRouter 实例时，会将路由配置传入实例中，包括路径与组件之间的映射关系。
+
+   ```javascript
+   const router = new VueRouter({
+       routes: [
+           { path: '/', component: Home },
+           { path: '/about', component: About }
+       ]
+   });
+   ```
+
+2. **记录初始路由**：
+   Router 实例会记录当前的初始路由，以便在后续操作中进行路由匹配。
+
+3. **设置路由模式**：
+   Router 支持两种模式：`history` 模式和 `hash` 模式。可以通过传递 `mode` 参数来指定：
+   - `history` 模式：基于 HTML5 History API。
+   - `hash` 模式：基于 URL 的哈希部分。
+
+   ```javascript
+   const router = new VueRouter({
+       mode: 'history', // 或者 'hash'
+       routes: [...]
+   });
+   ```
+
+#### 2. 路由匹配
+
+当路由发生变化时，Vue Router 会根据已配置的路由表进行路径匹配。这个过程通常包括以下几步：
+
+1. **解析路径**：
+   从浏览器的 URL 中解析出路径信息。
+
+2. **匹配路由**：
+   遍历路由配置表，找到与当前路径匹配的路由记录。这些路由记录可以是静态路径，也可以是动态路径（如 `/user/:id`）。
+
+3. **加载组件**：
+   根据匹配的路由记录加载相应的 Vue 组件，并将其渲染到 `<router-view>` 中。
+
+#### 3. 路由模式
+
+##### Hash模式
+- **原理**：基于 URL 的哈希（#）部分，它不会被浏览器发送到服务器。
+- **实现**：使用 `window.onhashchange` 监听 URL 的变化。
+
+##### History模式
+- **原理**：利用 HTML5 自带的 History API（pushState, replaceState, popstate）。
+- **实现**：通过调用 `history.pushState` 和 `history.replaceState` 方法来设置 URL，并使用 `window.onpopstate` 事件监听回退和前进操作。
+  - pushState: 将新的状态推入（push）历史堆栈。
+  - replaceState: 替换（replace）历史堆栈中的当前状态。
+  - pushState: 增加浏览器历史的长度。
+  - replaceState: 不改变浏览器历史的长度。
+  - pushState: 允许用户通过后退按钮逐步回到之前的状态。
+  - replaceState: 用户无法通过后退按钮回到被替换的状态。
+
+
+#### 4. 导航过程
+
+1. **导航触发**：
+   导航可以通过点击 `<router-link>` 或调用 `router.push`、`router.replace` 等方法触发。
+
+2. **确认导航**：
+   触发导航后，Vue Router 会先确认当前路由的离开，并解析目标路由。
+
+3. **执行导航守卫**：
+   在确认导航之前，Vue Router 会执行各级导航守卫（全局守卫、路由独享守卫、组件内守卫），用于验证权限、异步数据加载等。
+
+4. **更新路由视图**：
+   当所有导航守卫执行完毕且通过验证后，Vue Router 会更新 `<router-view>`，将新的组件渲染到视图中。
+
+#### 5. 导航守卫
+
+导航守卫用于控制路由跳转的逻辑，主要包括以下几类：
+
+1. **全局守卫**：
+   - `router.beforeEach`：在每次导航前触发。
+   - `router.afterEach`：在每次导航后触发。
+
+   ```javascript
+   router.beforeEach((to, from, next) => {
+       // 如果用户未登录，则跳转到登录页
+       if (!isAuthenticated() && to.path !== '/login') {
+           next('/login');
+       } else {
+           next();
+       }
+   });
+   ```
+
+2. **路由独享守卫**：
+   定义在路由配置中的守卫。
+
+   ```javascript
+   const routes = [
+       {
+           path: '/dashboard',
+           component: Dashboard,
+           beforeEnter: (to, from, next) => {
+               if (hasPermission()) {
+                   next();
+               } else {
+                   next('/');
+               }
+           }
+       }
+   ];
+   ```
+
+3. **组件内守卫**：
+   包括 `beforeRouteEnter`、`beforeRouteUpdate` 和 `beforeRouteLeave`。
+
+   ```javascript
+   export default {
+       beforeRouteEnter(to, from, next) {
+           // 在路由进入之前，调用组件的进入钩子
+           next(vm => {
+               // 这里的 vm 是页面实例，可以调用其方法
+               vm.initialize();
+           });
+       },
+       beforeRouteUpdate(to, from, next) {
+           // 在路由状态更新时调用
+           next();
+       },
+       beforeRouteLeave(to, from, next) {
+           // 在离开路由之前调用，可以用于清理工作
+           next();
+       }
+   };
+   ```
+
+### 总结
+
+Vue Router 是 Vue.js 中用于管理单页面应用路由的工具。它通过路径匹配和导航守卫，使得开发者可以方便地管理不同 URL 与组件之间的关系，并对导航进行控制。了解其核心原理，有助于我们开发出功能丰富且安全可靠的前端应用。
+
+## 路由的history和hash模式
+
+History 模式和 Hash 模式是 Vue Router（以及其他前端路由系统）中两种主要的路由实现方式。它们各有特点和使用场景，让我们详细比较一下：
+
+1. URL 格式
+   - History 模式: `http://example.com/user/123`
+   - Hash 模式: `http://example.com/#/user/123`
+2. 实现原理
+   - History 模式:  使用 HTML5 History API，主要是 `pushState()` 和 `replaceState()` 方法来改变 URL， 并通过 `popstate` 事件来监听 URL 的变化。
+   - Hash 模式:  使用 URL 的哈希部分（即 # 后面的部分）来模拟路径， 通过 `hashchange` 事件来监听 URL 的变化。
+3. 浏览器支持
+   - History 模式: 需要 HTML5 History API 支持，不支持较老的浏览器。
+   - Hash 模式: 支持所有浏览器，包括较老的浏览器。
+4. 服务器配置
+   - History 模式:  需要服务器配置。因为当用户直接访问 `http://example.com/user/123` 时，服务器需要返回应用的 index.html 文件， 而不是试图寻找一个 `/user/123` 文件。
+   - Hash 模式:  不需要特殊的服务器配置。因为 hash 部分不会被发送到服务器。
+5. SEO 友好性
+   - History 模式: 更友好。URL 看起来像普通的路径，更有利于 SEO。
+   - Hash 模式: 较差。搜索引擎通常会忽略 URL 中 # 后面的内容。
+6. 美观度
+   - History 模式: URL 更加简洁美观。
+   - Hash 模式: URL 中包含 #，不太美观。
+7. 刷新页面的行为
+   - History 模式:  刷新页面时，如果服务器没有正确配置，可能会返回 404 错误。
+   - Hash 模式:  刷新页面总是没问题的，因为服务器不会解析 hash 部分。

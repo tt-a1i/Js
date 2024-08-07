@@ -668,3 +668,50 @@ Tailwind CSS 是一种`功能类优先`的` CSS 框架`，它提供了大量的�
 
 通过使用 Tailwind CSS，开发者和设计师可以更加专注于构建精美而响应迅速的界面，而无需担心大量的样式维护问题。与传统 CSS 相比，它提供了一种更为高效和可控的方式来处理前端样式问题。
 
+## requestAnimationFrame 
+
+requestAnimationFrame 是一个浏览器 API，用于优化动画渲染性能。它的主要作用和特点包括：
+
+1. 优化动画性能：
+   - 与浏览器的刷新率同步，通常是 60fps（每秒60帧）。
+   - 确保动画更加流畅，减少卡顿。
+
+2. 提高电池寿命：
+   - 当标签页不可见时，动画会自动暂停，节省 CPU 和 GPU 资源。
+
+3. 自动调节帧率：
+   - 根据设备性能和系统负载自动调整，保证最佳性能。
+
+4. 精确的时间控制：
+   - 提供一个高精度的时间戳，便于计算动画进度。
+
+5. 避免过度渲染：
+   - 限制在浏览器重绘之前完成所有动画操作，防止一帧中多次重绘。
+
+6. 优化后台标签页：
+   - 当页面不在活动标签页时，动画会自动暂停，节省资源。
+
+7. 替代 setTimeout 和 setInterval：
+   - 对于动画来说，requestAnimationFrame 比这两个方法更加高效和准确。
+
+使用示例：
+
+```javascript
+function animate(time) {
+    // 更新动画状态
+    updateAnimation(time);
+
+    // 绘制动画
+    drawAnimation();
+
+    // 继续下一帧
+    requestAnimationFrame(animate);
+}
+
+// 开始动画循环
+requestAnimationFrame(animate);
+```
+
+在这个例子中，animate 函数会在每一帧被调用，time 参数提供了一个精确的时间戳。
+
+总之，requestAnimationFrame 是创建高性能、流畅 Web 动画的关键工具，它能够智能地管理动画timing，优化资源使用，并提供更好的用户体验。

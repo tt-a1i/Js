@@ -5,6 +5,13 @@ class TreeNode {
         this.right = null;
     }
 }
+/**
+ * 
+ * @param {class} root 
+ * @returns array
+    时间复杂度是 O(n)，其中 n 是树中的节点数，因为每个节点都被访问一次。
+    空间复杂度在最坏情况下（树完全倾斜）是 O(n)，但对于平衡树，平均情况下是 O(log n)。
+ */
 function inorderTraversal(root){
     const result = [];
     const stack = [];
