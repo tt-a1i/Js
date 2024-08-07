@@ -436,6 +436,73 @@ if (1) {  console.log("true"); }// 输出 "true"
 
 这是因为 `null` 和 `undefined` 在`相等比较中被认为是相等的`，而`不会触发类型转换`。这种情况下，两者之间的比较会返回 `true`。
 
+## 检测数据类型的方法
+
+除了 `typeof` 操作符，JavaScript 还有其他几种获取数据类型的方法。以下是一些常用的方法：
+
+除了 `typeof` 操作符，JavaScript 还有其他几种获取数据类型的方法。以下是一些常用的方法：
+
+- Object.prototype.toString.call()
+
+这是一种更可靠的类型检查方法，能够识别更多的类型：
+
+```javascript
+Object.prototype.toString.call(42);           // "[object Number]"
+Object.prototype.toString.call('');           // "[object String]"
+Object.prototype.toString.call(true);         // "[object Boolean]"
+Object.prototype.toString.call(undefined);    // "[object Undefined]"
+Object.prototype.toString.call(null);         // "[object Null]"
+Object.prototype.toString.call({});           // "[object Object]"
+Object.prototype.toString.call([]);           // "[object Array]"
+Object.prototype.toString.call(function(){}); // "[object Function]"
+```
+
+- instanceof 操作符
+
+用于检查对象是否是某个构造函数的实例：
+
+```javascript
+[] instanceof Array;  // true
+{} instanceof Object; // true
+```
+
+- Array.isArray()
+
+专门用于检查是否为数组：
+
+```javascript
+Array.isArray([]);  // true
+Array.isArray({});  // false
+```
+
+- constructor 属性
+
+可以用来查看对象的构造函数：
+
+```javascript
+[].constructor === Array;  // true
+({}).constructor === Object;  // true
+```
+
+- Symbol.toStringTag
+
+ES6 引入的一个新特性，允许自定义对象在 `Object.prototype.toString.call()` 中的行为：
+
+```javascript
+class MyClass {
+    get [Symbol.toStringTag]() {
+        return "MyClass";
+    }
+}
+Object.prototype.toString.call(new MyClass()); // "[object MyClass]"
+```
+
+- 使用库
+
+一些流行的 JavaScript 库如 Lodash 提供了更复杂的类型检查方法。
+
+每种方法都有其适用场景和限制。在实际开发中，通常需要根据具体需求选择合适的类型检查方法，有时甚至需要组合使用多种方法来准确判断数据类型。
+
 ## 深拷贝浅拷贝的区别？如何实现一个深拷贝
 
 `基本类型`数据保存在在`栈`内存中
@@ -853,6 +920,10 @@ Function.prototype.myBind = function (context) {
     };
 };
 ```
+
+- `call`：在函数调用时需要立即传递多个参数。
+- `apply`：在函数调用时需要立即传递一个参数数组（例如，数组元素作为独立参数传递给函数）。
+- `bind`：在需要创建一个新函数，并希望在之后的某个时间点调用这个新函数，同时预置一些参数。
 
 ## 正则表达式
 
@@ -2548,3 +2619,32 @@ emitter.off('dataUpdated', handler);
 2. 缺点：
    - 可能导致内存泄漏：如果订阅者忘记取消订阅。
    - 复杂性：在大型应用中，可能难以追踪事件流。
+
+## 为什么typeof null === 'object'?
+
+`typeof null === 'object'` 这个现象是 JavaScript 中一个长期被认为是设计缺陷的问题。这个问题可以追溯到 JavaScript 语言设计的早期版本。以下是详细解释：
+
+### 原因
+
+在 JavaScript 最初版本的设计中，JavaScript 的值是通过表示一个类型标签（type  tag）和实际的值来存储的。其中，类型标签主要用于标识数据类型，而这数据类型可以是对象、数字、字符串等等。在当时，所有的复杂数据类型（对象，数组，函数等）都是通过对象类型标签来表示的。下面是一些类型标签的示例：
+
+- 对象：`000`
+- 整数：`1`
+- 浮点数：`010`
+- 字符串：`100`
+- 布尔值：`110`
+
+当时 `null` 的二进制表示是全零（即`00000000`），这与对象的类型标签相同。因此，`typeof null` 被认为是对象。从技术层面上看，这是因为无论是对象类型标签还是 `null` 的二进制表示，都是全零，这导致了 `typeof null` 返回 `'object'`。
+
+### 解决方案
+
+虽然这个问题已被广泛了解，但由于涉及到向后兼容性，所以这个类型检查行为无法改变。这意味着 `typeof null === 'object'` 将继续存在。
+
+### 如何判断 null
+
+为了更准确地判断一个值是否为 `null`，通常可以使用直接的 `null` 比较：
+
+```javascript
+let value = null;
+console.log(value === null); // true
+```
