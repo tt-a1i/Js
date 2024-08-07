@@ -1,6 +1,6 @@
 /**
  *手写call
- *call是参数列表，一次性传入参数
+ *call是参数列表，一次性传入参数，立即执行
  */
 Function.prototype.myCall = function(context, ...args) {
     context = context || window;
