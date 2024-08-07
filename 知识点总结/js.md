@@ -840,12 +840,75 @@ console.log(typeof(new Number(1)));//Object
 2. 当事件发生时，事件会在子元素上触发，并冒泡到父元素。
 3. 父元素捕获事件，根据事件目标（即触发事件的子元素）来执行相应的处理逻辑。
 
+事件委托是一种常用且重要的 JavaScript 事件处理模式。我来详细解释一下事件委托机制，以及 target 和 currentTarget 的区别：
+
+### 事件委托机制
+
+事件委托（Event Delegation）是利用事件冒泡的原理，将事件监听器添加到父元素而不是每个子元素上。当子元素上的事件被触发时，事件会冒泡到父元素，然后在父元素上进行处理。
+
+主要优点：
+- 减少内存占用，提高性能（特别是对于大量子元素）
+- 动态添加的子元素也能响应事件，无需再次绑定
+- 代码更简洁，易于维护
+
+示例：
+```javascript
+document.getElementById('parent-list').addEventListener('click', function(e) {
+    if(e.target && e.target.nodeName == "LI") {
+        console.log("List item ", e.target.id, " was clicked!");
+    }
+});
+```
+
+2. target vs currentTarget
+
+- e.target：
+  - 指向触发事件的具体元素
+  - 在事件冒泡过程中，它始终是最初触发事件的那个元素
+
+- e.currentTarget：
+  - 指向事件绑定的元素
+  - 在事件冒泡过程中，它会随着事件的冒泡而改变
+
+区别示例：
+```html
+<div id="outer">
+    <div id="inner">
+        <button id="button">Click me</button>
+    </div>
+</div>
+
+<script>
+document.getElementById('outer').addEventListener('click', function(e) {
+    console.log('target:', e.target.id);
+    console.log('currentTarget:', e.currentTarget.id);
+});
+</script>
+```
+
+如果点击按钮，输出将会是：
+```
+target: button
+currentTarget: outer
+```
+
+这里，e.target 是 button（实际被点击的元素），而 e.currentTarget 是 outer（事件监听器所在的元素）。
+
+总结：
+- 事件委托利用事件冒泡，在父元素上处理子元素的事件，提高效率和灵活性。
+- e.target 指向实际触发事件的元素，e.currentTarget 指向事件处理程序所在的元素。
+- 在使用事件委托时，通常会使用 e.target 来确定哪个具体的子元素触发了事件。
+
+
+
 #### 应用场景：
 
 1. **动态添加元素：** 当页面中的元素是动态生成的，并且数量较多时，可以使用事件代理来简化事件处理逻辑。`只需将事件监听器绑定到父元素上`，而`不需要为每个子元素都添加事件监听器`。
 2. **性能优化：** 在大型列表或表格中，如果为每个元素都添加事件监听器，可能会导致页面性能下降。使用事件代理可以`减少事件处理程序的数量`，提高页面的性能。
 3. **元素重新渲染：** 在使用虚拟 DOM 技术或框架时，页面元素可能会经常重新渲染。如果直接在子元素上绑定事件监听器，每次重新渲染都需要重新绑定事件。而使用事件代理，`只需在父元素上绑定一次事件监听器，不受元素重新渲染的影响`。
 4. **节省内存：** 在特定情况下，使用事件代理可以节省内存。因为`事件处理程序只需绑定到一个父元素上，而不是多个子元素上，减少了内存消耗`。
+
+
 
 ## new操作符具体干了什么
 
