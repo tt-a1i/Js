@@ -20,19 +20,4 @@ function countDOMElements() {
 }
 
 // 使用函数并打印结果
-console.log(countDOMElements());
-
-
-function func(elem){
-    const elems = {}
-    function travels(elem){
-      const tag = elem.tagName.toLowerCase()
-      elems[tag] = (elem[tag] || 0) + 1
-      for(let child of elem.children){
-        travels(child)
-      }
-    }
-    travels(document.body)
-    return elems;
-  }
-  console.log(func());
+console.log(countDOMElements())

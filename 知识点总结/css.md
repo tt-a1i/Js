@@ -715,3 +715,127 @@ requestAnimationFrame(animate);
 在这个例子中，animate 函数会在每一帧被调用，time 参数提供了一个精确的时间戳。
 
 总之，requestAnimationFrame 是创建高性能、流畅 Web 动画的关键工具，它能够智能地管理动画timing，优化资源使用，并提供更好的用户体验。
+
+## css会阻塞dom渲染吗，dom解析呢
+
+在讨论浏览器渲染过程中 CSS 对于 DOM 和页面显示的影响时，需要区分几个关键步骤：DOM 解析、CSSOM 解析、渲染树构建、布局计算与绘制。
+
+### 1. CSS 是否阻塞 DOM 解析？
+
+**CSS 不会阻塞 DOM 解析**。浏览器在解析 HTML 文件时，会同时进行 DOM 树构建和 CSSOM 树构建。具体流程如下：
+- **DOM 树**：浏览器从上到下解析 HTML，逐步构建 DOM 树。
+- **CSSOM 树**：浏览器在解析遇到 `<link>` 标签引入的外部 CSS 文件时，会开始下载和解析这些 CSS 文件，构建 CSSOM 树。
+
+虽然 CSS 解析是并行进行的，但它并不阻止 DOM 树的构建。
+
+### 2. CSS 是否阻塞 DOM 渲染？
+
+**CSS 会阻塞 DOM 的渲染**。这是因为，在页面渲染之前，浏览器需要将 CSSOM 树与 DOM 树结合起来，生成渲染树（Render Tree）。只有当 CSSOM 树和 DOM 树都构建完成以后，浏览器才能开始生成渲染树，并进行后续的布局计算与绘制。因此，如果在构建 CSSOM 树的过程中某些关键 CSS 文件尚未加载完毕，就会导致渲染过程被阻塞，进而影响页面的首屏渲染。
+
+### 小结：
+
+- **DOM 解析**：CSS 不会阻塞 DOM 树的解析。
+- **页面渲染**：CSS 会阻塞渲染树的生成，进而阻塞页面的最终渲染。
+
+### 优化技巧
+
+为了优化页面的加载性能，减少 CSS 文件对 DOM 渲染的阻塞影响，可以采取以下几种策略：
+
+1. **尽量减少 CSS 文件的数量和体积**：合并和压缩 CSS 文件，移除不必要的样式。
+2. **使用异步加载 CSS**：例如使用 `media` 属性，或者动态创建 `<link>` 标签加载非关键 CSS 文件。
+   ```html
+   <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'; this.onload=null;">
+   ```
+3. **内联关键 CSS**：在 HTML 文件中包含关键的 CSS 片段，确保首屏内容可以尽快渲染。
+   ```html
+   <style>
+       /* Critical CSS */
+   </style>
+   ```
+4. **异步加载非关键 CSS**：可以使用 JavaScript 动态加载非关键的 CSS 文件。
+   ```javascript
+   const link = document.createElement('link');
+   link.rel = 'stylesheet';
+   link.href = 'non-critical-styles.css';
+   document.head.appendChild(link);
+   ```
+
+总结来说，尽管 CSS 不会阻塞 DOM 解析，但它会阻塞页面的渲染。通过合理地组织和加载 CSS，能够有效提升页面的加载速度和用户体验。
+
+## querySelectorAll得到结果，能否用forEach遍历，如何遍历？
+
+`querySelectorAll` 方法返回一个静态的 `NodeList` 对象，虽然这个结果看起来类似于数组，但它并不是一个真正的 JavaScript 数组。然而，自 ECMAScript 2015 (ES6) 以来，`NodeList` 对象已经实现了 `forEach` 方法，因此你可以直接对 `NodeList` 进行 `forEach` 遍历。
+
+### 使用 `forEach` 遍历 `NodeList`
+
+以下是一个简单的例子，展示了如何使用 `forEach` 方法遍历 `querySelectorAll` 返回的 `NodeList`：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Query Selector All Example</title>
+</head>
+<body>
+  <div class="item">Item 1</div>
+  <div class="item">Item 2</div>
+  <div class="item">Item 3</div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const items = document.querySelectorAll('.item');
+      items.forEach(item => {
+        console.log(item.textContent);
+      });
+    });
+  </script>
+</body>
+</html>
+```
+
+### 兼容性考虑
+
+尽管现代浏览器都支持 `NodeList.prototype.forEach`，如果你需要在不支持 `forEach` 方法的旧浏览器（如 IE）上也能正常运行代码，可以将 `NodeList` 转换为一个真正的数组，然后再进行遍历。这可以通过 `Array.from` 或者 `Array.prototype.slice.call` 实现。
+
+#### 使用 `Array.from`
+
+```javascript
+const items = document.querySelectorAll('.item');
+Array.from(items).forEach(item => {
+  console.log(item.textContent);
+});
+```
+
+#### 使用 `Array.prototype.slice.call`
+
+```javascript
+const items = document.querySelectorAll('.item');
+Array.prototype.slice.call(items).forEach(item => {
+  console.log(item.textContent);
+});
+```
+
+### 其它遍历方法
+
+除了使用 `forEach`，你也可以使用其他遍历方法，例如 `for...of` 循环或传统的 `for` 循环。
+
+#### 使用 `for...of`
+
+```javascript
+const items = document.querySelectorAll('.item');
+for (const item of items) {
+  console.log(item.textContent);
+}
+```
+
+#### 使用传统的 `for` 循环
+
+```javascript
+const items = document.querySelectorAll('.item');
+for (let i = 0; i < items.length; i++) {
+  console.log(items[i].textContent);
+}
+```
+
+总结来说，`querySelectorAll` 返回的 `NodeList` 是可以使用 `forEach` 直接进行遍历的，此外你也可以选择将其转换为数组或使用其他循环方式进行遍历。
