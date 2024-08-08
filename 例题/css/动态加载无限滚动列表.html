@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			#list-container {
+				height: 500px;
+				overflow-y: scroll;
+			}
+
+			#loading {
+				display: none;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="list-container">
+			<ul id="list"></ul>
+			<div id="loading">Loading...</div>
+		</div>
+		<script>
+			const listContainer = document.getElementById("list-container");
+			const list = document.getElementById("list");
+			const loading = document.getElementById("loading");
+
+			let page = 1;
+			let isLoading = false;
+
+			// 初始加载
+			loadItems();
+
+			// 监听滚动事件
+			listContainer.addEventListener("scroll", () => {
+				if (isLoading) return;
+
+				if (
+					listContainer.scrollTop + listContainer.clientHeight >=
+					listContainer.scrollHeight - 50
+				) {
+					loadItems();
+				}
+			});
+
+			function loadItems() {
+				isLoading = true;
+				loading.style.display = "block";
+
+				// 模拟API请求
+				setTimeout(() => {
+					for (let i = 0; i < 2000; i++) {
+						const item = document.createElement("li");
+						item.textContent = `Item ${(page - 1) * 20 + i + 1}`;
+						list.appendChild(item);
+					}
+
+					page++;
+					isLoading = false;
+					loading.style.display = "none";
+				}, 1000);
+			}
+		</script>
+	</body>
+</html>
