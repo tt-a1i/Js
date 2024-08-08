@@ -3153,3 +3153,92 @@ JavaScript 的底层实现通常是由 C 或 C++ 编写的。不同的 JavaScrip
 虽然 JavaScript 引擎的核心通常是用 C/C++ 实现的，但在引擎的某些部分或工具中可能会使用其他语言。例如，一些测试套件或辅助工具可能用 Python 或其他高级语言编写。
 
 总的来说，JavaScript 作为一种高级解释型语言，其执行环境（引擎）是由更低级的系统编程语言实现的，这使得 JavaScript 可以在保持其灵活性和易用性的同时，通过优化的底层实现来获得良好的性能。
+
+## 浏览器的每个页面是一个线程还是一个进程
+
+现代主流浏览器中，通常每个页面是一个独立的进程，而不是线程
+
+使用多进程架构可以带来许多好处：
+
+1. **稳定性**：一个标签页或插件崩溃不会影响整个浏览器，可以提高整体的稳定性。
+2. **安全性**：进程间隔离提供了一个额外的安全层，防止恶意网页或扩展影响其他页面或系统。
+3. **性能**：不同进程可以运行在不同 CPU 核心上，以实现更好的并发性能。缺点
+
+然而，多进程架构也带来了一些缺点：
+
+1. **内存消耗**：每个进程需要独立的内存空间，会增加整体的内存使用量。
+
+## 数组去重
+
+1. Set
+
+   ```javascript
+   const result = [...new Set(arr)]
+   ```
+
+2. 对象键名一致性
+
+   ```javascript
+   const obj = {}
+   for(let n of arr) obj[n] = n;
+   Object.values(obj).map(Number)
+   ```
+
+3. 双循环splice
+
+   ```javascript
+   for(let i = 0; i < arr.length; i++){
+       let n = arr[i]
+       for(let j = i+1; j < arr.length; j++){
+           if(arr[j] === n){
+               arr.splice(i, 1)
+               j--
+           }
+       }
+   }
+   ```
+
+4. 排序扫描
+
+   ```javascript
+   arr.sort()//默认升序
+   const result = arr[0]
+   for(let i = 1; i < arr.length; i++){
+       if(arr[i] !== arr[i - 1]) result.push(arr[i])
+   }
+   ```
+
+5. reduce
+
+   ```javascript
+   let res = arr.reduce((acc, curr) => acc.includes(curr) ? acc : [...acc, curr], [])
+   ```
+
+6. filter
+
+   ```javascript
+   let res = arr.filter((item, index) => arr.indexOf(item) === index)
+   ```
+
+7. map
+
+   ```javascript
+   const map = new Map()
+   for(let n of arr){
+     map.set(n, n)
+   }
+   let res = map.values()
+   console.log([...res])
+   ```
+
+8. indexof 或 includes
+
+   ```javascript
+   const res = []
+   for(let i = 0; i < arr.length; i++){
+   	if(!res.includes(arr[i]))
+           res.push(arr[i])
+   }
+   ```
+
+   
