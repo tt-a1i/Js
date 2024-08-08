@@ -34,6 +34,7 @@
 
 			// 监听滚动事件
 			listContainer.addEventListener("scroll", () => {
+				
 				if (isLoading) return;
 
 				if (
@@ -50,9 +51,9 @@
 
 				// 模拟API请求
 				setTimeout(() => {
-					for (let i = 0; i < 2000; i++) {
+					for (let i = 0; i < 25; i++) {
 						const item = document.createElement("li");
-						item.textContent = `Item ${(page - 1) * 20 + i + 1}`;
+						item.textContent = `Item ${(page - 1) * 25 + i + 1}`;
 						list.appendChild(item);
 					}
 
