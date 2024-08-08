@@ -2976,3 +2976,94 @@ setTimeout(() => {
 - 第二种独立定时器方式适合需要固定时间段内反复执行的操作，不考虑操作本身的执行时间，从而使得操作具有更严格的时间间隔。
 
 选择使用哪种方式应该依赖于具体的使用场景和对时间间隔的严格性要求。
+
+## web accessibility
+
+Web Accessibility（网络可访问性）指的是确保所有用户，包括那些有视觉、听觉、运动和认知障碍的用户，都能够平等地访问和使用网站。实现Web可访问性可以提高网站的用户体验，并且在很多地区已经成为法律或法规的要求。
+
+### 为什么Web可访问性很重要？
+
+1. **法律要求**：
+   在许多国家和地区（例如美国的《残疾人法案》（ADA）和欧洲的《无障碍信息技术指令》），不符合可访问性标准的网站可能面临法律诉讼。
+
+2. **更大的受众群体**：
+   提高了网站的用户覆盖面，使得有各种障碍的用户也能顺利访问和使用你的网站。
+
+3. **改进的用户体验**：
+   可访问性措施往往也会带来更好的用户体验，不仅对障碍用户，对所有用户都有益。
+
+4. **SEO 优化**：
+   一些可访问性实践（如文本替代标签、结构化HTML）有助于搜索引擎优化，提高搜索引擎排名。
+
+### 在网页设计中实现Web可访问性的方法
+
+1. **语义化HTML**：
+   使用正确的HTML标签，例如`<header>`, `<nav>`, `<main>`, `<aside>`, 和`<footer>`。这些标签帮助屏幕阅读器理解页面结构。
+   
+   ```html
+   <header>
+       <h1>网站标题</h1>
+       <nav>
+           <ul>
+               <li><a href="#home">首页</a></li>
+               <li><a href="#about">关于我们</a></li>
+               <li><a href="#contact">联系</a></li>
+           </ul>
+       </nav>
+   </header>
+   ```
+
+2. **提供文本替代标签 (Alt Text)**：
+   所有图像应当有描述性替代文本 (`alt` 属性)，帮助视觉障碍用户了解图像内容。
+
+   ```html
+   <img src="logo.png" alt="公司标志" />
+   ```
+
+3. **使用适当的对比度**：
+   确保文本和背景有足够的颜色对比度，以便有视觉障碍的用户可以阅读内容。可以使用工具如 [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) 来验证对比度。
+
+4. **键盘导航**：
+   确保网站可以通过键盘导航。所有的交互元素如链接、按钮和表单应当可以通过 tab 键进行访问。
+
+   ```html
+   <button>点击我</button>
+   ```
+
+5. **使用ARIA（Accessible Rich Internet Applications）标签**：
+   ARIA标签能够为动态内容提供附加信息，使屏幕阅读器更容易理解和解释。
+   
+   ```html
+   <div role="alert">这是一个重要的警告信息。</div>
+   ```
+
+6. **提供可操作的表单**：
+   为表单元素提供标签，并使用正确的输入类型。
+
+   ```html
+   <form>
+       <label for="name">姓名:</label>
+       <input type="text" id="name" name="name" required />
+       <button type="submit">提交</button>
+   </form>
+   ```
+
+7. **避免闪烁内容**：
+   闪烁或频闪会对有癫痫症的用户产生危险，尽量避免这种设计。
+
+8. **字幕和文字说明**：
+   为视频和音频内容提供字幕和文字说明，这对听力障碍用户至关重要。
+
+   ```html
+   <video controls>
+       <source src="movie.mp4" type="video/mp4">
+       <track kind="captions" src="captions.vtt" srclang="en" label="English">
+   </video>
+   ```
+
+9. **可调整字体大小**：
+   确保用户可以自由调整文本的大小而不影响页面布局和功能。
+
+10. **定期测试和验证**：
+    使用工具和屏幕阅读器（比如NVDA、JAWS、VoiceOver）进行测试，确保网站符合Web可访问性标准。可以参考WCAG（Web Content Accessibility Guidelines）中的具体标准。
+
