@@ -1,12 +1,4 @@
-function Person(name, age, sex) {
-    this.name = name;
-    this.age = age;
-    this.sex = 1
-}
-
-const person1 = new Person('Alice', 25);
-console.log(person1.name); // 输出：Alice
-console.log(person1.age);  // 输出：25
+//类构造函数必须通过 new 关键字调用。如果不这样做，JavaScript 引擎会抛出一个 TypeError
 function myNew(constructor, ...args) {
     // 1. 创建一个新的空对象
     const obj = {};
@@ -17,12 +9,16 @@ function myNew(constructor, ...args) {
     // 3. 将构造函数的 this 绑定到新创建的对象上，并执行构造函数中的代码
     const result = constructor.apply(obj, args);
 
-    // 4. 如果构造函数返回一个对象，那么这个对象将作为 new 表达式的结果返回；否则，返回新创建的对象
+    // 4. 如果 result 不是对象（即为基本类型，如字符串、数字等），则返回新创建的对象 obj
     return result instanceof Object ? result : obj;
 }
-
+function Person(name, age, sex) {
+    this.name = name;
+    this.age = age;
+    this.sex = sex
+}
 // 测试 myNew 函数
-const person2 = myNew(Person, 'Bob', 30);
+const person2 = myNew(Person, 'Bob', 30, 'girl');
 console.log(person2.name); // 输出：Bob
 console.log(person2.age);  // 输出：30
 console.log(person2.sex);
