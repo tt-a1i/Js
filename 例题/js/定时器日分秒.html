@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时时间显示</title>
+    <style>
+        .timer {
+            font-size: 2em;
+            text-align: center;
+            margin-top: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer" id="timer">
+        <!-- 实时时间显示区 -->
+    </div>
+
+    <script>
+        // 函数：获取当前时间并格式化
+        function updateClock() {
+            const now = new Date();
+
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');  // 月份从0开始，需要加1
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+            // 显示时间
+            document.getElementById("timer").innerHTML = formattedTime;
+        }
+
+        // 每秒更新一次时间
+        setInterval(updateClock, 1000);
+
+        // 立即调用一次更新，以确保页面加载时立即显示当前时间
+        updateClock();
+    </script>
+</body>
+</html>
