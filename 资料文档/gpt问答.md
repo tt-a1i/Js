@@ -100,6 +100,65 @@ anthropic": [
     </template>
 ```
 
+### MarkDown组件的数据
+
+![image-20240809154301173](assets/image-20240809154301173.png)
+
+props.content为input.vue传来的流式输出动态更新返回的数据
+
+#### marked库配置项的作用
+
+```javascript
+marked.setOptions({
+      renderer: renderer,
+      sanitize: false,
+      pedantic: false,
+      silent: true,
+      highlight(code) {
+        return hljs.highlightAuto(code).value;
+      },
+    });
+```
+
+**`renderer`**:
+
+- **描述**: 自定义渲染器，用于覆盖默认的 Markdown 渲染行为。
+
+- **细节**: `renderer` 是一个对象，其中包含用于渲染不同 Markdown 元素的方法。你可以用自己的实现替换这些方法，以自定义输出。例如，如果你想自定义标题的渲染，可以给 renderer 对象提供一个 `heading` 方法。
+
+- 示例
+
+  ```javascript
+  const renderer = {
+    heading(text, level) {
+      return `<h${level} class="my-custom-class">${text}</h${level}>`;
+    }
+  };
+  ```
+
+**`sanitize`**:
+
+- **描述**: 是否启用 HTML 标签的清理。
+- **细节**: 如果设置为 `true`，将会移除 Markdown 中的 HTML 标签。这样可以避免 XSS 攻击，但可能会剥离掉一些需要的 HTML 内容。
+- **默认值**: `false`，不清理 HTML 标签。
+
+**`pedantic`**:
+
+- **描述**: 是否启用严格模式。
+- **细节**: 如果设置为 `true`，将会严格遵循 Markdown.pl 的实现。一些 Markdown 解析器会在标准基础上增加一些灵活性，这个选项可以关闭这些灵活性。
+- **默认值**: `false`，不启用严格模式。
+
+**`silent`**:
+
+- **描述**: 是否静默运行。
+- **细节**: 如果设置为 `true`，错误会被作为响应返回而不会抛出异常。这对在某些环境下避免程序崩溃可能有用。
+- **默认值**: `false`，不启用静默模式。
+
+**`highlight`**:
+
+- **描述**: 代码高亮函数。
+- **细节**: 允许你为代码块提供自定义的高亮实现。设定此选项后，代码块将使用你提供的函数进行高亮。
+
 ## 模型对比的实现
 
 ![image-20240809132012784](assets/image-20240809132012784.png)
@@ -108,7 +167,30 @@ anthropic": [
 
 # 输出内容渲染
 
-- 代码渲染:highlight.js库
+### 代码渲染:highlight.js库
+
+![image-20240809164007098](assets/image-20240809164007098.png)
+
+![image-20240809164040337](assets/image-20240809164040337.png)
+
+- 导入的onedark样式，marked库配置的highlight函数会自动应用导入的hilightjs库下导入样式，最终应用到代码块的样式上
+
+
+
+### 输出内容样式
+
+![image-20240809164245743](assets/image-20240809164245743.png)
+
+为插入v-html的元素设置类名
+
+![image-20240809164320531](assets/image-20240809164320531.png)
+
+匹配样式库的类名进行格式的生成
+
+也可以自定义样式进行覆盖应用
+
+![image-20240809164359342](assets/image-20240809164359342.png)
+
 - markdown渲染:Marked库,将markdown转换为html
   - 支持标准的 Markdown 语法
   - 允许自定义渲染器和解析规则
