@@ -1093,6 +1093,27 @@ if (stream || modelType !== "pharm") {
 
 总的来说，选择哪种方法主要取决于你的具体需求、项目复杂度、性能要求以及开发团队的偏好。在复杂的应用场景中，使用库通常能提供更多的功能和更好的开发体验，而在简单场景中，原生实现可能更加轻量和直接。
 
+# 一键复制效果实现
+
+```javascript
+const copyHandler = () => {
+      navigator.clipboard
+        ? navigator.clipboard
+            .writeText(escapeContent.value || displayContent.value)
+            .then(() => {
+              Message.success("复制成功");
+            })
+        : ctx.root
+            .$copyText(escapeContent.value || displayContent.value)
+            .then(() => {
+              Message.success("复制成功");
+            });
+    };
+```
+
+尝试使用现代浏览器的 navigator.clipboard.writeText 方法来复制文本。
+如果浏览器不支持该方法，则使用 vue-clipboard2 的 $copyText 方法。
+
 # 为什么这种与模型问答的场景要使用sse,而不是使用websocket
 
 在设计和实现实时通信的应用场景时，选择适当的技术非常重要。Server-Sent Events (SSE) 和 WebSocket 是两种常见的实时通信协议，各自有其优势和适用场景。在与你描述的模型问答场景中，使用 SSE 而不是 WebSocket 通常有以下几个原因：
