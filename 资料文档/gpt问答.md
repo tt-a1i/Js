@@ -8,6 +8,76 @@
     - input
   - slider
 
+### main-vue的数据
+
+![image-20240809134035765](assets/image-20240809134035765.png)
+
+#### history
+
+![image-20240809134442030](assets/image-20240809134442030.png)
+
+与模型的对话历史记录，根据role来区分对应的角色进行对话卡片位置头像的渲染
+
+其中模型的回答没有文件相关的参数
+
+##### 携带文件进行对话时的数据结构
+
+![image-20240809134825956](assets/image-20240809134825956.png)
+
+
+
+### content-vue的数据
+
+![image-20240809135325330](assets/image-20240809135325330.png)
+
+content-vue负责渲染对话的历史记录，相当于所有聊天对话的最外层盒子，对子组件card-vue进行每一条记录的传参进行渲染单个的消息
+
+#### contentRef
+
+![image-20240809135453696](assets/image-20240809135453696.png)
+
+![image-20240809135550319](assets/image-20240809135550319.png)
+
+通过ref控制滚动条位置赋值为content的内容高度来实现滚动到底部
+
+### card-vue的数据
+
+![image-20240809141249878](assets/image-20240809141249878.png)
+
+props为content-vue的单条对话数据
+
+通过判断是否存在文件数据来展现图片预览
+
+- isUpload
+
+在改变模型时，请求接口获取模型的相关信息，更改可支持的图像类型
+
+格式类型：
+
+```json
+anthropic": [
+            {
+                "model": "claude-3-sonnet",
+                "max_tokens": 4096,
+                "max_temperature": 1,
+                "label": "claude",
+                "multimodal": true,
+                "support_modals": [
+                    "image/jpeg",
+                    "image/jpg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp"
+                ],
+                "unit_price": {
+                    "prompt": 0.000003,
+                    "completion": 0.000015
+                }
+            },
+```
+
+
+
 对话卡片,根据消息历史来渲染,根据history中的role来进行确定user或assistant,v-for渲染
 
 传参用了props和inject,传给card的参数
@@ -29,6 +99,12 @@
       />
     </template>
 ```
+
+## 模型对比的实现
+
+![image-20240809132012784](assets/image-20240809132012784.png)
+
+多设置一套数据用来做对比模型的数据和渲染
 
 # 输出内容渲染
 
@@ -678,6 +754,14 @@ const showText = () => {
 总之，理解你的数据来源和展示需求是选择合适实现方式的关键。如果仍有其他问题或需要进一步帮助，欢迎提问！
 
 ## 实现SSE的部分
+
+### 请求发送的内容
+
+![image-20240809132351261](assets/image-20240809132351261.png)
+
+- maxtoken: 输出内容的长度限制
+- temperature: 随机和稳定性
+- stream： 流式输出
 
 ### 组件中实现 SSE 通信的代码详细介绍
 
