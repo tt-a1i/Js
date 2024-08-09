@@ -288,6 +288,8 @@ element.scrollTop = element.scrollHeight - element.clientHeight;
 
 # 打字机效果实现
 
+
+
 ### 第一版,不实现打字机,根据props.content的变化,页面进行响应式更新,vue的虚拟dom进行优化(猜测),所以不会闪动
 
 ### 第二版,实现打字机,但是由于fulltext重新赋值,所以在sse数据未全部传输之前会导致重新赋值,页面闪动,直到数据不再更新才正确显示
@@ -389,6 +391,67 @@ export default defineComponent({
   </div>
 </template>
 ```
+
+### 第三版（实现）
+
+```javascript
+const typeWriterEffect = () => {
+  console.log(1);
+  if (typingIndex < fullText.value.length) {
+    displayedContent.value = fullText.value.slice(0, typingIndex++);
+    timer = setTimeout(typeWriterEffect, props.typingSpeed);
+  } else {
+    clearTimeout(timer);
+    timer = undefined;
+  }
+};
+const updateContent = () => {
+  // 每次增量更新
+  fullText.value = marked(props.content.replace(/\\n|\r\n/g, "<br />"));
+  // console.log("Rendered markdown:", marked(props.content));
+  // console.log("props.content", props.content);
+  if (!timer) {
+    typeWriterEffect();
+  }
+};
+
+watch(
+  () => props.content,
+  () => {
+    updateContent();
+  }
+);
+
+onMounted(() => {
+  updateContent();
+});
+```
+
+#### 第二版实际上并没有完成对速度的控制
+
+原因：
+
+![image-20240809201819699](assets/image-20240809201819699.png)
+
+#### watch中不断间接调用函数创建新的定时器
+
+不是，是多次创建之后会导致你的定时器出现异常，因为他们执行的是同样的逻辑，间隔的时间也一样，如果你创建的过程也很均匀最后的结果就是你的定时器看起来是变快了，实际上是多个定时器在互相影响
+
+他重复创建的结果就是你会看到他执行的越来越快
+
+然后渲染是根据typeindex的值
+
+你看起来是一个
+
+其实背后执行的可能有几百个定时器了
+
+#### 解决方法
+
+注意：clearTimeout定时器后，！timer为false，所以需要手动赋值timer为空
+
+![image-20240809201923906](assets/image-20240809201923906.png)
+
+![image-20240809201937409](assets/image-20240809201937409.png)
 
 ### sse动态更新内容和打字机实现动态更新
 
