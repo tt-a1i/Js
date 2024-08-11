@@ -1298,6 +1298,33 @@ if (stream || modelType !== "pharm") {
 
 # 使用@microsoft/fetch-event-source库实现Server-Sent Events（SSE）和使用原生JavaScript方法实现SSE
 
+使用 @microsoft/fetch-event-source 改善服务器发送事件的请求@microsoft/fetch-event-source - npm
+在前端开发中，处理服务器发送事件（server-sent events）时，我们通常使用浏览器提供的 EventSource API。然而，该默认 API 存在一些限制，本文介绍了一个名为 @microsoft/fetch-event-source 的包，它提供了更强大的 API，使我们能够更灵活地进行服务器发送事件的请求。
+
+#### 问题与限制
+
+##### 默认的浏览器 EventSource API 在以下方面存在一些限制：
+
+- 无法传递请求体（request body），必须将执行请求所需的所有信息编码到 URL 中，而大多数浏览器对 URL 的长度限制为 2000 个字符。
+
+- 无法传递自定义请求头。
+- 只能进行 GET 请求，无法指定其他方法。
+- 如果连接中断，无法控制重试策略，浏览器会自动进行几次尝试然后停止。
+
+##### @microsoft/fetch-event-source 的优势
+
+@microsoft/fetch-event-source 提供了一个基于 Fetch API 的替代接口，完全兼容 Event Stream 格式。这使得我们能够以更加灵活的方式进行服务器发送事件的消费。以下是该库的一些主要优势：
+
+- 支持任何请求方法、请求头和请求体，以及 Fetch API 提供的其他功能。甚至可以提供替代的 fetch() 实现，以应对默认浏览器实现无法满足需求的情况。
+
+- 提供对响应对象的访问权限，允许在解析事件源之前进行自定义验证/处理。这在存在 API 网关（如 nginx）的情况下非常有用，如果网关返回错误，我们可能希望正确处理它。
+- 对连接中断或发生错误时，提供完全控制的重试策略。
+- 此外，该库还集成了浏览器的 Page Visibility API，使得在文档被隐藏时（例如用户最小化窗口），连接会关闭，当文档再次可见时会自动使用上次事件 ID 进行重试。这有助于减轻服务器负担，避免不必要的开放连接（但如果需要，可以选择禁用此行为）。
+
+原文链接：https://blog.csdn.net/SAXX2/article/details/136538314
+
+
+
 使用@microsoft/fetch-event-source库和原生JavaScript实现Server-Sent Events (SSE)各有优缺点。让我们来详细比较一下：
 
 @microsoft/fetch-event-source库：
