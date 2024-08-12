@@ -8,7 +8,7 @@
     - input
   - slider
 
-### main-vue的数据
+### main-vue
 
 ![image-20240809134035765](assets/image-20240809134035765.png)
 
@@ -26,7 +26,7 @@
 
 
 
-### input-vue的数据
+### input-vue
 
 ![image-20240809214448409](assets/image-20240809214448409.png)
 
@@ -43,6 +43,8 @@
 sse的onemessage对数据进行更新
 
 #### 关于文件到base64的转换
+
+![image-20240812143906683](assets/image-20240812143906683.png)
 
 - 使用 `FileReader` 将文件读取为 Data URL 格式。
 
@@ -85,7 +87,181 @@ sse的onemessage对数据进行更新
    - `FileReader.readAsDataURL(file)` 方法读取文件，结果是一个包含 Base64 编码的 Data URL。
    - 在 `onload` 回调中，将 Base64 数据存储到 `imageFile.previewImageUrl` 和 `parseTextData.value.data` 属性中。
 
-### content-vue的数据
+#### 关于组件间渲染数据对象传输格式
+
+![image-20240812144955077](assets/image-20240812144955077.png)
+
+- **ID**
+  - **数据更新：**根据标识更新具体的数组中的某一项数据（找到历史中当前进行的会话）
+  - ![image-20240812145057932](assets/image-20240812145057932.png)
+  - **取消出错请求**
+  - ![image-20240812145332594](assets/image-20240812145332594.png)
+
+#### 关于模拟调用el-upload实现对预览栏的图片进行问答和上传图片问答走一套逻辑
+
+![image-20240812145724153](assets/image-20240812145724153.png)
+
+```javascript
+function convertUrlToUploadFormat(url, callback) {
+          console.log("fetch前", url);
+      // 使用fetch API获取图像数据
+      fetch(url)
+        .then((response) => {
+          // 确保响应状态正常
+          if (!response.ok) throw new Error("Failed to fetch the image");
+          // 获取响应的MIME类型
+          // 获取MIME类型
+          const contentType = response.headers.get("content-type");
+          // 返回一个包含blob和contentType的对象
+          return response.blob().then((blob) => ({ blob, contentType }));
+        })
+        .then(({ blob, contentType }) => {
+          // 从MIME类型中提取文件扩展名
+          // 使用从headers获取的MIME类型设置文件类型
+          const fileExtension = contentType.split("/")[1]; // 从MIME类型获取文件扩展名
+          // 构造文件名
+          const fileName = `image.${fileExtension}`; // 创建文件名
+          // 创建File对象，用于上传
+          const file = new File([blob], fileName, {
+            type: contentType,
+          });
+          // 为文件对象添加URL属性，用于预览
+          file.url = URL.createObjectURL(blob); // 创建Blob URL用于预览等
+          // 创建原始文件对象，保持原始数据
+          file.raw = new File([blob], file.name, { type: contentType });
+          // 设置文件状态为准备就绪
+          file.status = "ready";
+          // 构造模拟的事件对象，包含文件信息
+          // 模拟Element UI el-upload的handleChange参数
+          const event = { file };
+          // 调用回调函数，传入转换后的文件对象
+          callback(event);
+        })
+        .catch((error) => {
+          // 在转换过程中捕获并打印错误
+          console.error("Error converting URL to upload format:", error);
+        });
+    }
+```
+
+![image-20240812145918088](assets/image-20240812145918088.png)
+
+##### 函数的目标是方便地将图片的 URL 转换为一个文件上传时所需的格式
+
+- 获取响应的 MIME 类型，通过 `response.headers.get("content-type")` 获取。
+- 将响应数据转换为 `Blob`，并返回包含 `Blob` 和 MIME 类型的对象。
+- 提取 MIME 类型中的文件扩展名（通过分割 MIME 类型字符串）。
+- 构造文件名（`image.<fileExtension>`）。
+- 基于 `Blob` 创建一个新的 `File` 对象，用于上传。
+- 创建一个 `Blob` URL（`URL.createObjectURL(blob)`）用于预览图像。
+- 创建一个原始的 `File` 对象，保持原始数据方便后续使用。
+- 设置文件的状态为 "ready"（准备就绪状态）。
+- 构造一个模拟的事件对象（`event`），包含文件信息。
+- 调用回调函数 `callback`，将处理后的文件对象传入回调函数。
+
+#### MIME
+
+MIME（Multipurpose Internet Mail Extensions）用于指定文件的类型和格式，浏览器和服务器通过 MIME 类型来识别和处理不同的文件类型
+
+##### MIME 在这个函数中的作用
+
+在 `convertUrlToUploadFormat` 函数中，MIME 类型是通过 `response.headers.get("content-type")` 获取的。它在以下几个方面起作用：
+
+1. **识别内容类型**：
+
+   - `const contentType = response.headers.get("content-type");` 获取了响应的数据类型，例如 `image/jpeg` 或 `image/png`。
+   - 通过 MIME 类型，我们能够知道所处理的数据的具体格式，从而能够正确处理这些数据。
+
+2. **构造文件对象**：
+
+   - 在创建File对象时，需要指定type属性：
+
+     ```javascript
+     const file = new File([blob], fileName, { type: contentType });
+     ```
+
+     这能确保浏览器在处理文件时，了解文件的具体类型。
+
+3. **设置文件扩展名**：
+
+   - 从 MIME 类型中提取文件扩展名，以便创建适当的文件名：
+
+     ```javascript
+     const fileExtension = contentType.split("/")[1];
+     const fileName = `image.${fileExtension}`;
+     ```
+
+#### BLOB
+
+##### 为什么需要 Blob
+
+Blob（Binary Large Object）是一种表示二进制数据的大对象，通常用于在浏览器中存储和处理文件。Blob 对象可以表示图片、视频、音频等多种二进制数据。
+
+##### Blob 在这个函数中的作用
+
+在函数 `convertUrlToUploadFormat` 中，Blob 扮演着以下重要角色：
+
+1. **处理图像数据**：
+
+   - 使用fetch获取图像数据后，通过response.blob()将响应数据转换成 Blob 对象：
+
+     ```javascript
+     return response.blob().then((blob) => ({ blob, contentType }));
+     ```
+
+   - Blob 对象可以方便地处理二进制数据，例如传送到 `File` 对象或通过 URL 生成预览图片。
+
+2. **创建文件对象**：
+
+   - 基于 Blob 对象创建File对象，用于模拟用户上传的文件：
+
+     ```javascript
+     const file = new File([blob], fileName, { type: contentType });
+     ```
+
+3. **创建预览 URL**：
+
+   - 使用URL.createObjectURL(blob)创建一个预览 URL：
+
+     ```javascript
+     file.url = URL.createObjectURL(blob);
+     ```
+
+   - 这使得可以在浏览器中直接预览二进制文件的数据，而不需要上传到服务器。这对于用户体验是非常有好处的，因为用户可以立刻看到他们选择或下载的图片。
+
+​	MIME 和 Blob 的应用场景
+
+1. 文件上传
+
+   ：
+
+   - 当需要上传文件到服务器时，通常会使用 Blob 或 File 对象。Blob 对象可以代表任何二进制数据，同时也可以指定 MIME 类型。
+
+2. 数据处理
+
+   ：
+
+   - Blob 对象用于处理大型二进制数据，如将数据读取到内存中进行处理，或者使用 Blob 创建下载链接，允许用户下载二进制文件。
+
+3. 预览功能
+
+   ：
+
+   - 使用 `URL.createObjectURL(blob)` 可以生成一个临时 URL，用于在网页中直接显示二进制数据，如图像预览、视频播放等。
+
+#### 在这个函数中的关系与配合
+
+- **获取图像数据**：
+  - 使用 `fetch` 获取图像数据并将其转换为 Blob；
+  - 在转换过程中获取内容的 MIME 类型以确保数据类型正确。
+- **创建 `File` 对象**：
+  - 使用 Blob 创建一个新的 `File` 对象，确保其 MIME 类型正确，并指定文件名。
+- **预览 URL**：
+  - 基于 Blob 创建图像预览 URL，使用户可以即时查看下载的图像。
+
+通过上述步骤，`convertUrlToUploadFormat` 函数实现了从给定 URL 获取图像数据，并将其转换成可上传和预览的格式，最终通过回调函数返回。
+
+### content-vue
 
 ![image-20240809135325330](assets/image-20240809135325330.png)
 
@@ -99,7 +275,7 @@ content-vue负责渲染对话的历史记录，相当于所有聊天对话的最
 
 通过ref控制滚动条位置赋值为content的内容高度来实现滚动到底部
 
-### card-vue的数据
+### card-vue
 
 ![image-20240809141249878](assets/image-20240809141249878.png)
 
@@ -159,7 +335,7 @@ anthropic": [
     </template>
 ```
 
-### MarkDown组件的数据
+### MarkDown组件
 
 ![image-20240809154301173](assets/image-20240809154301173.png)
 
