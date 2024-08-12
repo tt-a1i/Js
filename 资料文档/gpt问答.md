@@ -42,11 +42,48 @@
 
 sse的onemessage对数据进行更新
 
+#### 关于文件到base64的转换
 
+- 使用 `FileReader` 将文件读取为 Data URL 格式。
 
+  - `FileReader` 是一个内置的 JavaScript 对象，它位于 [File API](https://developer.mozilla.org/en-US/docs/Web/API/FileReader) 中，允许Web应用读取用户本地文件的内容。它是处理由 `<input type="file">`、`drag-and-drop` 接口、`Clipboard API` 等提供的 `File` 或 `Blob` 对象的主要工具。
 
+    ##### `FileReader` 主要功能
 
+    `FileReader` 主要用于读取文件内容，其中包括：
 
+    - 读取文件并返回文本。
+    - 读取文件并返回 ArrayBuffer。
+    - 读取文件并返回 Data URL（Base64编码）。
+    - 读取文件并返回二进制字符串。
+
+    ##### 常用方法
+
+    - **`readAsArrayBuffer(blob)`**：读取文件并返回 ArrayBuffer。
+    - **`readAsBinaryString(blob)`**：读取文件并返回二进制字符串。
+    - **`readAsDataURL(blob)`**：读取文件并返回 Data URL（Base64编码）。
+    - **`readAsText(blob, [encoding])`**：读取文件并返回文本字符串。可以指定编码，默认是 UTF-8。
+
+    ##### 常用事件
+
+    - **`onload`**：当读取操作成功完成时触发。
+    - **`onerror`**：读取操作发生错误时触发。
+    - **`onprogress`**：在读取进行中以及读取结束前的读取数据量的变化通知。
+    - **`onabort`**：当读取操作被中止时触发。
+
+- `reader.onload` 回调中，将结果存储到 `imageFile.previewImageUrl` 和 `imageSource.value.data` 中。 `Data URL` 是由两个部分组成：`data:[<mediatype>][;base64],<data>`，所以直接用`.split(",")[1]`来获取Base64部分。
+
+##### 完整流程解析
+
+1. **用户上传文件**： 用户选择文件后，`element-upload` 的 `:on-change` 触发 `handleChange` 方法。
+2. **`handleChange` 方法**：
+   - 获取文件类型 `fileType`。
+   - 判断是否支持多模态文件上传 `isUpload.multimodal`。
+   - 如果支持多模态，则根据文件类型设置 `mediaType` 并调用 `previewImage(file.raw)`。
+   - 如果仅支持特定格式的文件上传，则使用 `FileReader` 直接读取文件并生成 Base64。
+3. **`FileReader` 读取文件**：
+   - `FileReader.readAsDataURL(file)` 方法读取文件，结果是一个包含 Base64 编码的 Data URL。
+   - 在 `onload` 回调中，将 Base64 数据存储到 `imageFile.previewImageUrl` 和 `parseTextData.value.data` 属性中。
 
 ### content-vue的数据
 
