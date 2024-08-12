@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Event Flow Example</title>
-</head>
-<body>
-    <div id="parent">
-        <ul id="ul">
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-            <li>5</li>
-            <li>6</li>
-        </ul>
-    </div>
+	<head>
+		<title>Event Flow Example</title>
+	</head>
+	<body>
+		<div id="parent">
+			<ul id="ul">
+				<li>1</li>
+				<li>2</li>
+				<li>3</li>
+				<li>4</li>
+				<li>5</li>
+				<li>6</li>
+			</ul>
+		</div>
 
-    <script>
-        document.getElementById('parent').addEventListener("click", function(e){
-            console.log('parent');
-        }, true)
-        //默认false，监听在冒泡阶段触发，设置为true在捕获阶段触发，阻止冒泡且为false(冒泡触发)无法触发父元素事件
-        //阻止冒泡，但是设置为捕获后可以触发
-        document.getElementById('ul').addEventListener("click", function(e) {
-            console.log(e.target);
-            e.target.style.color = 'red'
-            e.stopPropagation();
-        }, true)
-    </script>
-</body>
+		<script>
+			document.getElementById("parent").addEventListener(
+				"click",
+				function (e) {
+					console.log("parent");
+				},
+				true
+			);
+			//默认false，监听在冒泡阶段触发，设置为true在捕获阶段触发，阻止冒泡且为false(冒泡触发)无法触发父元素事件
+			//阻止冒泡，但是设置为捕获后可以触发
+			document.getElementById("ul").addEventListener(
+				"click",
+				function (e) {
+					console.log(e.target);
+					e.target.style.color = "red";
+					e.stopPropagation();
+				},
+				true
+			);
+		</script>
+	</body>
 </html>
