@@ -832,74 +832,242 @@ console.log(getType(new Number(1)));//Number
 console.log(typeof(new Number(1)));//Object
 ```
 
-## 事件代理和事件委托
+## 事件冒泡和事件捕获
 
-事件代理和事件委托是同一个概念的不同表达方式，`指的是通过在父元素上注册事件监听器来处理子元素上的事件。`
+- 事件冒泡（Event Bubbling）和事件捕获（Event Capturing）是 Web 开发中处理 DOM 事件的重要概念，它们定义了事件在 DOM 树中传播的方式。让我们深入了解这两个机制及其区别。
 
-1. 在父元素上注册事件监听器，监听特定类型的事件。
-2. 当事件发生时，事件会在子元素上触发，并冒泡到父元素。
-3. 父元素捕获事件，根据事件目标（即触发事件的子元素）来执行相应的处理逻辑。
+  ### 事件流（Event Flow）
 
-事件委托是一种常用且重要的 JavaScript 事件处理模式。我来详细解释一下事件委托机制，以及 target 和 currentTarget 的区别：
+  事件流是指当一个事件发生时，它如何通过 DOM 元素传播。事件流由三个阶段组成：
 
-### 事件委托机制
+  1. **捕获阶段（Capture Phase）**：事件从文档根节点向目标元素传播。
+  2. **目标阶段（Target Phase）**：事件到达目标元素。
+  3. **冒泡阶段（Bubble Phase）**：事件从目标元素向上传播回文档根节点。
 
-事件委托（Event Delegation）是利用事件冒泡的原理，将事件监听器添加到父元素而不是每个子元素上。当子元素上的事件被触发时，事件会冒泡到父元素，然后在父元素上进行处理。
+  我们可以通过下图来更好地理解事件流：
 
-主要优点：
-- 减少内存占用，提高性能（特别是对于大量子元素）
-- 动态添加的子元素也能响应事件，无需再次绑定
-- 代码更简洁，易于维护
+  ```
+  Document (Document Root)
+     |
+     V
+  Element 1
+     |
+     V
+  Element 2
+     |
+     V
+  Element 3
+     |
+     V
+  (Target Element) Element 4
+  ```
 
-示例：
+  在这个事件流中，当我们在 `Element 4` 触发一个事件时，事件首先经过捕获阶段依次经过 `Element 1`, `Element 2`, `Element 3` 到达 `Element 4`（目标元素），然后进入目标阶段。随后，在冒泡阶段，事件从 `Element 4` 依次向上传播回 `Element 3`, `Element 2`, `Element 1`，最终到达文档根节点。
+
+  ### 事件捕获
+
+  在事件传播的第一阶段，事件从文档根节点向目标元素传播，这称为事件捕获。默认情况下，事件监听器在捕获阶段不会触发，但你可以通过 `addEventListener` 的第三个参数（`options.capture` 或 `useCapture`）将其设置为 `true` 来监听捕获阶段的事件。
+
+  ```javascript
+  document.getElementById("parent").addEventListener("click", function(event) {
+      console.log("Parent (Capture)");
+  }, true);
+  
+  document.getElementById("child").addEventListener("click", function(event) {
+      console.log("Child (Capture)");
+  }, true);
+  ```
+
+  ### 事件冒泡
+
+  在事件传播的最后阶段，事件从目标元素向上传播，这称为事件冒泡。默认情况下，事件监听器在冒泡阶段触发。
+
+  ```javascript
+  document.getElementById("parent").addEventListener("click", function(event) {
+      console.log("Parent (Bubble)");
+  }, false);
+  
+  document.getElementById("child").addEventListener("click", function(event) {
+      console.log("Child (Bubble)");
+  }, false);
+  ```
+
+  ### 综合示例
+
+  下面的示例结合了事件捕获和事件冒泡，帮助你更好地理解这两个概念。
+
+  ```html
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Event Flow Example</title>
+  </head>
+  <body>
+      <div id="parent" style="width: 200px; height: 200px; background-color: lightblue;">
+          Parent
+          <div id="child" style="width: 100px; height: 100px; background-color: lightcoral;">
+              Child
+          </div>
+      </div>
+  
+      <script>
+          // 事件捕获监听器
+          document.getElementById("parent").addEventListener("click", function(event) {
+              console.log("Parent (Capture)");
+          }, true);
+  
+          document.getElementById("child").addEventListener("click", function(event) {
+              console.log("Child (Capture)");
+          }, true);
+  
+          // 事件冒泡监听器
+          document.getElementById("parent").addEventListener("click", function(event) {
+              console.log("Parent (Bubble)");
+          }, false);
+  
+          document.getElementById("child").addEventListener("click", function(event) {
+              console.log("Child (Bubble)");
+          }, false);
+  
+          // 在点击事件发生时阻止事件冒泡
+          document.getElementById("child").addEventListener("click", function(event) {
+              event.stopPropagation(); // 阻止事件冒泡
+              console.log("Child (Stop Propagation)");
+          }, false);
+      </script>
+  </body>
+  </html>
+  ```
+
+  如果你点击 `Child` 元素，控制台的输出将会是：
+  ```
+  Parent (Capture)
+  Child (Capture)
+  Child (Stop Propagation)
+  ```
+
+  注意，因为在 `Child` 元素的冒泡阶段事件传播被 `stopPropagation` 阻止了，父元素的冒泡阶段监听器不会被触发。
+
+  ### `stopPropagation()` 和 `stopImmediatePropagation()`
+
+  - **`event.stopPropagation()`**：阻止事件进一步冒泡（但不阻止同一元素的其他事件处理器）。
+  - **`event.stopImmediatePropagation()`**：阻止事件进一步冒泡，同时阻止当前元素上剩余的事件处理器。
+
+  ### 总结
+
+  - **事件捕获（Capture Phase）**：事件从文档根节点向目标元素传播。
+  - **事件冒泡（Bubble Phase）**：事件从目标元素向上传播回文档根节点。
+
+  通过合理利用事件捕获和事件冒泡，你可以更灵活地控制事件在 DOM 树中的传播和处理。
+
+## addEventListener的第三个参数
+
+`addEventListener` 方法的第三个参数是一个可选的参数，可以是一个布尔值或一个对象，用来指定事件监听器的各种选项。具体来说，这个参数决定了事件监听器在事件流中的行为方式，以及一些额外的特性。让我们详细看一下：
+
+### 布尔值（`useCapture`）
+
+在较早的版本中，第三个参数是一个布尔值，称为 `useCapture`。这个参数决定了事件监听器是否在捕获阶段触发。
+
+- `false` 或 **默认值**：事件监听器在冒泡阶段触发。
+- `true`：事件监听器在捕获阶段触发。
+
+#### 事件流简介
+
+事件流分为三个阶段：
+
+1. **捕获阶段**（Capture Phase）：事件从根到目标元素依次经过祖先元素。
+2. **目标阶段**（Target Phase）：事件到达目标元素本身。
+3. **冒泡阶段**（Bubble Phase）：事件从目标元素向上依次经过祖先元素，直到根结束。
+
 ```javascript
-document.getElementById('parent-list').addEventListener('click', function(e) {
-    if(e.target && e.target.nodeName == "LI") {
-        console.log("List item ", e.target.id, " was clicked!");
-    }
+// 示例：在冒泡阶段触发
+element.addEventListener('click', function(event) {
+    console.log('Button clicked');
+}, false);
+
+// 示例：在捕获阶段触发
+element.addEventListener('click', function(event) {
+    console.log('Button clicked');
+}, true);
+```
+
+### 对象（`options`）
+
+随着现代浏览器的发展，第三个参数也可以是一个对象，用于详细指定事件监听器的行为选项。这个对象可以包含以下属性：
+
+1. **capture**（布尔值，和 `useCapture` 一样）
+   - `true`：在捕获阶段触发。
+   - `false`：在冒泡阶段触发（默认值）。
+
+2. **once**（布尔值）
+   - `true`：事件监听器在触发一次后自动移除。
+   - `false`：事件监听器在每次相应事件发生时都会触发（默认值）。
+
+3. **passive**（布尔值）
+   - `true`：将永远不会调用 `preventDefault()`，即表明事件监听器不会阻止默认行为。这对于滚动事件等默认行为非常有帮助。
+   - `false`：事件监听器可以调用 `preventDefault()` 来阻止默认行为（默认值）。
+
+4. **signal**（`AbortSignal` 对象）
+   - 允许您通过 `AbortController` 中止事件监听。
+
+```javascript
+// 示例：使用 options 对象
+const options = {
+    capture: true,
+    once: true,
+    passive: true
+};
+
+element.addEventListener('click', function(event) {
+    console.log('Button clicked');
+}, options);
+
+// 示例：使用 AbortController
+const controller = new AbortController();
+
+element.addEventListener('click', function(event) {
+    console.log('Button clicked');
+}, { signal: controller.signal });
+
+// 之后如何中止事件监听器
+controller.abort();
+```
+
+### 综合示例
+
+下面是一个更加综合的示例，展示如何使用这几种方式来配置事件监听器：
+
+```javascript
+// 使用useCapture（旧版本）
+element.addEventListener('click', function(event) {
+    console.log('Clicked (useCapture)');
+}, true);
+
+// 使用 options（新版本，推荐）
+element.addEventListener('click', function(event) {
+    console.log('Clicked (options)');
+}, {
+    capture: false,
+    once: true,
+    passive: false
 });
+
+// 使用 AbortSignal 取消事件监听
+const abortController = new AbortController();
+element.addEventListener('click', function(event) {
+    console.log('Clicked (AbortSignal)');
+}, { signal: abortController.signal });
+
+// 中止事件监听
+abortController.abort();
 ```
 
-2. target vs currentTarget
+### 总结
 
-- e.target：
-  - 指向触发事件的具体元素
-  - 在事件冒泡过程中，它始终是最初触发事件的那个元素
+- **布尔值 `useCapture`**：用于指定是否在捕获阶段触发事件监听器。
+- **对象 `options`**：允许详细指定事件监听器的各种行为，包括捕获阶段、自动移除、被动监听和中止监听。
 
-- e.currentTarget：
-  - 指向事件绑定的元素
-  - 在事件冒泡过程中，它会随着事件的冒泡而改变
-
-区别示例：
-```html
-<div id="outer">
-    <div id="inner">
-        <button id="button">Click me</button>
-    </div>
-</div>
-
-<script>
-document.getElementById('outer').addEventListener('click', function(e) {
-    console.log('target:', e.target.id);
-    console.log('currentTarget:', e.currentTarget.id);
-});
-</script>
-```
-
-如果点击按钮，输出将会是：
-```
-target: button
-currentTarget: outer
-```
-
-这里，e.target 是 button（实际被点击的元素），而 e.currentTarget 是 outer（事件监听器所在的元素）。
-
-总结：
-- 事件委托利用事件冒泡，在父元素上处理子元素的事件，提高效率和灵活性。
-- e.target 指向实际触发事件的元素，e.currentTarget 指向事件处理程序所在的元素。
-- 在使用事件委托时，通常会使用 e.target 来确定哪个具体的子元素触发了事件。
-
-
+选择哪种方式取决于你需要精确控制事件监听器的哪方面行为。对于大部分现代浏览器，推荐使用 `options` 对象，因为它更具描述性且功能更强大。
 
 #### 应用场景：
 
@@ -3241,4 +3409,6 @@ JavaScript 的底层实现通常是由 C 或 C++ 编写的。不同的 JavaScrip
    }
    ```
 
-   
+
+
+
