@@ -294,33 +294,22 @@ foo() // TypeError: Cannot read property 'x' of undefined
 
 `Set`是一种叫做`集合`的数据结构，`Map`是一种叫做`字典`的数据结构
 
-#### 什么是集合？什么又是字典？
+##### Map
 
-- `集合`
-  是由一堆无序的、相关联的，且`不重复`的内存结构【数学中称为元素】组成的组合
-- `字典`
-  是一些元素的集合。`每个元素有一个称作key 的域`，`不同元素的key 各不相同`
+- 键值对的集合，其中键可以是任何类型（包括对象）。
+- 记住键的原始插入顺序。
+
+##### Set
+
+- 集合中的每个值只能出现一次，即 Set 中的元素是唯一的。
+- 可以存储任何类型的值。
+- 保证插入顺序
 
 #### 区别？
 
-- `共同点`：集合、字典`都可以存储不重复的值`
-- `不同点`：`集合是以[值，值]`的形式存储元素，`字典是以[键，值]`的形式存储
-
-#### `Set`的实例关于增删改查的方法：
-
-- add()
-- delete()
-- has()
-- clear()
-
-#### `Map` 结构的实例针对增删改查有以下属性和操作方法：
-
-- size 属性
-- set()
-- get()
-- has()
-- delete()
-- clear()
+- Set 只存储值，而 Map 存储键值对。
+- Set 中的值是唯一的，而 Map 允许重复的值（但键是唯一的）。
+- Set 主要用于检查一个值是否存在于集合中，而 Map 用于存储具有关联关系的数据。
 
 #### 都有的遍历方法
 
@@ -335,7 +324,7 @@ foo() // TypeError: Cannot read property 'x' of undefined
 
 共同特点:
 
-- **只能使用对象作为键：** 的键必须是对象，不能是原始值。
+- **只能使用对象作为键：** 的键必须是**对象**，不能是原始值。
   - 虽然键必须是对象，但值可以是任意类型的数据。
 
 - **弱引用：** 键是弱引用的，当键对象被垃圾回收时，相应的键值对会自动从 中删除。
@@ -354,7 +343,7 @@ foo() // TypeError: Cannot read property 'x' of undefined
 - 链式操作减低了编码难度
 - 代码可读性明显增强
 
-#### Promise 的特点：
+### Promise 的特点：
 
 1. **状态（State）：** `Promise` 对象有三种状态：`pending`（进行中）、`fulfilled`（已成功）和`rejected`（已失败）。
 2. **状态转换：** `Promise` 对象的状态一旦改变，就会凝固，不会再改变。只有异步操作的结果可以决定状态的转变。
@@ -362,9 +351,158 @@ foo() // TypeError: Cannot read property 'x' of undefined
 4. **错误处理：** `Promise` 允许通过 `.catch()` 方法捕获异步操作中的错误，并进行统一的错误处理。
 5. **多个异步操作的并行和串行：** `Promise.all()` 方法可以将多个异步操作并行执行，直到所有操作完成；`Promise.race()` 方法可以将多个异步操作串行执行，只要有一个操作完成就返回结果。
 
-#### 使用场景
+### Promise的主要方法
 
-将图片的加载写成一个`Promise`，一旦加载完成，`Promise`的状态就发生变化
+1. 实例方法：
+
+   a. then(onFulfilled, onRejected)
+   - 用于处理 Promise 成功或失败的情况
+   - 返回一个新的 Promise
+
+   ```javascript
+   promise.then(
+     result => console.log(result),
+     error => console.error(error)
+   );
+   ```
+
+   b. catch(onRejected)
+   - 用于处理 Promise 失败的情况
+   - 相当于 then(null, onRejected)
+
+   ```javascript
+   promise.catch(error => console.error(error));
+   ```
+
+   c. finally(onFinally)
+   - 无论 Promise 成功还是失败都会执行
+   - 不接收任何参数
+
+   ```javascript
+   promise.finally(() => console.log('Finished'));
+   ```
+
+2. 静态方法：
+
+   a. Promise.resolve(value)
+   - 返回一个以给定值解决的 Promise
+
+   ```javascript
+   const resolvedPromise = Promise.resolve(42);
+   ```
+
+   b. Promise.reject(reason)
+   - 返回一个以给定原因拒绝的 Promise
+
+   ```javascript
+   const rejectedPromise = Promise.reject(new Error('Failed'));
+   ```
+
+   c. Promise.all(iterable)
+   - 等待所有 Promise 都成功，或任一 Promise 失败
+   - 返回一个新的 Promise
+
+   ```javascript
+   Promise.all([promise1, promise2, promise3])
+     .then(results => console.log(results));
+   ```
+
+   d. Promise.race(iterable)
+   - 返回一个 Promise，一旦迭代器中的某个 promise 解决或拒绝，就采用第一个 promise 的值作为它的值
+
+   ```javascript
+   Promise.race([promise1, promise2, promise3])
+     .then(result => console.log(result));
+   ```
+
+   e. Promise.allSettled(iterable)
+   - 等待所有 Promise 都完成（无论成功或失败）
+   - 返回一个包含所有结果的数组
+
+   ```javascript
+   Promise.allSettled([promise1, promise2, promise3])
+     .then(results => console.log(results));
+   ```
+
+   f. Promise.any(iterable)
+   - 只要给定的迭代中的一个 promise 成功，就返回那个已经成功的 promise
+   - 如果所有 promise 都失败，则返回一个失败的 promise
+
+   ```javascript
+   Promise.any([promise1, promise2, promise3])
+     .then(result => console.log(result))
+     .catch(error => console.error(error));
+   ```
+
+3. 创建 Promise：
+
+   使用 Promise 构造函数创建新的 Promise
+
+   ```javascript
+   const promise = new Promise((resolve, reject) => {
+     // 异步操作
+     if (/* 操作成功 */) {
+       resolve(value);
+     } else {
+       reject(error);
+     }
+   });
+   ```
+
+这些方法让 Promise 能够灵活地处理各种异步场景，从简单的单一异步操作到复杂的多个异步操作的组合。理解和熟练使用这些方法可以大大提高处理异步代码的能力。
+
+## js不是单线程的吗，Promise.all为什么是并行
+
+您提出了一个非常好的问题！这确实是一个容易混淆的概念。让我来解释一下：
+
+1. JavaScript 确实是单线程的：
+   JavaScript 的确是单线程执行的，这意味着在任何给定时刻，只有一个操作在执行。
+
+2. 异步和并发：
+   尽管 JavaScript 是单线程的，但它支持异步编程。这允许代码以非阻塞的方式执行，给人一种"并行"的错觉。
+
+3. 事件循环：
+   JavaScript 使用事件循环来管理异步操作。当遇到异步操作时，JavaScript 会将其放入事件队列，继续执行后续代码，然后在主线程空闲时处理队列中的事件。
+
+4. Promise.all() 的"并行"：
+   当我们说 Promise.all() 是"并行"执行的，实际上是指它同时启动了所有的异步操作，而不是一个接一个地等待它们完成。
+
+5. 实际的执行过程：
+   - 当调用 Promise.all() 时，它会立即启动所有传入的 Promise。
+   - 这些 Promise 可能包含 AJAX 请求、定时器、文件操作等异步任务。
+   - JavaScript 引擎会将这些异步任务交给浏览器的其他部分（如 Web APIs）来处理。
+   - 主线程继续执行，不会被这些异步操作阻塞。
+   - 当异步操作完成时，相应的回调会被添加到事件队列。
+   - 事件循环会在主线程空闲时，从队列中取出这些回调并执行。
+
+6. 并发 vs 并行：
+   - 严格来说，这种行为更准确的描述是"并发"而不是"并行"。
+   - 并发是指同时管理多个任务，而并行是指同时执行多个任务。
+   - JavaScript 通过事件循环实现了并发，但由于单线程的本质，它不能真正地并行执行任务。
+
+示例：
+
+```javascript
+console.log('Start');
+
+Promise.all([
+  new Promise(resolve => setTimeout(() => resolve('One'), 1000)),
+  new Promise(resolve => setTimeout(() => resolve('Two'), 2000)),
+  new Promise(resolve => setTimeout(() => resolve('Three'), 3000))
+]).then(console.log);
+
+console.log('End');
+
+// 输出：
+// Start
+// End
+// (大约3秒后)
+// ['One', 'Two', 'Three']
+```
+
+在这个例子中，所有的定时器几乎同时开始，但它们在不同的时间完成。JavaScript 引擎不会等待这些定时器，而是继续执行后续代码。
+
+总结：虽然 JavaScript 是单线程的，但通过事件循环和异步编程，它能够高效地管理多个并发操作，给人一种"并行"的感觉。Promise.all() 利用了这种机制，同时启动多个异步操作，但实际上它们仍然是在单个线程上交错执行的。
 
 ## async和await
 
