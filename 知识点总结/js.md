@@ -1035,72 +1035,19 @@ console.log(typeof(new Number(1)));//Object
   }, false);
   ```
 
-  ### 综合示例
-
-  下面的示例结合了事件捕获和事件冒泡，帮助你更好地理解这两个概念。
-
-  ```html
-  <!DOCTYPE html>
-  <html>
-  <head>
-      <title>Event Flow Example</title>
-  </head>
-  <body>
-      <div id="parent" style="width: 200px; height: 200px; background-color: lightblue;">
-          Parent
-          <div id="child" style="width: 100px; height: 100px; background-color: lightcoral;">
-              Child
-          </div>
-      </div>
-  
-      <script>
-          // 事件捕获监听器
-          document.getElementById("parent").addEventListener("click", function(event) {
-              console.log("Parent (Capture)");
-          }, true);
-  
-          document.getElementById("child").addEventListener("click", function(event) {
-              console.log("Child (Capture)");
-          }, true);
-  
-          // 事件冒泡监听器
-          document.getElementById("parent").addEventListener("click", function(event) {
-              console.log("Parent (Bubble)");
-          }, false);
-  
-          document.getElementById("child").addEventListener("click", function(event) {
-              console.log("Child (Bubble)");
-          }, false);
-  
-          // 在点击事件发生时阻止事件冒泡
-          document.getElementById("child").addEventListener("click", function(event) {
-              event.stopPropagation(); // 阻止事件冒泡
-              console.log("Child (Stop Propagation)");
-          }, false);
-      </script>
-  </body>
-  </html>
-  ```
-
-  如果你点击 `Child` 元素，控制台的输出将会是：
-  ```
-  Parent (Capture)
-  Child (Capture)
-  Child (Stop Propagation)
-  ```
-
-  注意，因为在 `Child` 元素的冒泡阶段事件传播被 `stopPropagation` 阻止了，父元素的冒泡阶段监听器不会被触发。
-
   ### `stopPropagation()` 和 `stopImmediatePropagation()`
 
   - **`event.stopPropagation()`**：阻止事件进一步冒泡（但不阻止同一元素的其他事件处理器）。
   - **`event.stopImmediatePropagation()`**：阻止事件进一步冒泡，同时阻止当前元素上剩余的事件处理器。
-
+  
   ### 总结
-
+  
+  1. `event.target` 是实际被点击的元素
+  2. `event.currentTarget` 是绑定该事件处理器的元素
+  
   - **事件捕获（Capture Phase）**：事件从文档根节点向目标元素传播。
   - **事件冒泡（Bubble Phase）**：事件从目标元素向上传播回文档根节点。
-
+  
   通过合理利用事件捕获和事件冒泡，你可以更灵活地控制事件在 DOM 树中的传播和处理。
 
 ## addEventListener的第三个参数
@@ -3551,7 +3498,6 @@ JavaScript 的底层实现通常是由 C 或 C++ 编写的。不同的 JavaScrip
            res.push(arr[i])
    }
    ```
-
 
 
 

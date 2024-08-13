@@ -20,6 +20,11 @@
 				"click",
 				function (e) {
 					console.log("parent");
+					console.log(e.target);
+					console.log(e.currentTarget);
+					
+					
+					e.target.style.color = "red";
 				},
 				true
 			);
@@ -29,7 +34,6 @@
 				"click",
 				function (e) {
 					console.log(e.target);
-					e.target.style.color = "red";
 					e.stopPropagation();
 				},
 				true
