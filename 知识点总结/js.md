@@ -512,16 +512,68 @@ console.log('End');
 
 `async` 函数是用来定义异步函数的关键字，它可以将函数声明为异步函数，使得函数内部可以使用 `await` 来等待异步操作的结果。
 
-- `async` 函数内部使用 `return` 返回的值会被包装成一个 Promise 对象，并且 `async` 函数总是返回一个 Promise 对象。
+- `async` 函数内部使用 `return` 返回的值会被包装成一个 Promise 对象，无论这个函数内部是否显式地返回了一个 `Promise`。
 - 在 `async` 函数内部可以使用 `await` 关键字来等待 Promise 对象的完成，并且 `await` 只能在 `async` 函数内部使用。
 
 ------
 
 `await` 是用于等待异步操作完成的关键字，它只能在 `async` 函数内部使用。当 `await` 后面跟着一个 Promise 对象时，它会暂停函数的执行，直到该 Promise 对象状态变为 resolved（完成）或 rejected（失败）。
 
-- `await` 表达式会暂停异步函数的执行，直到 `await` 后面的 Promise 对象返回结果。
-- 如果 `await` 后面的 Promise 对象状态为 resolved，则 `await` 表达式返回 Promise 对象的 resolved 值。
-- 如果 `await` 后面的 Promise 对象状态为 rejected，则 `await` 表达式会抛出错误，可以使用 `try...catch` 来捕获错误。
+- await 关键字只能在 async 函数内部使用。
+- 当遇到 await 时，JavaScript 引擎会暂停当前 async 函数的执行。
+- await 后面的表达式会立即执行，然后函数暂停，等待 Promise settled（即 resolved 或 rejected）。
+- 一旦 Promise settled，函数会恢复执行。
+- 如果 Promise resolved，await 表达式的值就是 Promise 的结果。
+- 如果 Promise rejected，await 表达式会抛出异常。
+
+### 内部实现：
+
+async/await 的内部实现利用了生成器（Generator）和 Promise。可以将其理解为一个自动执行的生成器函数。
+
+```javascript
+async function example() {
+  const result = await someAsyncOperation();
+  return result;
+}
+
+// 可以理解为以下形式
+function example() {
+  return new Promise((resolve, reject) => {
+    const generator = function* () {
+      try {
+        const result = yield someAsyncOperation();
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    
+    const iterator = generator();
+    const handleNext = (value) => {
+      const next = iterator.next(value);
+      if (next.done) return;
+      Promise.resolve(next.value).then(handleNext, iterator.throw);
+    };
+    
+    handleNext();
+  });
+}
+```
+
+#### 执行过程：
+
+- 当调用 async 函数时，它会立即返回一个 Promise。
+- 函数体开始执行，直到遇到第一个 await 表达式。
+- await 表达式会暂停函数的执行，并等待 Promise 的结果。
+- 一旦 Promise settled，函数恢复执行，await 返回 Promise 的结果（或抛出异常）。
+- 这个过程会一直重复，直到函数执行完毕或抛出未捕获的异常。
+
+1. 错误处理：
+   - 在 async 函数中，可以使用 try/catch 来捕获 await 的错误。
+   - 如果没有被捕获，错误会导致返回的 Promise 被 reject。
+2. 事件循环和任务队列：
+   - async/await 不会阻塞事件循环。当遇到 await 时，函数的后续代码会被放入微任务队列（microtask queue）。
+   - 这确保了异步操作不会阻塞主线程，同时保持了代码的顺序执行。
 
 使用场景
 
@@ -811,78 +863,76 @@ Object.prototype.toString.call(new MyClass()); // "[object MyClass]"
 - `Array.prototype.slice()`, `Array.prototype.concat()`
 - 使用拓展运算符实现的复制
 
-在JavaScript中，浅拷贝（Shallow Copy）和深拷贝（Deep Copy）是两种不同的复制对象的方法，它们之间的主要区别在于如何处理嵌套的对象或数组。
+JavaScript 中的深拷贝和浅拷贝是两种不同的复制对象的方法，它们之间的主要区别在于如何处理嵌套的对象或数组。
 
 1. 浅拷贝（Shallow Copy）:
 
-浅拷贝会创建一个新对象，其属性值是原始对象属性值的一份精确拷贝。如果属性是基本类型，拷贝的就是基本类型的值；如果属性是引用类型，拷贝的就是内存地址。
+   - 创建一个新对象，该对象有着原始对象属性值的一份精确拷贝。
+   - 如果属性是基本类型，拷贝的就是基本类型的值。
+   - 如果属性是引用类型，拷贝的就是内存地址，所以如果其中一个对象改变了这个地址，就会影响到另一个对象。
+   - 只复制对象的第一层属性。
 
-特点：
+   示例：
+   ```javascript
+   let obj1 = { a: 1, b: { c: 2 } };
+   let obj2 = Object.assign({}, obj1);
+   // 或者使用展开运算符
+   // let obj2 = { ...obj1 };
 
-- 只复制对象的第一层属性
-- 如果属性是基本类型，拷贝其值
-- 如果属性是引用类型，拷贝其内存地址（两个对象共享同一个内存地址）
+   obj2.a = 3;
+   obj2.b.c = 4;
 
-实现浅拷贝的方法：
+   console.log(obj1); // { a: 1, b: { c: 4 } }
+   console.log(obj2); // { a: 3, b: { c: 4 } }
+   ```
 
-```javascript
-// 使用Object.assign()
-let obj = { a: 1, b: { c: 2 } };
-let newObj = Object.assign({}, obj);
+2. 深拷贝（Deep Copy）:
 
-// 使用展开运算符
-let newObj2 = { ...obj };
+   - 创建一个新对象，该对象有着原始对象属性值的一份精确拷贝。
+   - 对于非基本类型的属性，递归地复制其所有层级的属性。
+   - 深拷贝会创建一个全新的对象，与原始对象完全独立，互不影响。
 
-// 使用Array.slice() (用于数组)
-let arr = [1, 2, [3, 4]];
-let newArr = arr.slice();
-```
+   示例：
+   ```javascript
+   let obj1 = { a: 1, b: { c: 2 } };
+   let obj2 = JSON.parse(JSON.stringify(obj1)); // 一种简单的深拷贝方法，但有局限性
+   
+   obj2.a = 3;
+   obj2.b.c = 4;
+   
+   console.log(obj1); // { a: 1, b: { c: 2 } }
+   console.log(obj2); // { a: 3, b: { c: 4 } }
+   ```
 
-1. 深拷贝（Deep Copy）:
+主要区别：
 
-深拷贝会递归复制所有层级的属性，创建一个完全独立的新对象，包括嵌套的对象和数组。
+1. 复制深度：
+   - 浅拷贝只复制对象的第一层属性。
+   - 深拷贝递归复制对象的所有层级。
 
-特点：
+2. 内存分配：
+   - 浅拷贝中，对于复杂类型的属性，新对象和原对象引用同一块内存。
+   - 深拷贝会创建全新的内存空间，新旧对象完全独立。
 
-- 递归复制所有层级的属性
-- 完全独立的新对象，修改新对象不会影响原对象
-- 处理循环引用可能会导致栈溢出
+3. 相互影响：
+   - 浅拷贝中，改变新对象的复杂类型属性会影响原对象。
+   - 深拷贝中，新旧对象互不影响。
 
-实现深拷贝的方法：
+4. 性能：
+   - 浅拷贝通常更快，因为它只复制一层。
+   - 深拷贝可能较慢，尤其是对于大型、嵌套的对象。
 
-```javascript
-// 使用JSON.parse() 和 JSON.stringify() (有局限性，不能处理函数、undefined等)
-let obj = { a: 1, b: { c: 2 } };
-let newObj = JSON.parse(JSON.stringify(obj));
+5. 实现复杂度：
+   - 浅拷贝相对简单，可以使用 Object.assign() 或展开运算符。
+   - 深拷贝相对复杂，通常需要递归或使用专门的库。
 
-// 递归实现
-function deepCopy(obj) {
-  if (typeof obj !== 'object' || obj === null) {
-    return obj;
-  }
-  
-  let newObj = Array.isArray(obj) ? [] : {};
-  
-  for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      newObj[key] = deepCopy(obj[key]);
-    }
-  }
-  
-  return newObj;
-}
+注意：简单的 JSON.parse(JSON.stringify()) 方法虽然可以实现深拷贝，但它有一些局限性：
 
-// 使用第三方库如lodash
-const _ = require('lodash');
-let newObj = _.cloneDeep(obj);
-```
+- 无法复制函数、undefined、symbol。
+- 不能处理循环引用。
+- 会丢失原型链。
 
-总结：
-
-- 浅拷贝只复制对象的第一层属性，而深拷贝递归复制所有层级的属性。
-- 浅拷贝更快，但可能导致意外的副作用（当修改嵌套对象时）。
-- 深拷贝创建完全独立的新对象，但可能较慢，且需要注意循环引用问题。
-- 选择使用哪种方法取决于你的具体需求和对象结构。
+对于更复杂的深拷贝需求，可能需要使用递归方法或专门的库（如 lodash 的 _.cloneDeep()）来实现。
 
 ## 闭包
 
