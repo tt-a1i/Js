@@ -2036,30 +2036,133 @@ JavaScript 的事件模型是实现动态交互的重要机制，了解并灵活
 
 ## typeof 与 instanceof 区别
 
-`typeof`与`instanceof`都是判断数据类型的方法，区别如下：
+`typeof` 和 `instanceof` 是 JavaScript 中用于检测变量类型的两个重要操作符，但它们的用途和适用场景有所不同。
 
-- `typeof`会返回一个变量的`基本类型`，`instanceof`返回的是一个`布尔值`,`instanceof` 运算符用于检测构造函数的 `prototype` 属性是否出现在某个实例对象的原型链上
+### `typeof` 操作符
 
-  
+`typeof` 是一个一元操作符，用于返回一个字符串，表示未经计算的操作数的数据类型。它可以应用于任何变量，并且结果通常是以下几种类型之一：
 
-- `instanceof` 可以准确地判断复杂引用数据类型，但是不能正确判断基础数据类型
+- `'undefined'`：如果变量未定义。
+- `'boolean'`：如果变量是布尔值。
+- `'number'`：如果变量是数字。
+- `'string'`：如果变量是字符串。
+- `'object'`：如果变量是对象（包括 `null`，数组，以及几乎所有对象类型）。
+- `'function'`：如果变量是函数。
+- `'symbol'`：如果变量是符号（在ES6中引入）。
 
-  - 而`typeof` 也存在弊端，检测`null`和`数组`返回都是`Object`, 它虽然可以判断基础数据类型（`null` 除外），但是引用数据类型中，除了`function` 类型以外，其他的也无法判断
-
-如果需要通用检测数据类型，可以采用`Object.prototype.toString`，调用该方法，统一返回格式`“[object Xxx]”`的字符串
+#### 使用示例
 
 ```javascript
-function getType(obj){
-    let type = typeof(obj);
-    if(type !== 'object') return type;
-    // return Object.prototype.toString.call(obj).replace(/^\[object (\S+)\]$/, '$1');;
-    return Object.prototype.toString.call(obj).split(' ')[1].slice(0, -1);
-}
-//typeof 特例
-let a = new Number(1)
-console.log(getType(new Number(1)));//Number
-console.log(typeof(new Number(1)));//Object
+console.log(typeof 42); // "number"
+console.log(typeof 'hello'); // "string"
+console.log(typeof true); // "boolean"
+console.log(typeof undefined); // "undefined"
+console.log(typeof {name: 'John'}); // "object"
+console.log(typeof [1, 2, 3]); // "object"
+console.log(typeof function() {}); // "function"
+console.log(typeof null); // "object" （这是一个历史遗留问题）
+console.log(typeof Symbol('symbol')); // "symbol"
 ```
+
+#### 注意点
+
+- **`null` 返回 "object"**：这被认为是 JavaScript 的一个历史遗留错误，但是为了保持兼容性并未修复。
+- **数组**：`typeof` 对数组返回 "object"，因为数组在底层也是一种对象。
+- **函数**：对于函数类型，`typeof` 会返回 "function"。
+
+### `instanceof` 操作符
+
+`instanceof` 是一个二元操作符，用于检测对象是否为某个构造函数的实例。它用于确定对象的原型链上是否存在特定构造函数的 `prototype` 属性。
+
+#### 使用示例
+
+```javascript
+let arr = [1, 2, 3];
+console.log(arr instanceof Array); // true
+console.log(arr instanceof Object); // true
+
+let date = new Date();
+console.log(date instanceof Date); // true
+console.log(date instanceof Object); // true
+
+let func = function() {};
+console.log(func instanceof Function); // true
+console.log(func instanceof Object); // true
+
+function Person() {}
+let person = new Person();
+console.log(person instanceof Person); // true
+console.log(person instanceof Object); // true
+```
+
+#### 注意点
+
+- **原型链检查**：`instanceof` 检查的是构造函数的 `prototype` 属性在不在对象的原型链上，所以结果依据实际的原型链结构。**如果修改了原型链**，结果会不同。
+
+  - ```javascript
+    let a = new String('a');  // 创建一个字符串对象，而不是原始字符串
+    Object.setPrototypeOf(a, Array.prototype);
+    console.log(a instanceof Array);  // 输出：true
+    ```
+
+- **与 `typeof` 的对比**：`instanceof` 更适合用于检测复杂的数据类型（如自定义对象或类），而 `typeof` 主要用于基本数据类型的检测。
+
+### 区别与总结
+
+1. **检测对象类型**：
+   - `typeof` 主要用于检测基本数据类型（Boolean、Number、String、Undefined、Symbol）。
+   - `instanceof` 主要用于检测复杂数据类型（自定义类的实例或内置对象如数组、日期等）。
+
+2. **返回值**：
+   - `typeof` 返回一个表示数据类型的字符串。
+   - `instanceof` 返回一个布尔值，表示对象是否是特定构造函数的实例。
+
+3. **适用场景**：
+   - 使用 `typeof` 来检测基本类型，如 `number`、`string`、`boolean`、`undefined`、`function`。
+   - 使用 `instanceof` 来检测某个对象是否是某个构造函数的实例，适用于复杂类型及继承体系。
+
+4. **特殊情况**：
+   - 对于 `null`，`typeof null` 返回 "object"，这是一种历史遗留问题，应特别注意。
+   - 对于数组，`typeof` 返回 "object" 而 `instanceof Array` 返回 true。
+
+#### 示例总结
+
+```javascript
+let num = 100;
+let str = "hello";
+let bool = true;
+let und;
+let obj = {a: 1};
+let arr = [1, 2, 3];
+let func = function() {};
+let date = new Date();
+let regex = /abc/;
+let nul = null;
+
+console.log(typeof num); // "number"
+console.log(typeof str); // "string"
+console.log(typeof bool); // "boolean"
+console.log(typeof und); // "undefined"
+console.log(typeof obj); // "object"
+console.log(typeof arr); // "object"
+console.log(typeof func); // "function"
+console.log(typeof date); // "object"
+console.log(typeof regex); // "object"
+console.log(typeof nul); // "object"
+
+console.log(arr instanceof Array); // true
+console.log(arr instanceof Object); // true
+console.log(date instanceof Date); // true
+console.log(date instanceof Object); // true
+console.log(func instanceof Function); // true
+console.log(func instanceof Object); // true
+console.log(obj instanceof Object); // true
+console.log(str instanceof String); // false
+```
+
+通过理解 `typeof` 和 `instanceof` 的不同使用场景和返回值，你可以选择合适的操作符来进行类型检测，提高代码的正确性和可维护性。
+
+
 
 ## 事件冒泡和事件捕获
 
@@ -2256,12 +2359,155 @@ abortController.abort();
 
 ## new操作符具体干了什么
 
-`new`操作符用于创建一个给定构造函数的实例对象
+`new` 操作符在 JavaScript 中用于创建一个由构造函数定义的新实例。构造函数是一个普通的函数，但是当使用 `new` 操作符调用它时，会执行一些与直接调用函数不同的操作。深入理解 `new` 的内部机制可以帮助开发者更好地掌握 JavaScript 的面向对象编程。本节将详细介绍 `new` 操作符的步骤和其执行的具体操作。
 
-- 创建一个新的对象`obj`
-- 将对象与构建函数通过原型链连接起来
-- 将构建函数中的`this`绑定到新建的对象`obj`上
-- 根据构建函数返回类型作判断，如果是原始值则被忽略，如果是返回对象，需要正常处理
+### `new` 操作符的具体步骤
+
+使用 `new` 操作符时，JavaScript 会执行以下步骤来创建新对象：
+
+1. **创建一个新对象**：
+   - 创建一个空的简单 JavaScript 对象（从 `Object.prototype` 继承）。
+
+2. **将构造函数的原型赋值给新对象的 `__proto__` 属性**：
+   - 将新对象的内部属性 `[[Prototype]]`（即 `__proto__` 属性）指向构造函数的原型对象（`Constructor.prototype`）。
+
+3. **将构造函数的 `this` 绑定到新创建的对象**：
+   - 使用新创建的对象通过 `this` 关键字绑定到构造函数中，执行构造函数代码。
+
+4. **返回新创建的对象**：
+   - 如果构造函数显式返回一个对象（即返回值是一个对象类型），那么返回该对象。
+   - 否则，返回新创建的对象。
+
+下面是一个用伪代码描述的流程：
+
+```javascript
+function myNew(constructor, ...args) {
+    // 1. 创建一个空对象
+    let obj = {};
+
+    // 2. 将新对象的原型设置为构造函数的原型
+    obj.__proto__ = constructor.prototype;
+
+    // 3. 将构造函数的 this 绑定到新对象，并执行构造函数
+    let result = constructor.apply(obj, args);
+
+    // 4. 如果构造函数返回的结果是对象，返回该对象；否则返回新对象
+    return (result !== null && (typeof result === 'object' || typeof result === 'function')) ? result : obj;
+}
+```
+
+### 详解步骤
+
+#### 1. 创建一个新对象
+
+当使用 `new` 操作符时，首先会创建一个空的 JavaScript 对象，这个对象继承自 `Object.prototype`。
+
+```javascript
+let obj = {};
+```
+
+#### 2. 设置新对象的原型
+
+然后，将新对象的 `__proto__` 设置为构造函数的 `prototype` 属性。这意味着新对象将通过原型链继承构造函数 `prototype` 上的方法和属性。
+
+```javascript
+obj.__proto__ = Constructor.prototype;
+```
+
+#### 3. 绑定 `this` 并执行函数
+
+接下来，使用构造函数的 `this` 绑定到新创建的对象 `obj`。然后，执行构造函数，并且把构造函数的参数传递进去。
+
+```javascript
+let result = Constructor.apply(obj, args);
+```
+
+#### 4. 返回新对象
+
+最后，如果构造函数返回了一个对象，那么返回这个对象；否则返回新创建的对象 `obj`。
+
+```javascript
+return (result !== null && (typeof result === 'object' || typeof result === 'function')) ? result : obj;
+```
+
+### 示例代码
+
+通过下面的示例代码来验证上述步骤：
+
+```javascript
+function Person(name, age) {
+    this.name = name;
+    this.age = age;
+
+    // 如果显式返回一个对象
+    // return { custom: 'object' };
+}
+
+// 使用 new 操作符创建一个 Person 实例
+let person = new Person('Alice', 30);
+
+console.log(person.name); // Alice
+console.log(person.age); // 30
+console.log(person instanceof Person); // true
+console.log(person instanceof Object); // true
+```
+
+在这个例子中：
+
+1. 创建一个新对象 `{}`。
+2. 将新对象的 `__proto__` 设置为 `Person.prototype`。
+3. 绑定 `this` 到新对象并执行 `Person` 函数。
+4. 返回新对象，因此 `person` 的 `name` 和 `age` 属性被正确赋值，且 `person` 是 `Person` 类的实例。
+
+### 显式返回非对象的情况
+
+如果构造函数返回一个非对象类型的值，那么返回新创建的对象：
+
+```javascript
+function Car(make, model) {
+    this.make = make;
+    this.model = model;
+    return 42; // 显式返回一个基本类型（非对象）
+}
+
+let car = new Car('Toyota', 'Camry');
+
+console.log(car.make); // Toyota
+console.log(car.model); // Camry
+console.log(car instanceof Car); // true
+```
+
+尽管构造函数返回了一个基本类型 `42`，但是 `new` 操作符仍然返回新创建的对象。
+
+### 显式返回对象的情况
+
+如果构造函数显式返回一个对象，那么这个对象将作为整个 `new` 操作的返回值：
+
+```javascript
+function House(address) {
+    this.address = address;
+    return { custom: 'This is a custom object' };
+}
+
+let house = new House('123 Main St');
+
+console.log(house.custom); // This is a custom object
+console.log(house.address); // undefined
+console.log(house instanceof House); // false
+```
+
+在这个例子中，构造函数返回了一个显式对象 `{ custom: 'This is a custom object' }`，所以 `house` 变量的值是这个显式返回的对象，而不是新创建关联 `House.prototype` 的对象。
+
+### 小结
+
+`new` 操作符在 JavaScript 中实现了面向对象编程，通过以下步骤创建一个新对象并执行构造函数：
+
+1. 创建一个空对象。
+2. 设置新对象的原型链。
+3. 绑定 `this` 到新对象并执行构造函数。
+4. 返回新对象（如果构造函数未显式返回对象）。
+
+通过理解这些底层机制，开发者可以更好地利用 JavaScript 的对象系统，编写健壮和高效的代码。
 
 ## Ajax
 
