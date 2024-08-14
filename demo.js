@@ -1,16 +1,20 @@
-function debounce(fn, delay){
-    let timer = null;
-    return function(...args){
-        if(timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-            fn.apply(this, args)
-            console.timeEnd()
-        }, delay)
-    }
+function quickSort(arr, low = 0, high = arr.length - 1) {
+	while (low < high) {
+		let pivotIndex = partition(arr, low, high);
+		quickSort(arr, low, pivot - 1);
+		quickSort(arr, pivot + 1, high);
+	}
+	return arr;
 }
-let log = () => console.log(1)
-let fn = debounce(log, 2000)
-console.time()
-fn()
-setTimeout(fn, 1500)
-setTimeout(fn, 3000)
+function partition(arr, low, high) {
+	const pivot = arr[high];
+	let i = low - 1;
+	for (let j = low; j < high; j++) {
+		if (arr[j] <= pivot) {
+			i++;
+			[arr[i], arr[j]] = [arr[j], arr[i]];
+		}
+	}
+	[arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+	return i + 1;
+}
