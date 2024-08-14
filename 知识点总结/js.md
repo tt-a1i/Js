@@ -3282,74 +3282,544 @@ console.log(doubleAndSquare(3)); // 36
 
 ## 函数缓存
 
-函数缓存，就是`将函数运算过的结果进行缓存`
+函数缓存（Function Caching），也称“记忆化”（Memoization），是一种优化技术，特别适用于那些存在重复计算需求的场景。通过缓存函数的计算结果，可以避免重复计算，从而提高性能。
 
-本质上就是`用空间（缓存存储）换时间（计算过程）`
+### 什么是函数缓存？
 
-常用于缓存数据计算结果和缓存对象
+函数缓存是指在函数第一次运行时，将计算结果缓存起来。下次当函数被调用时，如果输入相同，就直接返回缓存的结果，而不再进行重复计算。函数缓存通常用于那些计算复杂且代价较高的函数。
 
-实现函数缓存主要依靠`闭包、柯里化、高阶函数`
+### 基本实现思路
 
+1. 创建一个缓存对象，用于存储输入参数和相应的输出结果。
+2. 在每次函数调用时，先检查输入参数是否在缓存对象中。
+3. 如果在缓存中找到相应的结果，直接返回该结果。
+4. 如果未找到，执行计算，并将结果存储到缓存对象中，然后返回该结果。
 
+### 简单实现
 
-实现原理也很简单，把参数和对应的结果数据存在一个对象中，`调用时判断参数对应的数据是否存在，存在就返回对应的结果数据，否则就返回计算结果`
+我们先来看一个简单的 Memoization 实现，用于缓存单一参数的函数结果：
 
 ```javascript
-const memoize = function (func, content) {
-  let cache = Object.create(null)
-  content = content || this
-  return (...key) => {
-    if (!cache[key]) {
-      cache[key] = func.apply(content, key)
+function memoize(fn) {
+  const cache = {};
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache[key]) {
+      return cache[key];
+    } else {
+      const result = fn.apply(this, args);
+      cache[key] = result;
+      return result;
     }
-    return cache[key]
-  }
+  };
 }
-const calc = memoize(add);
-const num1 = calc(100,200)
-const num2 = calc(100,200) // 缓存得到的结果
+
+// 示例函数：计算斐波那契数列
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+// 使用 memoize 包装斐波那契函数
+const memoizedFibonacci = memoize(fibonacci);
+console.time()
+console.log(memoizedFibonacci(40));
+console.timeEnd()
+console.time()
+console.log(memoizedFibonacci(40))
+console.timeEnd()
+---------------------------------------log-------------------------------------------
+102334155
+default: 932.363ms
+102334155
+default: 0.079ms
+
 ```
 
-#### 应用场景
+### 深入理解
 
-1. **计算密集型任务：** 对于需要进行复杂计算的函数，如果函数的输入参数相同，那么输出结果也是相同的，可以通过函数缓存来避免重复计算，提高性能。
-2. **网络请求：** 对于需要从服务器获取数据的函数，如果请求参数相同，可以缓存服务器返回的结果，避免重复请求，提高响应速度。
-3. **数据处理：** 对于数据处理函数，如果需要对大量数据进行处理，可以缓存处理过的数据，避免重复操作，提高效率。
-4. **递归函数：** 对于递归函数，可以使用函数缓存来存储已经计算过的中间结果，避免重复计算，提高效率。
+让我们更加深入地阐述函数缓存的细节和优化：
+
+#### 1. 缓存策略
+
+不同的缓存策略可能影响缓存的命中率和性能。例如，缓存可能按值（value-based）或按引用（reference-based）存储数据。对于复杂对象，通常需要对输入参数进行序列化（如使用 JSON.stringify）。
+
+#### 2. 自动清理
+
+在实际应用中，缓存可能会占用大量内存。可以使用“缓存过期”或者“LRU（Least Recently Used）”策略进行自动清理。下面是一个简单的 LRU 缓存示例：
+
+```javascript
+function memoize(fn, limit = 10) {
+  const cache = new Map();
+
+  return function(...args) {
+    const key = JSON.stringify(args);
+
+    if (cache.has(key)) {
+      const value = cache.get(key);
+      cache.delete(key);
+      cache.set(key, value);
+      return value;
+    }
+
+    const result = fn.apply(this, args);
+
+    cache.set(key, result);
+    if (cache.size > limit) {
+      // 删除最早添加的缓存
+      cache.delete(cache.keys().next().value);
+    }
+    return result;
+  };
+}
+```
+
+#### 3. 函数缓存适用场景
+
+函数缓存尤其适用于以下场景：
+
+- **计算密集型任务**：如数学计算、图形处理。
+- **纯函数**：无副作用且仅依赖输入参数。例如，斐波那契数列、阶乘运算。
+- **网络请求缓存**：避免多次请求同一资源。
+- **重复性数据转换**：如大型数据集的转换和映射。
+
+#### 4. 函数缓存的注意事项
+
+- **内存使用**：缓存数据会占用内存，在处理大数据量或长时间运行的程序中需要注意内存管理。
+- **副作用**：仅对纯函数有效，带有副作用的函数不适合使用缓存。
+- **缓存命中率**：低命中率可能导致不如预期的性能提升，需根据具体情况使用缓存。
+
+### 实际案例
+
+来看一个实际应用中的函数缓存案例：HTTP 请求结果缓存。
+
+```javascript
+function memoizeAsync(fn) {
+  const cache = new Map();
+
+  return async function(...args) {
+    const key = JSON.stringify(args);
+
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    const result = await fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+// 模拟异步请求函数
+async function fetchData(url) {
+  const response = await fetch(url);
+  return response.json();
+}
+
+// 包装异步请求函数
+const memoizedFetchData = memoizeAsync(fetchData);
+
+// 使用示例
+memoizedFetchData('https://jsonplaceholder.typicode.com/todos/1')
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
+```
+
+### 高阶库和工具
+
+在实际开发中，可以使用某些库和工具来简化和增强函数缓存的实现：
+
+1. **lodash.memoize**：流行的实用工具库 lodash 提供了 memoize 方法。
+2. **memoizee**：功能强大的 memoization 库，支持多参数、异步和限时缓存。
+
+```javascript
+const memoize = require('lodash.memoize');
+
+const memoizedFunction = memoize((n) => {
+  // 模拟复杂计算
+  console.log(`Computing for ${n}`);
+  return n * 2;
+});
+
+console.log(memoizedFunction(5)); // Computing for 5, 10
+console.log(memoizedFunction(5)); // 10 (缓存命中，没有计算)
+```
+
+### 总结
+
+函数缓存（Memoization）是一种高效的优化技术，适用于纯函数和计算密集型任务。通过缓存计算结果，可以大幅减少计算次数，提高性能。实际应用中要结合具体情况选择合适的缓存策略，并注意内存管理和缓存命中率。充分利用现有的库和工具也可以简化实现，提升开发效率。掌握这一技术，可以使代码在性能优化方面达到一个新的水平。
 
 ## Javascript 数字精度
 
-JavaScript 中，数字精度丢失问题是由于采用` IEEE 754 标准的双精度浮点数表示法`所导致的
+JavaScript 的数字精度是一个复杂而重要的话题，涉及到 IEEE 754 标准、浮点数表示、以及在实际编程中的各种注意事项。让我们深入探讨这个主题：
 
-#### 解决方法：
+### JavaScript 中的数字表示
 
-1. **使用整数进行计算：** 将需要进行精确计算的小数转换为整数进行计算，计算完成后再转换回小数。
-2. **使用精确计算库：** 可以使用第三方的精确计算库，如 BigNumber.js、decimal.js 等，这些库提供了精确的十进制数值运算，避免了浮点数的精度问题。
-3. **四舍五入或截断处理：** 对于需要显示的小数结果，可以使用四舍五入或截断处理来控制小数点后的位数，避免显示过多的小数位数。
-4. **避免直接比较：** 在进行数字比较时，避免直接使用等号判断两个浮点数是否相等，而是采用误差范围的方式进行比较。
-5. **使用 ECMAScript 6 的新特性：** ECMAScript 6 引入了 BigInt 类型，用于表示任意精度的整数，可以避免大整数的精度问题。
+JavaScript 使用 IEEE 754 标准的双精度浮点数来表示所有数字。这意味着：
+
+- 使用 64 位来存储一个数字
+- 1 位用于符号
+- 11 位用于指数
+- 52 位用于尾数（也称为有效数字或小数部分）
+
+### 精度限制
+
+由于这种表示方法，JavaScript 中的数字存在一些精度限制：
+
+a) 整数精度
+   - 可以精确表示的最大整数是 2^53 - 1（9007199254740991）
+   - 超过这个范围的整数可能会失去精度
 
 ```javascript
-// 使用整数进行计算示例
-function add(x, y) {
-  const precision = Math.pow(10, 4); // 精度，此处为保留四位小数
-  const result = Math.round((x * precision + y * precision) / precision);
-  return result / precision;
+console.log(Number.MAX_SAFE_INTEGER); // 9007199254740991
+console.log(9007199254740991 + 1 === 9007199254740991 + 2); // true
+```
+
+b) 浮点数精度
+   - 浮点数运算可能产生微小的舍入误差
+
+```javascript
+console.log(0.1 + 0.2); // 0.30000000000000004
+console.log(0.1 + 0.2 === 0.3); // false
+```
+
+### 常见问题和解决方案
+
+a) 浮点数比较
+   问题：直接比较浮点数可能导致意外结果
+   解决方案：使用一个很小的误差范围（epsilon）进行比较
+
+```javascript
+function areEqual(a, b, epsilon = 0.0001) {
+  return Math.abs(a - b) < epsilon;
 }
 
-console.log(add(0.1, 0.2)); // 输出 0.3
+console.log(areEqual(0.1 + 0.2, 0.3)); // true
 ```
+
+b) 金融计算
+   问题：金融计算需要精确的小数
+   解决方案：使用专门的库（如 decimal.js）或将金额转换为整数计算
+
+```javascript
+// 不推荐
+console.log(0.1 + 0.2); // 0.30000000000000004
+
+// 推荐
+function add(a, b) {
+  return (a * 100 + b * 100) / 100;
+}
+console.log(add(0.1, 0.2)); // 0.3
+```
+
+c) 舍入误差
+   问题：某些十进制小数无法精确表示为二进制浮点数
+   解决方案：使用 toFixed() 方法或自定义舍入函数
+
+```javascript
+function round(number, decimals) {
+  return Number(Math.round(number + 'e' + decimals) + 'e-' + decimals);
+}
+
+console.log(round(1.005, 2)); // 1.01
+```
+
+### BigInt
+
+对于需要处理超出 Number.MAX_SAFE_INTEGER 范围的整数，JavaScript 提供了 BigInt 类型：
+
+```javascript
+const bigInt = 1234567890123456789012345678901234567890n;
+console.log(bigInt); // 1234567890123456789012345678901234567890n
+
+// BigInt 运算
+console.log(bigInt + 1n); // 1234567890123456789012345678901234567891n
+```
+
+注意：BigInt 不能与普通数字直接进行混合运算。
+
+### 数字格式化
+
+a) toFixed()
+   用于格式化小数位数，但可能引入舍入误差
+
+```javascript
+const num = 1.23456;
+console.log(num.toFixed(2)); // "1.23"
+```
+
+b) toPrecision()
+   控制有效数字的位数
+
+```javascript
+const num = 1.23456;
+console.log(num.toPrecision(3)); // "1.23"
+```
+
+### 特殊数值
+
+JavaScript 有一些特殊的数值需要注意：
+
+a) Infinity 和 -Infinity
+```javascript
+console.log(1 / 0);  // Infinity
+console.log(-1 / 0); // -Infinity
+```
+
+b) NaN (Not a Number)
+```javascript
+console.log(0 / 0);  // NaN
+console.log(parseInt("Hello")); // NaN
+```
+
+### 精确计算库
+
+对于需要高精度计算的场景，可以使用专门的库：
+
+a) decimal.js
+```javascript
+import Decimal from 'decimal.js';
+
+const a = new Decimal(0.1);
+const b = new Decimal(0.2);
+console.log(a.plus(b).toString()); // "0.3"
+```
+
+b) big.js
+```javascript
+import Big from 'big.js';
+
+const x = new Big(0.1);
+const y = x.plus(0.2);
+console.log(y.toString()); // "0.3"
+```
+
+#### 性能考虑
+
+- 整数运算通常比浮点数运算快
+- 使用高精度库可能会影响性能，应权衡精度需求和性能要求
+
+#### 最佳实践
+
+a) 避免直接比较浮点数
+b) 金融计算时使用专门的库或整数运算
+c) 了解并正确处理 NaN 和 Infinity
+d) 对于大整数，使用 BigInt
+e) 在展示结果时使用适当的舍入和格式化方法
+
+#### ES6+ 新特性
+
+##### a) Number.EPSILON
+
+   表示 1 与大于 1 的最小浮点数之间的差
+
+```javascript
+function epsEqual(x, y) {
+  return Math.abs(x - y) < Number.EPSILON;
+}
+
+console.log(epsEqual(0.1 + 0.2, 0.3)); // true
+```
+
+##### b) Number.isSafeInteger()
+
+   检查一个数是否在安全整数范围内
+
+```javascript
+console.log(Number.isSafeInteger(9007199254740991)); // true
+console.log(Number.isSafeInteger(9007199254740992)); // false
+```
+
+结论：
+JavaScript 的数字精度问题源于其使用 IEEE 754 浮点数表示法的特性。虽然这种表示方法在大多数情况下工作良好，但在需要高精度计算（如金融应用）或处理非常大的数字时，可能会遇到问题。理解这些限制并采用适当的策略（如使用专门的库、正确的比较方法、适当的舍入技术等）可以帮助开发者有效地处理 JavaScript 中的数字精度问题。随着 JavaScript 的发展，新的特性如 BigInt 的引入也为处理大整数提供了新的解决方案。在实际开发中，选择合适的数字处理方法应该基于具体的应用需求和性能考虑。
 
 ## 8种数据类型
 
-1. Undefined（未定义）
-2. Null（空值）
-3. Boolean（布尔值）
-4. Number（数字）
-5. String（字符串）
-6. Symbol（符号）
-7. BigInt（大整数）
-8. Object（对象）
+JavaScript 作为一门动态、松散类型的编程语言，其数据类型体系相对简单，但也有一些独特的设计。JavaScript 的数据类型可以分为两大类：**原始类型（Primitive Types）**和**引用类型（Reference Types）**。原始类型包括 `Undefined`、`Null`、`Boolean`、`Number`、`String`、`Symbol` 和 `BigInt`。引用类型主要是 `Object`。
+
+JavaScript 中的8种主要数据类型可以分为原始类型和引用类型：
+
+- **原始类型**：
+  - Undefined
+  - Null
+  - Boolean
+  - Number
+  - String
+  - Symbol
+  - BigInt
+
+- **引用类型**：
+  - Object：包括普通对象、数组、函数、日期、正则表达式、Map、Set 等。
+
+**原始类型**是不可变的，直接存储值。**引用类型**是可变的，通过引用存储值。理解这些不同的数据类型及其特性，是编写高效和健壮JavaScript代码的基础。
+
+### 1. Undefined
+
+`Undefined` 表示一个未赋值的变量或者一个未定义的属性。
+
+```javascript
+let x;
+console.log(x); // undefined
+console.log(typeof x); // "undefined"
+const obj = {};
+console.log(obj.nonExistentProperty); // undefined
+```
+
+### 2. Null
+
+`Null` 表示一个空值或者一个无效的对象引用。它是一个关键字，可以用作字面量。
+
+```javascript
+let y = null;
+console.log(y); // null
+console.log(typeof y); // "object" (这是一个被认为是设计错误的问题)
+```
+
+### 3. Boolean
+
+`Boolean` 类型有两个值：`true` 和 `false`，主要用于条件判断。
+
+```javascript
+const isTrue = true;
+const isFalse = false;
+console.log(typeof isTrue); // "boolean"
+console.log(typeof isFalse); // "boolean"
+```
+
+### 4. Number
+
+`Number` 类型表示的是64位双精度浮点数（符合 IEEE 754 标准）。`Number` 类型可以表示整数和小数。
+
+```javascript
+const intNum = 42;
+const floatNum = 3.14;
+console.log(typeof intNum); // "number"
+console.log(typeof floatNum); // "number"
+```
+
+- **特殊值**：
+    - `Infinity`：表示正无穷大。
+    - `-Infinity`：表示负无穷大。
+    - `NaN`（Not a Number）：表示一个非数字值。
+
+```javascript
+console.log(1 / 0); // Infinity
+console.log(-1 / 0); // -Infinity
+console.log("hello" / 2); // NaN
+```
+
+### 5. String
+
+`String` 是用于表示文本数据的类型。字符串可以用单引号（`'`）、双引号（`"`）或者反引号（`` ` ``）括起来。
+
+```javascript
+const singleQuoteStr = 'Hello, World!';
+const doubleQuoteStr = "Hello, World!";
+const templateStr = `Hello, World!`;
+console.log(typeof singleQuoteStr); // "string"
+console.log(typeof doubleQuoteStr); // "string"
+console.log(typeof templateStr); // "string"
+
+// 模板字符串还支持插值和多行字符串：
+const name = "John";
+const greeting = `Hello, ${name}!`;
+const multiLineStr = `This is line 1
+This is line 2`;
+console.log(greeting); // "Hello, John!"
+console.log(multiLineStr);
+```
+
+### 6. Symbol
+
+`Symbol` 是 ES6 引入的一种原始数据类型，表示唯一的标识符，通常用于对象属性的键，以避免属性命名冲突。
+
+```javascript
+const sym1 = Symbol();
+const sym2 = Symbol('description');
+console.log(typeof sym1); // "symbol"
+console.log(sym1 === sym2); // false
+
+const obj = {};
+const symKey = Symbol('key');
+obj[symKey] = 'value';
+console.log(obj[symKey]); // 'value'
+```
+
+### 7. BigInt
+
+`BigInt` 是 ES11 引入的一种原始类型，用于表示任意精度的整数。这种类型主要为了解决 `Number` 类型无法精确表示大整数的问题。
+
+```javascript
+const bigInt1 = 1234567890123456789012345678901234567890n;
+const bigInt2 = BigInt("1234567890123456789012345678901234567890");
+console.log(typeof bigInt1); // "bigint"
+
+const sum = bigInt1 + bigInt2;
+console.log(sum); // 2469135780246913578024691357802469135780n
+```
+
+### 8. Object
+
+`Object` 是引用类型，表示集合或者复杂的一组数据。所有其他的数据类型都被称为原始类型。
+
+常见的对象类型包括：
+
+1. **普通对象（Object）**：
+
+```javascript
+const obj = { name: "John", age: 30 };
+console.log(typeof obj); // "object"
+console.log(obj.name); // "John"
+```
+
+2. **数组（Array）**：
+
+```javascript
+const arr = [1, 2, 3];
+console.log(typeof arr); // "object"
+console.log(Array.isArray(arr)); // true
+console.log(arr[0]); // 1
+```
+
+3. **函数（Function）**：
+
+```javascript
+function greeting() {
+  console.log("Hello, World!");
+}
+console.log(typeof greeting); // "function"
+greeting(); // "Hello, World!"
+```
+
+4. **日期（Date）**：
+
+```javascript
+const date = new Date();
+console.log(typeof date); // "object"
+console.log(date); // The current date and time
+```
+
+5. **正则表达式（RegExp）**：
+
+```javascript
+const regex = /\d+/;
+console.log(typeof regex); // "object"
+console.log(regex.test("123abc")); // true
+```
+
+6. **Map 和 Set**：
+
+```javascript
+const map = new Map();
+map.set('key', 'value');
+console.log(typeof map); // "object"
+console.log(map.get('key')); // "value"
+
+const set = new Set();
+set.add(1);
+console.log(typeof set); // "object"
+console.log(set.has(1)); // true
+```
 
 ## 防抖和节流
 
