@@ -20,7 +20,7 @@ function partition(arr, low, high) {
     const pivot = arr[high]
     let i = low - 1
     for(let j = low; j < high; j++){
-        if(arr[j] <= pivot){//左边的都小于枢轴
+        if(arr[j] <= pivot){//左边的都小于枢轴,保证i左边的都比pivot小
             i++
             [arr[i], arr[j]] = [arr[j], arr[i]]
         }
