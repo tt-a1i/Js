@@ -1,15 +1,27 @@
-var obj = {
-    name: 'obj',
-    foo1: () => {
-      console.log(this.name)
-    },
-    foo2: function () {
-      console.log(this.name)
-      return () => {
-        console.log(this.name)
-      }
+class EventEmitter{
+    constructor(){
+        this.events = {}
     }
-  }
-  var name = 'window'
-  obj.foo1()//undefined
-  obj.foo2()()//obj obj
+    on(event, listener){
+        if(!this.events[event]){
+            this.events[event] = []
+        }
+        this.events[event].push(listener)
+    }
+    off(event, listener){
+        if(!this.events[event]){
+            return;
+        }
+        this.events[event] = this.events[event].filter(l => l !== listener)
+    }
+    emit(event, ...args){
+        if(!this.events[event]) return;
+        this.events[event].forEach(l => l(args))
+    }
+}
+function greet(name){
+    console.log(`hello ${name}`);
+}
+const emitter = new EventEmitter()
+emitter.on('greet', greet)
+emitter.emit('greet', 'tom')
