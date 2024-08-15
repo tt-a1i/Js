@@ -2806,3 +2806,172 @@ History 模式和 Hash 模式是 Vue Router（以及其他前端路由系统）�
 2. **访问方式**: `ref` 包装的值通过 `.value` 访问；`reactive` 直接访问属性就像普通对象一样。
 3. **深层响应性**: `reactive` 提供深层响应性，嵌套属性的变化也能响应；`ref` 提供的是浅层响应性。
 4. **直接赋值对象或数组时使用ref**：当对reactive对象赋值新的数组时，指向的引用会变，reactive会监测不到变化响应式不会更新，ref会更新
+
+## 展开操作符为什么能确保响应性系统能够捕捉到数据变化
+
+展开操作符（...）之所以能够确保响应式系统捕捉到数据变化,主要是因为它遵循了不可变性原则,创建了新的引用。让我们深入探讨这个问题:
+
+1. 引用比较与响应式系统
+
+大多数响应式系统(如React、Vue等)在检测状态变化时,采用的是浅比较(shallow comparison)。这意味着它们比较的是对象或数组的引用,而不是深层次的内容。
+
+例如:
+
+```javascript
+const obj1 = { a: 1, b: 2 };
+const obj2 = { a: 1, b: 2 };
+
+console.log(obj1 === obj2); // false
+```
+
+尽管obj1和obj2的内容完全相同,但它们是两个不同的对象引用,因此比较结果为false。
+
+2. 展开操作符的作用
+
+展开操作符创建了一个新的对象或数组,而不是修改原有的。这就产生了一个新的引用。
+
+```javascript
+const originalObj = { a: 1, b: 2 };
+const newObj = { ...originalObj, c: 3 };
+
+console.log(originalObj === newObj); // false
+```
+
+3. 响应式系统中的应用
+
+在React等框架中,当我们更新状态时,如果返回的是同一个引用,框架会认为状态没有变化,从而不触发重新渲染。
+
+使用展开操作符:
+
+```javascript
+setState(prevState => ({ ...prevState, newProp: value }));
+```
+
+这里创建了一个新对象,包含了之前状态的所有属性,并添加/更新了newProp。由于是新对象,React能检测到变化。
+
+4. 避免直接修改
+
+如果直接修改对象:
+
+```javascript
+// 错误示范
+setState(prevState => {
+  prevState.newProp = value;
+  return prevState;
+});
+```
+
+这样不会创建新引用,React可能检测不到变化。
+
+5. 性能考虑
+
+虽然创建新对象可能看起来效率较低,但现代JavaScript引擎对此进行了优化。相比之下,深层比较所有属性会更耗费性能。
+
+6. 嵌套对象的处理
+
+展开操作符只进行浅拷贝。对于嵌套对象,需要递归应用:
+
+```javascript
+const newState = {
+  ...oldState,
+  nestedObj: {
+    ...oldState.nestedObj,
+    updatedProp: newValue
+  }
+};
+```
+
+7. 数组操作
+
+展开操作符同样适用于数组:
+
+```javascript
+const newArray = [...oldArray, newItem];
+```
+
+这创建了一个新数组,而不是修改原数组。
+
+8. 函数式编程范式
+
+使用展开操作符符合函数式编程的原则,特别是不可变性(Immutability)原则,这有助于代码的可预测性和可测试性。
+
+9. 调试便利性
+
+由于每次更新都创建新对象,使用开发者工具可以更容易地追踪状态变化的历史。
+
+10. 并发模式的支持
+
+在React的并发模式中,不可变更新变得更加重要,因为React可能需要回滚或重复应用某些更新。
+
+总结:
+展开操作符之所以能确保响应式系统捕捉到数据变化,是因为它创建了新的对象引用,而不是修改现有对象。这符合大多数响应式系统基于引用比较的检测机制,同时也带来了更好的性能、可预测性和调试体验。正确使用展开操作符,能够有效地管理状态更新,确保UI与数据保持同步。
+
+## 前端框架,像vue和react的生命周期和html页面的生命周期有关系吗
+
+当然可以！前端框架如 Vue 和 React 都有自己的生命周期，这些生命周期钩子是帮助开发者在应用的不同阶段注入逻辑和控制行为的强大工具。理解这些概念对开发稳健和性能优化的单页应用（SPA）非常重要。
+
+### Vue.js 的生命周期
+
+Vue.js 是一个渐进式 JavaScript 框架，它的生命周期可以分为以下几个关键阶段：
+
+1. **创建阶段（Creation Phase）**：
+   - `beforeCreate`: 实例刚被创建，数据观测和事件机制尚未初始化。
+   - `created`: 实例创建完成，实例已经具有响应式数据，但尚未编译模板和挂载 DOM。
+
+2. **挂载阶段（Mounting Phase）**：
+   - `beforeMount`: 模板编译和挂载在实际 DOM 之前调用。
+   - `mounted`: 实例被挂载，`this.$el` 可以访问到真实的 DOM 元素。
+
+3. **更新阶段（Updating Phase）**：
+   - `beforeUpdate`: 响应式数据更新触发重新渲染前调用。
+   - `updated`: 完成 DOM 更新后调用。
+
+4. **销毁阶段（Destruction Phase）**：
+   - `beforeDestroy`: 实例销毁之前调用，可以在这里清理实例相关的内容。
+   - `destroyed`: 实例销毁后调用。
+
+### React 的生命周期
+
+React 是一个用于构建用户界面的库，它的生命周期方法在不同组件类型（如类组件和函数组件）之间有些许区别。我们先讨论类组件的生命周期，然后简要提及函数组件的生命周期（通过 React Hooks 实现）。
+
+**类组件生命周期**
+
+1. **初始化（Initialization）**：
+   - `constructor`: 构造函数，用于初始化状态和绑定事件处理器。
+
+2. **挂载（Mounting）**：
+   - `componentWillMount`（已废弃，在 React 16.3 后不推荐使用）: 组件即将挂载到 DOM 中。
+   - `componentDidMount`: 组件已经挂载到 DOM 中，可以在这里执行异步操作（例如数据获取）。
+
+3. **更新（Updating）**：
+   - `componentWillReceiveProps`（已废弃，在 React 16.3 后推荐用 `getDerivedStateFromProps` 替代）: 在老的 props 改变之前调用。
+   - `shouldComponentUpdate`: 返回值决定组件是否重新渲染。
+   - `componentWillUpdate`（已废弃，在 React 16.3 后不推荐使用）: 组件即将重新渲染前调用。
+   - `componentDidUpdate`: 组件更新后调用。
+
+4. **卸载（Unloading/Unmounting）**：
+   - `componentWillUnmount`: 组件即将卸载和销毁前调用。
+
+**函数组件生命周期（通过 Hooks 实现）**
+
+函数组件没有类组件的生命周期方法，但可以通过 React Hooks 实现类似的生命周期管理：
+
+- `useEffect`: 可以看作是 `componentDidMount`、`componentDidUpdate` 和 `componentWillUnmount` 的结合。依赖数组可以控制 `useEffect` 的调用时刻。
+- `useState`: 用来管理组件状态，类似于类组件中的 `this.state` 和 `this.setState`。
+
+### HTML 页面生命周期
+
+HTML 页面没有像 Vue 和 React 那样明确的生命周期钩子，但浏览器确实有一些事件可以表示 HTML 页面从加载到卸载的不同状态：
+
+1. **DOMContentLoaded**: 当 HTML 文档被完全加载和解析时，但不一定完成了样式表、图片等资源的加载。
+2. **load**: 当整个页面，包括所有依赖资源如样式表和图片都已完全加载。
+3. **beforeunload**: 用户即将离开页面时触发，通常用于弹出确认对话框。
+4. **unload**: 页面完全卸载时触发，可以执行一些清理操作。
+
+### 生命周期之间的关系
+
+Vue 和 React 的生命周期是用于控制组件行为和状态，而 HTML 页面生命周期与页面的加载、解析和卸载过程相关。
+
+它们之间没有直接的关系，但是在实际应用开发中，Vue 和 React 的生命周期方法可以与 HTML 页面生命周期事件相结合。例如，可以在 Vue 的 `mounted` 或 React 的 `componentDidMount` 方法中注册 `DOMContentLoaded` 或 `load` 事件，以确保在整个页面及其资源完全加载后执行某些操作。如此结合可确保应用在合适的时机执行关键逻辑，提升用户交互体验。
+
+理解和适时利用这些生命周期钩子和事件，可以帮助开发更稳定、高效的前端应用。
