@@ -1,27 +1,23 @@
-class EventEmitter{
-    constructor(){
-        this.events = {}
-    }
-    on(event, listener){
-        if(!this.events[event]){
-            this.events[event] = []
+function deepCopy(obj, map = new WeakMap()){
+    if(!obj || typeof obj !== 'object') return obj;
+    if(map.has(obj)) return map.get(obj);
+    let copy = Array.isArray(obj) ? [] : {}
+    map.set(obj, copy)
+    if(Array.isArray(obj)){
+        for(let i = 0; i < obj.length; i++){
+            copy[i] = deepCopy(obj[i], map)
         }
-        this.events[event].push(listener)
-    }
-    off(event, listener){
-        if(!this.events[event]){
-            return;
+    }else{
+        for(let item in obj){
+            copy[item] = deepCopy(obj[item], map)
         }
-        this.events[event] = this.events[event].filter(l => l !== listener)
     }
-    emit(event, ...args){
-        if(!this.events[event]) return;
-        this.events[event].forEach(l => l(args))
-    }
+    return copy;
 }
-function greet(name){
-    console.log(`hello ${name}`);
-}
-const emitter = new EventEmitter()
-emitter.on('greet', greet)
-emitter.emit('greet', 'tom')
+const obj = {name:'a', friends:['tom', 'jerry']}
+obj.self = obj;
+const newObj = deepCopy(obj)
+console.log(newObj);
+console.log(newObj.self === newObj);
+
+

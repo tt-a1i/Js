@@ -1,6 +1,6 @@
 function deepCopy(obj, map = new WeakMap()){
     if(typeof obj !== 'object' || obj === null) return obj;
-    if(map.has(obj)) return map.get(obj);
+    if(map.has(obj)) return map.get(obj);//对于循环引用，如果这句代码注释了会栈溢出
     let copy = Array.isArray(obj) ? [] : {}
     map.set(obj, copy)
     if(Array.isArray(obj)){
