@@ -867,3 +867,10 @@ n % 2 === 0
 // 小数取模不为0
 ```
 
+## alert输出内容为【Object Object】
+
+`alert` 无法直接显示对象的内容，因为它默认只能显示字符串
+
+如果你想以可读的形式查看对象的内容，可以将对象转换为字符串格式，通常可以使用 `JSON.stringify()` 函数来实现。这是因为 `JSON.stringify()` 会将 JavaScript 对象序列化为 JSON 字符串格式。
+
+`JSON.stringify(response.data, null, 2)` 会把 `response.data` 转变为一个格式良好的字符串形式，其中 `null` 和 `2` 是分别用于替换函数和缩进级别的参数，缩进级别

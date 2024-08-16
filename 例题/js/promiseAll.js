@@ -40,7 +40,7 @@ function myPromiseAll(promises){
 const promises1 = [
     Promise.resolve(1),
     Promise.resolve(2),
-    Promise.reject(3)
+    // Promise.reject(3)
   ];
   
   myPromiseAll(promises1)
