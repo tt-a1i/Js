@@ -839,3 +839,97 @@ for (let i = 0; i < items.length; i++) {
 ```
 
 总结来说，`querySelectorAll` 返回的 `NodeList` 是可以使用 `forEach` 直接进行遍历的，此外你也可以选择将其转换为数组或使用其他循环方式进行遍历。
+
+## CSS懒加载
+
+CSS 懒加载是一种优化网页加载性能的方法，旨在推迟加载非关键的 CSS 资源，直到它们实际需要时才进行加载。这种策略可以减少页面初次加载时的渲染阻塞，提高页面加载速度和性能。
+
+### 为什么需要 CSS 懒加载？
+
+1. **提高初次渲染速度**：在页面首次加载时，浏览器会等待关键 CSS 文件下载完毕再进行渲染，懒加载非关键 CSS 可以减少渲染阻塞。
+   
+2. **减小页面初始加载重量**：只加载首屏需要的样式，减少初次加载的 CSS 文件大小。
+   
+3. **密集带宽利用**：将非必要的 CSS 延迟加载，有助于更高效地利用网络带宽。
+
+### 实现 CSS 懒加载的方法
+
+#### 1. **Media Queries**
+
+通过为 `<link>` 标签设置 `media` 属性，可以指定某些 CSS 仅在特定媒体条件下加载。例如：
+
+```html
+<link rel="stylesheet" href="print.css" media="print">
+```
+
+这里的 CSS 文件只在页面打印时加载。
+
+#### 2. **JavaScript 动态加载**
+
+可以使用 JavaScript 动态创建 `<link>` 标签来加载 CSS：
+
+```javascript
+function loadCSS(href) {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  document.head.appendChild(link);
+}
+
+// 在需要时调用
+loadCSS("styles.css");
+```
+
+这种方法可以用于在特定用户交互或页面滚动到某个部分时加载 CSS。
+
+#### 3. **Preload + On Demand Loading**
+
+首先预加载CSS，然后在结束时应用：
+
+```html
+<link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="styles.css"></noscript>
+```
+
+这里使用 `preload` 在浏览器后台预加载 CSS 文件，当文件加载完成后，`onload` 回调将 `rel` 修改为 `stylesheet`，以此方式应用样式。
+
+#### 4.使用 `Intersection Observer` 实现懒加载
+
+可以使用 `Intersection Observer` 来检测元素是否出现在视口中，然后懒加载对应的样式。
+
+```javascript
+// 初始化 Intersection Observer
+const observer = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // 当目标元素出现在视口中时，加载所需的 CSS 文件
+      loadCSS('/path/to/style.css');
+      // 停止观察该元素
+      observer.unobserve(entry.target);
+    }
+  });
+});
+
+// 目标元素
+const targetElement = document.querySelector('#lazy-load-element');
+
+// 开始观察目标元素
+observer.observe(targetElement);
+```
+
+#### 5.路由懒加载与 CSS 懒加载结合
+
+在使用前端路由时（如 Vue Router 或 React Router），可以在路由切换时动态加载特定页面的 CSS。
+
+### 注意事项
+
+- **确保关键渲染路径的 CSS 不被懒加载**：CSS 懒加载应该只应用于非关键样式，否则会导致页面打开时未渲染完全的闪烁或无样式的元素。
+  
+- **处理 FOUC（无样式内容闪烁）**：一些懒加载策略可能导致首屏出现无样式内容闪烁的问题，要小心控制懒加载 CSS 的时机。
+
+- **浏览器兼容性**：某些方法可能在老旧浏览器中不被支持，应该进行浏览器兼容性检查。
+
+总的来说，合理的 CSS 懒加载策略可以显著提升页面的首屏加载性能，同时确保用户体验不受影响。根据项目的具体需求选择合适的懒加载技术至关重要。
+
+
+
