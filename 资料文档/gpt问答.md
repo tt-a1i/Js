@@ -95,7 +95,7 @@ sse的onemessage对数据进行更新
   - **数据更新：**根据标识更新具体的数组中的某一项数据（找到历史中当前进行的会话）
   - ![image-20240812145057932](assets/image-20240812145057932.png)
   - **取消出错请求**
-  - ![image-20240812145332594](assets/image-20240812145332594.png)
+  - ![image-20240817153242810](assets/image-20240817153242810.png)
 
 #### 关于模拟调用el-upload实现对预览栏的图片进行问答和上传图片问答走一套逻辑
 
@@ -195,7 +195,7 @@ MIME（Multipurpose Internet Mail Extensions）用于指定文件的类型和格
 
 ##### 为什么需要 Blob
 
-Blob（Binary Large Object）是一种表示二进制数据的大对象，通常用于在浏览器中存储和处理文件。Blob 对象可以表示图片、视频、音频等多种二进制数据。
+Blob（Binary Large Object）是一种**表示二进制数据的大对象**，通常用于在浏览器中存储和处理文件。Blob 对象可以表示图片、视频、音频等多种二进制数据。
 
 ##### Blob 在这个函数中的作用
 
@@ -233,19 +233,13 @@ Blob（Binary Large Object）是一种表示二进制数据的大对象，通常
 
 1. 文件上传
 
-   ：
-
    - 当需要上传文件到服务器时，通常会使用 Blob 或 File 对象。Blob 对象可以代表任何二进制数据，同时也可以指定 MIME 类型。
 
 2. 数据处理
 
-   ：
-
    - Blob 对象用于处理大型二进制数据，如将数据读取到内存中进行处理，或者使用 Blob 创建下载链接，允许用户下载二进制文件。
 
 3. 预览功能
-
-   ：
 
    - 使用 `URL.createObjectURL(blob)` 可以生成一个临时 URL，用于在网页中直接显示二进制数据，如图像预览、视频播放等。
 
@@ -527,6 +521,62 @@ element.scrollTop = element.scrollHeight - element.clientHeight;
 
 ### 第一版,不实现打字机,根据props.content的变化,页面进行响应式更新,vue的虚拟dom进行优化(猜测),所以不会闪动
 
+```javascript
+<script>
+import { computed, defineComponent } from "@vue/composition-api";
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+import { marked } from "marked";
+export default defineComponent({
+  props: {
+    content: {
+      type: String,
+    },
+    sanitize: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  setup(props) {
+    marked.setOptions({
+      renderer: new marked.Renderer(),
+      sanitize: props.sanitize,
+      pedantic: false,
+      highlight(code) {
+        return hljs.highlightAuto(code).value;
+      },
+    });
+
+    const wrapClass = computed(() => {
+      return ["text-wrap", "min-w-[20px]", "rounded-md", "bg-[#f4f6f8]"];
+    });
+
+    const text = computed(() =>
+      marked(props.content.replace(/\\n|\r\n/g, "<br />"))
+    );
+    return {
+      text,
+      wrapClass,
+    };
+  },
+});
+</script>
+
+<template>
+  <div class="text-black" :class="wrapClass">
+    <div class="leading-relaxed break-all">
+      <div class="markdown-body dark" v-html="text" v-blank />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+@import url(./github.less);
+</style>
+```
+
+
+
 ### 第二版,实现打字机,但是由于fulltext重新赋值,所以在sse数据未全部传输之前会导致重新赋值,页面闪动,直到数据不再更新才正确显示
 
 ```vue
@@ -687,6 +737,61 @@ onMounted(() => {
 ![image-20240809201923906](assets/image-20240809201923906.png)
 
 ![image-20240809201937409](assets/image-20240809201937409.png)
+
+### 第四版，requestAnimation
+
+```javascript
+const typeWriterEffect = () => {
+      console.log(1);
+      if (typingIndex < fullText.value.length) {
+        displayedContent.value = fullText.value.slice(0, typingIndex++);
+        timer = requestAnimationFrame(typeWriterEffect);
+      } else {
+        if (timer !== null) {
+          cancelAnimationFrame(timer);
+          timer = null;
+        }
+      }
+    };
+```
+
+可以在可能已有高帧率的情况下获得更平滑的性能表现，同时还可以更高效地使用浏览器提供的优化,
+
+因为它是由浏览器来调度的，通常可以提供更好的性能和电池效率
+
+1. **准确的间隔**：`requestAnimationFrame` 的调用频率是每秒 60 次（即每 16.67 毫秒运行一次），这可能会比你原来的 `props.typingSpeed`（如果它高于 16ms）更快。因此，如果你的 `typingSpeed` 是高于 16ms，你可能需要在 `typeWriterEffect` 中手动添加一些计时逻辑，以确保你的效果和原先的 `setTimeout` 在视觉上保持一致。
+2. **取消动画**：确保在不需要进行动画时使用 `cancelAnimationFrame` 来尽可能释放资源。
+3. 调用频率大约为每秒60次（即每帧16.67毫秒）,这一频率是由浏览器和硬件刷新率决定的，不可直接通过 `requestAnimationFrame` 调用自身进行加速到**更短的时间间隔**。
+4. 适合用于动画和视觉更新,因为它与浏览器的重绘周期同步,可以提供更流畅的动画效果
+5. 当你使用 `requestAnimationFrame` 并切换到其他标签页时，浏览器通常会暂停该标签页的动画执行。`requestAnimationFrame` 的一个特性是它会在标签页不活跃时暂停调用，这样可以减少CPU和GPU的消耗。这意味着如果用户切换到其他标签页，动画会暂停，直到用户返回到原来的标签页时才会继续执行。
+6. 通义千问的效果就是这样的
+
+#### 控制速度版本
+
+这里增加了一个lastTime变量来记录上一次更新的时间，通过比较performance.now()和lastTime之间的差值来控制打字速度。
+
+```javascript
+如果你希望有一个打字速度参数，你可以这样做：
+
+const typeWriterEffect = () => {
+  console.log(1);
+  const now = performance.now();
+  if (now - lastTime >= props.typingSpeed) {
+    if (typingIndex < fullText.value.length) {
+      displayedContent.value = fullText.value.slice(0, typingIndex++);
+      lastTime = now;
+    } else {
+      cancelAnimationFrame(timer);
+      timer = null;
+      return;
+    }
+  }
+  timer = requestAnimationFrame(typeWriterEffect);
+};
+
+let lastTime = performance.now();
+
+```
 
 ### sse动态更新内容和打字机实现动态更新
 
@@ -1007,7 +1112,8 @@ const showText = () => {
 - **`requestAnimationFrame`**:
   - 更适合用于动画操作，它与浏览器的绘制周期同步，能够提供流畅的动画帧效果。
   - 函数会在下一次重绘之前被调用，因此在精准控制时间间隔上不如 `setTimeout`。
-
+  - 速度只能调整变慢不能快
+  
 - **`setTimeout`**:
   - `setTimeout` 提供了精确的延时控制，可以设定明确的时间间隔。
   - 适合用于需要精确时间间隔的操作，如打字机效果。
@@ -1566,7 +1672,7 @@ if (stream || modelType !== "pharm") {
 5. 长期稳定性：作为Web标准，API不太可能发生重大变化。
 
 缺点：
-1. 功能限制：只支持GET请求，不能自定义HTTP方法或发送请求体。
+1. 功能限制：**只支持GET请求**，不能自定义HTTP方法或发送请求体。
 2. 有限的错误处理：错误处理能力相对较弱。
 3. 兼容性问题：某些老旧浏览器可能不支持。
 4. 缺乏高级功能：如自动重连、细粒度的超时控制等需要自行实现。
@@ -1616,16 +1722,10 @@ const copyHandler = () => {
 1. **简单和轻量**：
    - **易于实现**：SSE 使用标准的 HTTP 协议，其实现比 WebSocket 简单。在浏览器中，使用 `EventSource` 对象可以很方便地与服务器进行事件流通信，而不需要复杂的握手过程。
    - **轻量级**：SSE 只需要单向通信（从服务器到客户端），省去了 WebSocket 双向通信的复杂性和资源消耗。
-
 2. **自动重连机制**：
    - **内建重连**：SSE 内置了自动重连机制。当连接意外断开时，浏览器会自动尝试重新连接，这非常适合长时间的稳定连接要求。
-
-3. **天然支持 HTTP/2**：
-   - **HTTP/2 的多路复用**：在使用 HTTP/2 时，SSE 可以利用多路复用特性，更高效地管理多个并发连接，减少资源消耗。
-
 4. **兼容性高**：
    - **HTTP 环境**：SSE 可以更方便地穿过防火墙和代理服务器，因为它基于 HTTP 协议，不需要额外的配置和代理支持。
-
 5. **更适合长时间持续性的更新**：
    - **问答场景**：在问答模型中，通常是服务器持续向客户端推送消息，直到一个问题的回答完成，这种场景更适合使用 SSE 的单向推送通信模式。
 6.  EventStream（事件流）为 `UTF-8` 格式编码的`文本`或使用 Base64 编码和 gzip 压缩的二进制消息
@@ -1690,7 +1790,7 @@ Server-Sent Events (SSE) 与 WebSocket 在处理机制和通信模式上有明�
 
 ### 3. 数据传输模式
 - **SSE**：
-  - **文本传输**：SSE 主要用于传输字符数据（文本），数据格式简单，解析效率高，减少了服务器和客户端的处理复杂度。
+  - **文本传输**：SSE 主要用于**传输字符数据（文本）**，数据格式简单，解析效率高，减少了服务器和客户端的处理复杂度。
   
 - **WebSocket**：
   - **二进制和文本传输**：除了文本，WebSocket 还可以传输二进制数据，这虽然在某些场景下带来便利（例如实时音视频传输），但也增加了解析和处理数据的复杂性，进而增加了资源消耗。
