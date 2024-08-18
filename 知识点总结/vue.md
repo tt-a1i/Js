@@ -1,3 +1,102 @@
+## computed原理
+
+在Vue.js中，`computed`属性（计算属性）提供了一种声明式的方法来基于其依赖数据来计算和缓存属性值。当依赖数据发生变化时，`computed`属性会自动更新。其设计思想是提高性能，通过在依赖没有发生变化时避免不必要的计算。
+
+### Vue.js `computed` 属性的原理
+
+理解Vue.js `computed`属性的原理需要从以下几个方面来看：
+
+1. **依赖追踪**
+2. **缓存机制**
+3. **响应式更新**
+
+#### 1. 依赖追踪
+
+Vue.js 使用依赖追踪的方式来实现响应式数据绑定。当你在定义一个`computed`属性时，Vue 会在首次访问时执行这个函数，并记录这个函数内部所依赖的响应式数据。
+
+```javascript
+new Vue({
+  data() {
+    return {
+      firstName: 'John',
+      lastName: 'Doe'
+    }
+  },
+  computed: {
+    fullName() {
+      return this.firstName + ' ' + this.lastName;
+    }
+  }
+});
+```
+
+首次访问`fullName`时，Vue会执行`fullName`函数，记录其依赖的`firstName`和`lastName`。
+
+#### 2. 缓存机制
+
+一旦`computed`属性的依赖数据没有变更，Vue会缓存上次计算的结果，避免重复计算。这就是`computed`属性比`methods`更高效的原因。
+
+缓存的实现是通过getter和setter来完成的。当依赖的数据变更时，Vue会使缓存失效，并在下次访问`computed`属性时重新计算。
+
+计算属性的缓存机制是通过内部的**Watcher**实现的，一个`computed`属性对应一个Watcher实例。Watcher会订阅其依赖的数据，当这些数据发生变化时，会通知Watcher刷新缓存。
+
+#### 3. 响应式更新
+
+当依赖的数据发生变化时，视图部分会被自动更新。这是通过Vue的响应式系统实现的。Vue会为所有响应式的数据添加getter和setter，内部使用Dep（Dependency，依赖）来管理依赖关系。
+
+具体流程如下：
+
+1. **首次访问**：
+    - 第一次读取`computed`属性时，Vue会创建一个Watcher实例，并进行依赖收集。
+    - 在计算期间，所有访问到的响应式数据都会记录在Watcher的依赖列表中。
+
+2. **依赖数据更新**：
+    - 当依赖的数据发生变化时，这些数据的setter会通知Watcher，标记该计算属性为“需要重新计算”。
+    - 缓存会被置为无效状态。
+
+3. **重新访问**：
+    - 再次读取该`computed`属性时，如果缓存无效，Vue会重新计算属性值并更新缓存。
+
+### 例子及解析
+
+以下是一个例子，以及关键的原理解析：
+
+```javascript
+new Vue({
+  el: '#app',
+  data() {
+    return {
+      num1: 1,
+      num2: 2
+    }
+  },
+  computed: {
+    sum() {
+      console.log('computed sum');
+      return this.num1 + this.num2;
+    }
+  }
+});
+```
+
+- **首次访问`sum`**：
+    - Vue创建一个`sum`的Watcher。
+    - 访问`sum`时，会调用`sum`函数并记录依赖`num1`和`num2`。
+    - `sum`计算结果被缓存。
+
+- **依赖数据更新**：
+    - 当`num1`或`num2`发生变化时，会触发它们的setter。
+    - setter通知`sum`的Watcher，使其缓存无效。
+
+- **重新访问`sum`**：
+    - 由于缓存无效，重新计算`sum`，并更新缓存。
+
+### 总结
+
+- **依赖追踪**使得`computed`属性能绑定在响应式数据上。
+- **缓存机制**确保了在数据未变化是缓存结果，避免不必要的计算。
+- **响应式更新**利用Vue的响应式系统，实现数据变化时自动更新视图。
+
 ## Watch和Computed的区别
 
 `Watch` 和 `Computed` 是 Vue.js 中两个非常重要和强大的特性，用于处理响应式数据。但它们在使用场景和功能上有明显的区别。以下是对它们的详细深入讲解：
