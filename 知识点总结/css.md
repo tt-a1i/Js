@@ -1,3 +1,95 @@
+## 判断设备类型
+
+使用 JavaScript 判断用户端设备类型可以通过多种方法。其中最常用的方法是检查 `navigator.userAgent` 属性，该属性包含一个字符串，描述了浏览器和操作系统的相关信息。基于这个字符串，可以检测设备是桌面设备、手机还是平板。
+
+以下是几个常见的方法和示例代码：
+
+### 1. 使用 `navigator.userAgent`
+
+可以通过解析 `navigator.userAgent` 字符串来判断设备类型。虽然这种方法有些繁琐，但能够覆盖较多的情况。
+
+```javascript
+function detectDevice() {
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    if (userAgent.includes("mobile")) {
+        return "Mobile";
+    } else if (userAgent.includes("tablet") || (userAgent.includes("ipad") || (userAgent.includes("android") && !userAgent.includes("mobile")))) {
+        return "Tablet";
+    } else {
+        return "Desktop";
+    }
+}
+
+console.log(detectDevice()); // 输出设备类型
+```
+
+### 2. 使用 `navigator.userAgentData` (更现代的解决方案)
+
+一些现代浏览器提供了 `navigator.userAgentData` 接口，其结构化数据比 `navigator.userAgent` 更加可靠。
+
+```javascript
+if (navigator.userAgentData) {
+    navigator.userAgentData.getHighEntropyValues(['platform', 'model'])
+    .then(ua => {
+        console.log('platform:', ua.platform);
+        console.log('model:', ua.model);
+        if (ua.mobile) {
+            console.log('Mobile');
+        } else {
+            console.log('Desktop or Tablet');
+        }
+    });
+} else {
+    console.log('navigator.userAgentData is not supported');
+}
+```
+
+### 3. 使用特定的库
+
+可以使用一些第三方库，例如 Mobile-Detect.js。这些库通常维护得比较好，也有较广泛的社区支持。
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.4.5/mobile-detect.min.js"></script>
+<script>
+    const md = new MobileDetect(window.navigator.userAgent);
+    if (md.mobile()) {
+        console.log("Mobile");
+    } else if (md.tablet()) {
+        console.log("Tablet");
+    } else {
+        console.log("Desktop");
+    }
+</script>
+```
+
+### 4. 使用 CSS 媒体查询与 JavaScript 结合
+
+可以结合 CSS 媒体查询和 JavaScript 来判断设备类型。例如，通过 JavaScript 检测当前视口宽度：
+
+```javascript
+function getDeviceType() {
+    if (window.matchMedia("(max-width: 767px)").matches) {
+        return "Mobile";
+    } else if (window.matchMedia("(min-width: 768px) and (max-width: 1024px)").matches) {
+        return "Tablet";
+    } else {
+        return "Desktop";
+    }
+}
+
+console.log(getDeviceType()); // 输出设备类型
+```
+
+### 总结
+
+1. 使用 `navigator.userAgent` 是一种经典的方法，但字符串解析可能会因为设备字符串的多样性而变得复杂和不易维护。
+2. `navigator.userAgentData` 是较为现代和结构化的方式，但兼容性尚未覆盖所有浏览器，需要做好兼容性检查。
+3. 第三方库如 Mobile-Detect.js 提供了方便的接口，但需要引入额外的资源。
+4. 结合 CSS 媒体查询也可以判断设备类型，尤其在响应式布局的场景下非常有用。
+
+根据具体情况和需求，选择合适的方法来判断用户端设备类型。
+
 ## 单行和多行文字中设置省略号
 
 在Web开发中，处理文本溢出时常需要使用省略号来表示内容超出了可见区域。这可以通过CSS实现，下面就单行和多行文本分别讲解如何设置省略号。
@@ -36,6 +128,9 @@
     -webkit-line-clamp: 3;            /* 显示的行数 */
     max-height: 4.5em;                /* 需要根据行高和行数自己调整 */
     line-height: 1.5em;               /* 配合行高使用 */
+    width: 200px; /* 增加宽度 */
+    font-size: 14px; /* 设置合适的字体大小 */
+    border: 1px solid black; /* 添加边框以便观察 */
 }
 ```
 
