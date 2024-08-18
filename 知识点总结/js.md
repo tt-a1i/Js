@@ -6979,3 +6979,117 @@ for (const item of array) {
 
 记住，清晰的代码通常比聪明但难以理解的技巧更有价值。如果发现自己经常需要中断 forEach，这可能是一个信号，表明应该重新考虑使用其他更适合的循环方法。
 
+## 判断一个对象为空对象
+
+在JavaScript中，可以通过几种不同的方法来判断一个对象是否为空对象。以下是一些常见的方法：
+
+### 1. 使用 `Object.keys()` 方法
+
+`Object.keys()` 方法返回一个对象自身可枚举属性的键数组。对于空对象，这个数组的长度为0。
+
+```javascript
+function isObjectEmpty(obj) {
+    return Object.keys(obj).length === 0;
+}
+
+// 使用示例
+const emptyObj = {};
+const nonEmptyObj = { key: 'value' };
+
+console.log(isObjectEmpty(emptyObj));  // 输出: true
+console.log(isObjectEmpty(nonEmptyObj));  // 输出: false
+```
+
+### 2. 使用 `for...in` 循环
+
+通过 `for...in` 循环可以遍历对象的所有可枚举属性。如果该对象没有属性，循环体不会执行。
+
+```javascript
+function isObjectEmpty(obj) {
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// 使用示例
+const emptyObj = {};
+const nonEmptyObj = { key: 'value' };
+
+console.log(isObjectEmpty(emptyObj));  // 输出: true
+console.log(isObjectEmpty(nonEmptyObj));  // 输出: false
+```
+
+### 3. 使用 `JSON.stringify()`
+
+将对象转换成 JSON 字符串，空对象会被转换成 `"{}"`。
+
+```javascript
+function isObjectEmpty(obj) {
+    return JSON.stringify(obj) === '{}';
+}
+
+// 使用示例
+const emptyObj = {};
+const nonEmptyObj = { key: 'value' };
+
+console.log(isObjectEmpty(emptyObj));  // 输出: true
+console.log(isObjectEmpty(nonEmptyObj));  // 输出: false
+```
+
+### 4. 使用 `Object.getOwnPropertyNames()`
+
+`Object.getOwnPropertyNames()` 方法返回一个对象自身属性名称（包括不可枚举属性，但不包括 Symbol 属性）的数组。对于空对象，这个数组的长度同样为0。
+
+```javascript
+function isObjectEmpty(obj) {
+    return Object.getOwnPropertyNames(obj).length === 0;
+}
+
+// 使用示例
+const emptyObj = {};
+const nonEmptyObj = { key: 'value' };
+
+console.log(isObjectEmpty(emptyObj));  // 输出: true
+console.log(isObjectEmpty(nonEmptyObj));  // 输出: false
+```
+
+## 不影响原数组的情况下修改某个属性
+
+```javascript
+const arr = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' }
+];
+
+const index = 1;         // 需要修改第二个元素
+const property = 'name'; // 需要修改的属性
+const newValue = 'John'; // 新的属性值
+
+const newArray = arr.map((item, i) => i === index ? { ...item, [property]: newValue } : item);
+
+console.log(newArray);
+/*
+输出:
+[
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'John' },
+    { id: 3, name: 'Charlie' }
+]
+*/
+
+// 原数组不变
+console.log(arr);
+/*
+输出:
+[
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' }
+]
+*/
+```
+

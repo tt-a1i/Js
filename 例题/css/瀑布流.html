@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瀑布流布局</title>
+    <style>
+        .container {
+            display: grid;
+            /*grid-template-columns 属性用来定义网格的列设置*/
+            /*repeat(auto-fill, minmax(200px, 1fr))表示自动填充列，列的最小宽度为200px，
+            最大宽度为1fr（即，1个分数单位，均分容器的剩余空间）。如果空间允许，将会填充更多的列,不运行时在下一行排列*/
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            /*为网格中的每个列和行之间设置一个10px的间距*/
+            gap: 10px;
+        }
+        .item {
+            background-color: lightblue;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="item">Item 1</div>
+        <div class="item">Item 2</div>
+        <div class="item">Item 3</div>
+        <div class="item">Item 4</div>
+        <div class="item">Item 5</div>
+    </div>
+</body>
+</html>
