@@ -4,45 +4,29 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
-		<style>
-			div {
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				-webkit-line-clamp: 3;
-				max-height: 4.5em;
-				line-height: 1.5em;
-				width: 200px; /* 增加宽度 */
-				font-size: 14px; /* 设置合适的字体大小 */
-				border: 1px solid black; /* 添加边框以便观察 */
-			}
+		<style>	
 		</style>
 	</head>
 	<body>
-		<div>
-			这是一段很长的文本，用来测试多行文本省略的效果。这段文字应该足够长，以确保可以在三行内显示省略号。如果你看到这句话，说明省略效果已经生效了。
-		</div>
+		<input type="text" id="input" maxlength="10">
+		<button id="btn">排序</button>
+		<h1 id="h1"></h1>	
 		<script>
-			function detectDevice() {
-                console.log(navigator.userAgentData);
-                
-				const userAgent = navigator.userAgent.toLowerCase();
-
-				if (userAgent.includes("mobile")) {
-					return "Mobile";
-				} else if (
-					userAgent.includes("tablet") ||
-					userAgent.includes("ipad") ||
-					(userAgent.includes("android") && !userAgent.includes("mobile"))
-				) {
-					return "Tablet";
-				} else {
-					return "Desktop";
+			let input = document.getElementById('input')
+			console.log(input);
+			
+			let btn = document.getElementById('btn')
+			let h1 = document.getElementById('h1')
+			btn.addEventListener('click', () => {				
+				if(typeof +input.value != 'number'){
+					alert('输入必须为数字')
+					return;
 				}
-			}
-
-			console.log(detectDevice()); // 输出设备类型
+				let num = input.value.split('').map(Number).sort((a, b) => a - b)
+				num = [...new Set(num)].join('');
+				h1.innerHTML = num
+			})
+			
 		</script>
 	</body>
 </html>

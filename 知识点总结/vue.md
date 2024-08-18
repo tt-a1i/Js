@@ -4984,3 +4984,139 @@ export default {
 ### 总结
 
 使用 `<keep-alive>` 组件，可以有效地提高 Vue 应用的性能，通过缓存并恢复组件状态来减少不必要的重新渲染和初始化。然而，合理使用和控制缓存也非常重要，需要结合具体应用场景，确保内存和状态管理的有效性。通过理解并关注 `activated` 和 `deactivated` 生命周期钩子，开发者可以更好地管理和优化这些缓存逻辑。
+
+## 为什么vue2不建议用箭头函数
+
+在 Vue 2 中，不建议在某些情况下使用箭头函数，尤其是在定义组件的选项（如 `methods`、`computed` 中）。主要原因涉及到箭头函数的 `this` 绑定行为。
+
+### 箭头函数的 `this` 绑定行为
+
+箭头函数中的 `this` 是在定义函数的时候静态绑定的，而不是在运行时动态绑定的。这和普通函数不同。普通函数的 `this` 是在调用时根据调用的上下文动态绑定的。
+
+这是一个简化的例子，展示了箭头函数和普通函数的 `this` 绑定差异：
+
+```javascript
+const obj = {
+    value: 10,
+    regularFunction: function() {
+        console.log(this.value); // 正常工作, 输出 10
+    },
+    arrowFunction: () => {
+        console.log(this.value); // 输出 undefined, 因为这里的 `this` 不是指向 obj
+    }
+};
+
+obj.regularFunction(); // 正常输出 10
+obj.arrowFunction();   // 输出 undefined
+```
+
+### Vue 2 的 `methods` 和组件选项中使用箭头函数的问题
+
+当你在 Vue 2 组件的 `methods`、`computed` 属性中使用箭头函数时，箭头函数的固定 `this` 指向问题会导致你无法正确访问 Vue 实例的其他属性和方法。
+
+#### 示例
+
+```javascript
+const vm = new Vue({
+    el: '#app',
+    data: {
+        a: 1
+    },
+    methods: {
+        // 正常使用普通函数
+        regularMethod: function () {
+            console.log(this.a); // 正常输出 1
+        },
+        // 使用箭头函数（不推荐）
+        arrowMethod: () => {
+            console.log(this.a); // 输出 undefined, 这里 `this` 不是指向 Vue 实例
+        }
+    }
+});
+```
+
+在上面的例子中，`regularMethod` 可以正确访问 Vue 实例的 `data` 属性 `a`，而 `arrowMethod` 则不能，因为箭头函数的 `this` 绑定不会指向 Vue 实例。
+
+### 总结
+
+在 Vue 2 中，建议在 `methods` 和其他组件选项中使用普通函数，而不是箭头函数，主要原因如下：
+
+1. **动态绑定 `this`**：普通函数的 `this` 自动绑定到当前的 Vue 实例，而箭头函数的 `this` 是静态绑定的，很多情况下会指向意料之外的对象（例如全局对象或 undefined）。
+2. **访问实例属性和方法**：使用普通函数，你可以正确地访问和调用 Vue 实例的其它属性和方法。在箭头函数中，这种访问可能会失败，因为 `this` 绑定不正确。
+
+通过遵循这一推荐原则，可以避免许多由于 `this` 绑定错误引起的常见问题，确保你的 Vue 组件能够正常运行和维护。
+
+## vuex的属性 mutation和action有什么不同
+
+Vuex 是 Vue.js 的集中式状态管理库，用于管理应用中共享状态。它的设计灵感源自 Flux 和 Redux，适用于复杂应用中的状态管理。在 Vuex 中，`mutation` 和 `action` 都是用于改变状态的机制，但它们的工作方式和用途有所不同。以下是对它们的详细比较：
+
+### Mutation
+
+- **同步性**: Mutation 操作必须是同步的。这是因为 Vuex 使用一个严格的规则，即所有状态的变更必须是明显的，这样调试工具才能准确地捕捉状态变化。当你需要修改 Vuex state 中的状态时，你会在 mutation 中执行。
+  
+- **唯一方法**: Mutation 是唯一允许直接修改 Vuex store 中 state 的入口。你只能通过提交（commit）mutation 来改变状态。
+
+- **触发方式**: 使用 `commit` 方法来触发 mutation。
+
+- **代码结构**:
+  ```javascript
+  const store = new Vuex.Store({
+    state: {
+      count: 0
+    },
+    mutations: {
+      increment(state) {
+        state.count++;
+      }
+    }
+  });
+  
+  // 使用
+  store.commit('increment');
+  ```
+
+- **目的**: 由于 mutation 必须同步执行，所有的状态变化在一个特定的时间点都是可以被追踪的。这使得状态变更更具可预测性和透明度。
+  
+### Action
+
+- **异步支持**: Action 可以包含异步操作。这是 action 的主要用途之一：处理异步逻辑，如 API 调用，然后在异步操作完成后提交 mutation 去修改状态。
+
+- **触发方式**: 使用 `dispatch` 方法来触发 action。
+
+- **不能直接修改状态**: 必须通过提交 mutation 来间接修改状态，而不是直接对 state 进行变更。
+
+- **参数**: `context` 对象，它包含了 `state`、`commit`、`dispatch` 等，可以让 action 执行复杂的逻辑。
+
+- **代码结构**:
+  ```javascript
+  const store = new Vuex.Store({
+    state: {
+      count: 0
+    },
+    mutations: {
+      increment(state) {
+        state.count++;
+      }
+    },
+    actions: {
+      incrementAsync({ commit }) {
+        setTimeout(() => {
+          commit('increment');
+        }, 1000);
+      }
+    }
+  });
+  
+  // 使用
+  store.dispatch('incrementAsync');
+  ```
+
+- **目的**: 将异步操作和业务逻辑与直接的状态变更分开，从而保持状态更改的明确性和日志记录的完整性。
+
+### 主要区别总结
+
+1. **同步 vs 异步**: Mutation 必须是同步的，而 Action 可以执行异步操作。
+2. **状态变更**: Mutation 是直接负责状态的修改，而 Action 负责处理业务逻辑，如异步任务，然后通过提交 mutation 来最终改变状态。
+3. **触发方式**: Mutation 通过 `commit` 触发，而 Action 通过 `dispatch` 触发。
+
+在 Vuex 中，Action 是处理复杂业务逻辑和异步操作的地方，而 Mutation 则是用于真正改变状态的地方。将两者分开，可以使应用状态的变化轨迹更容易追踪，也使得业务逻辑和状态改变过程更加清晰和可管理。

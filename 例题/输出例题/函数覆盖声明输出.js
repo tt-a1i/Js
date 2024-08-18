@@ -2,11 +2,11 @@ let a = 1;
 function foo(a) {
 	return a = a + 1;
 }//2
-var b = foo(a);//2
+var b = foo(a);
 function foo(a) {
 	return a = a + 2;
-}//4
-const c = foo(a);//4
+}
+const c = foo(a);
 function foo(a) {
 	return a = a + 3;
 }
