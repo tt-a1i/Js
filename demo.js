@@ -1,32 +1,14 @@
-const arr = [
-    { id: 1, name: 'Alice' },
-    { id: 2, name: 'Bob' },
-    { id: 3, name: 'Charlie' }
-];
-
-const index = 1;         // 需要修改第二个元素
-const property = 'name'; // 需要修改的属性
-const newValue = 'John'; // 新的属性值
-
-const newArray = arr.map((item, i) => i === index ? { ...item, [property]: newValue } : item);
-
-console.log(newArray);
-/*
-输出:
-[
-    { id: 1, name: 'Alice' },
-    { id: 2, name: 'John' },
-    { id: 3, name: 'Charlie' }
-]
-*/
-
-// 原数组不变
-console.log(arr);
-/*
-输出:
-[
-    { id: 1, name: 'Alice' },
-    { id: 2, name: 'Bob' },
-    { id: 3, name: 'Charlie' }
-]
-*/
+function debounce(fn, delay){
+    let timer = null;
+    return function(...args){
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+            fn.apply(this, args)
+            console.timeEnd()
+        }, delay)
+    }
+  }
+  let log = () => console.log(1)
+  let fn = debounce(log, 2000)
+  console.time()
+  setTimeout(fn, 1500)
