@@ -7473,3 +7473,162 @@ Bundle 与 Chunk 的关系：
    - 是浏览器最终加载的资源。
 
 这三个概念在 Webpack 的构建流程中紧密相连：Loader 处理各种源文件，Webpack 根据依赖关系和配置将处理后的模块组合成 Chunk，最后将 Chunk 转换为最终的 Bundle 文件。这个过程使得开发者可以使用现代化的开发技术和工具，同时确保最终产出的代码能够高效地在浏览器中运行。
+
+## 微前端沙箱隔离机制原理
+
+微前端是一种将大型前端应用拆分为多个独立的子应用，以提高开发效率和可维护性的方法。要确保不同子应用之间的独立性和互不干扰，一个关键因素是沙箱隔离机制。这对于避免不同子应用之间的全局变量污染、样式冲突、资源加载冲突等问题尤为重要。
+
+### 沙箱隔离机制的原理
+
+沙箱隔离的核心目标是为每个子应用创建一个独立的执行环境，使它们的全局状态、样式和资源互不干扰。常见的隔离机制包括以下几种：
+
+1. **Iframe沙箱**
+2. **JavaScript沙箱**
+3. **CSS隔离**
+4. **静态资源隔离**
+
+#### 1. Iframe沙箱
+
+**原理**：
+- **Iframe**天然具有隔离性。每个**iframe**都有自己独立的JavaScript上下文、样式作用域和资源加载环境。
+
+**优点**：
+- 隔离彻底，天然解决了全局变量和样式的污染问题。
+
+**缺点**：
+- 性能开销较大，页面切换和资源加载速度相对较慢。
+- Iframe与父窗口之间的通信相对复杂。
+
+**示例**：
+用Iframe加载子应用：
+```html
+<iframe src="https://subapp.example.com" >
+</iframe>
+```
+
+#### 2. JavaScript沙箱
+
+通过代理（Proxy）、虚拟机（VM）等技术，实现JavaScript代码间的隔离。
+
+**原理**：
+- 使用 `Proxy` 或 `with` 关键字，劫持全局对象（如 `window`、`document`）的读写操作，使之在不同的上下文环境中有不同的作用域。
+- 可以动态创建一个独立的上下文环境，使子应用只访问这个独立上下文中的全局变量。
+
+**优点**：
+- 性能较好，避免了 Iframe 的性能开销。
+- 更灵活的上下文控制，可以精细化管理全局对象的访问。
+
+**缺点**：
+- 需要手动管理全局对象的隔离。
+- 实现复杂度较高。
+
+**示例**：
+使用 Proxy 劫持全局对象：
+```javascript
+const originalWindow = window;
+const sandboxWindow = new Proxy(originalWindow, {
+  get(target, property) {
+    // 自定义代理逻辑，比如返回局部的sandbox上下文中的值
+  },
+  set(target, property, value) {
+    // 自定义代理逻辑，比如将值写入sandbox上下文中
+  }
+});
+```
+
+#### 3. CSS隔离
+
+CSS隔离是指确保不同子应用的样式互不干扰，主要有以下几种方式：
+
+- **CSS Modules**：通过模块化的方式命名CSS类，确保类名的唯一性。
+- **Scoped Styles（作用域样式）**：使用例如Vue的 `<style scoped>` 或 React 的`CSS-in-JS` 等机制，使样式仅在特定组件内生效。
+- **前缀命名**：为不同子应用的样式类名添加唯一前缀。
+
+**优点**：
+- 方案多样，易于实现现有项目中集成。
+- 无需引入额外的复杂机制。
+
+**缺点**：
+- 需要开发者编写和维护样式时遵守命名规范。
+- 某些方案可能不适用于所有框架（如Scoped Styles 对于纯HTML项目可能不适用）。
+
+**示例**：
+CSS Modules 示例：
+```css
+/* button.module.css */
+.button {
+  background-color: red;
+}
+
+// 在React中使用
+import styles from './button.module.css';
+
+<button className={styles.button}>Click Me</button>
+```
+
+#### 4. 静态资源隔离
+
+静态资源隔离是指为每个子应用加载独立的静态资源（如JS、CSS、图片等），避免资源冲突。
+
+**方法**：
+- 使用不同的资源路径和文件名确保资源的唯一性。
+- 增加资源加载的版本号或哈希值，以避免缓存问题。
+
+**优点**：
+- 简单有效，确保不同子应用的资源不相互影响。
+
+**缺点**：
+- 需要在构建和部署过程中管理资源的路径和版本。
+
+**示例**：
+在构建工具中配置文件名包含哈希值：
+```javascript
+// webpack.config.js
+module.exports = {
+  output: {
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, 'dist')
+  }
+};
+```
+
+### 复杂应用中的实践
+
+一个实际的微前端应用可能会综合使用以上多种沙箱隔离机制。例如，可能会用Iframe来运行一些相互隔离度要求极高的应用，同时为另外一些应用使用JavaScript沙箱，以提高性能和灵活性。
+
+#### 示例：
+通过轻量级的微前端框架（如qiankun），可以自动管理这些隔离。而在qiankun中，主要使用JS沙箱为前提，同时结合CSS Modules等进行样式隔离。
+
+```javascript
+import { registerMicroApps, start } from 'qiankun';
+
+// 注册子应用
+registerMicroApps([
+  {
+    name: 'app1',
+    entry: '//localhost:7100',
+    container: '#container',
+    activeRule: '/app1',
+  },
+  {
+    name: 'app2',
+    entry: '//localhost:7101',
+    container: '#container',
+    activeRule: '/app2',
+  },
+]);
+
+// 启动微前端环境
+start();
+```
+
+通过这样的配置，我们可以同时利用JavaScript沙箱和静态资源隔离，保证各个子应用的独立性和运行效率。
+
+### 总结
+
+通过沙箱隔离机制，微前端可以实现：
+- 避免全局变量冲突。
+- 样式隔离，防止CSS污染。
+- 独立管理静态资源，避免资源冲突。
+
+不同的沙箱机制各有优劣，实际应用中可以根据具体需求和场景，选择适合的方案或者结合多种方案以达到最佳效果。通过这些手段，可以显著提高微前端系统的可维护性和稳定性。

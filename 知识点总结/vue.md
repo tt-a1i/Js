@@ -4870,3 +4870,117 @@ Vue 和 React 的生命周期是用于控制组件行为和状态，而 HTML 页
 它们之间没有直接的关系，但是在实际应用开发中，Vue 和 React 的生命周期方法可以与 HTML 页面生命周期事件相结合。例如，可以在 Vue 的 `mounted` 或 React 的 `componentDidMount` 方法中注册 `DOMContentLoaded` 或 `load` 事件，以确保在整个页面及其资源完全加载后执行某些操作。如此结合可确保应用在合适的时机执行关键逻辑，提升用户交互体验。
 
 理解和适时利用这些生命周期钩子和事件，可以帮助开发更稳定、高效的前端应用。
+
+## vue组件开启keep alive之后会经历哪些生命周期，缓存了什么东西
+
+当你在 Vue 应用中使用 `<keep-alive>` 组件来缓存动态组件时，被缓存的组件将保存其状态，并在切换回来时恢复。这个行为改变了组件的生命周期钩子函数的顺序和执行，与正常的 Vue 组件生命周期有所不同。本文将详细解释 Vue 组件在开启 `keep-alive` 后会经历的生命周期，并缓存哪些内容。
+
+### 组件生命周期
+
+在 Vue 组件中，正常的生命周期顺序如下：
+1. `beforeCreate`
+2. `created`
+3. `beforeMount`
+4. `mounted`
+5. `beforeUpdate` (更新过程)
+6. `updated` (更新过程)
+7. `beforeDestroy`
+8. `destroyed`
+
+### 在使用 `<keep-alive>` 后，组件的生命周期行为
+
+当 `<keep-alive>` 启用时，组件并不会在每次显示时被完全重新创建，而是被缓存起来：
+
+#### 首次渲染
+1. `beforeCreate`
+2. `created`
+3. `beforeMount`
+4. `mounted`
+
+#### 激活（如从缓存中恢复）
+1. `activated`
+
+#### 失活（如被缓存）
+1. `deactivated`
+
+#### 更新
+1. `beforeUpdate`
+2. `updated`
+
+### 示例代码
+
+以下是一个使用 `<keep-alive>` 的简单示例：
+
+```html
+<template>
+  <div id="app">
+    <button @click="currentView = 'A'">Show A</button>
+    <button @click="currentView = 'B'">Show B</button>
+    <keep-alive>
+      <component :is="currentView"></component>
+    </keep-alive>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      currentView: 'A'
+    }
+  },
+  components: {
+    A: {
+      template: '<div>Component A</div>',
+      created() { console.log('A created') },
+      mounted() { console.log('A mounted') },
+      activated() { console.log('A activated') },
+      deactivated() { console.log('A deactivated') }
+    },
+    B: {
+      template: '<div>Component B</div>',
+      created() { console.log('B created') },
+      mounted() { console.log('B mounted') },
+      activated() { console.log('B activated') },
+      deactivated() { console.log('B deactivated') }
+    }
+  }
+}
+</script>
+```
+
+在这个示例中，当你在不同组件之间切换时，控制台将输出这些生命周期钩子的调用顺序。
+
+### 缓存了什么内容
+
+#### 状态
+- 组件的本地状态（即 `data` 中的数据）、计算属性（computed properties）和方法（methods）会被保留在缓存中。当组件被重新激活时，这些状态将恢复到缓存时的状态。
+
+#### DOM 结构
+- `<keep-alive>` 会缓存整个组件的 DOM 结构。这意味着当组件被恢复时，它的 DOM 结构会依照缓存时的样子重新渲染，而不需要进行完全的重新构造和计算。这对性能有很大帮助，尤其是对于需要频繁切换的大型组件。
+
+#### Vue 实例
+- 组件的 Vue 实例被缓存，包括实例的所有属性和方法。这确保了在激活时，组件的内部逻辑不需要重新初始化。
+
+### 实际应用中的注意事项
+
+1. **内存管理**：长期缓存过多组件可能导致内存占用过高。使用 `<keep-alive>` 的 `include` 和 `exclude` 属性，可以控制哪些组件需要被缓存。例如：
+    ```html
+    <keep-alive include="A,B">
+      <component :is="currentView"></component>
+    </keep-alive>
+    ```
+    或者使用正则表达式：
+    ```html
+    <keep-alive :include="/^Component[A-B]$/">
+      <component :is="currentView"></component>
+    </keep-alive>
+    ```
+
+2. **外部状态管理**：在使用 Vuex 或其他状态管理工具时，确保缓存的组件与全局状态保持一致。如果需要在组件缓存时重置某些状态，可以利用 `activated` 和 `deactivated` 钩子。
+
+3. **非 Vue 资源的管理**：如果组件中使用了第三方库或全局对象（如计时器、WebSocket 等），需要在 `activated` 和 `deactivated` 钩子中进行相应的管理，以确保这些资源的正确初始化和释放。
+
+### 总结
+
+使用 `<keep-alive>` 组件，可以有效地提高 Vue 应用的性能，通过缓存并恢复组件状态来减少不必要的重新渲染和初始化。然而，合理使用和控制缓存也非常重要，需要结合具体应用场景，确保内存和状态管理的有效性。通过理解并关注 `activated` 和 `deactivated` 生命周期钩子，开发者可以更好地管理和优化这些缓存逻辑。
