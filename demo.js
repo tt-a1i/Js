@@ -1,13 +1,22 @@
-let a = 1;
-function foo(a) {
-	return a = a + 1;
-}//2
-var b = foo(a);//2
-function foo(a) {
-	return a = a + 2;
-}//4
-const c = foo(a);//4
-function foo(a) {
-	return a = a + 3;
+const obj = {
+    a: {
+        x: {
+            y: 'tom'
+        },
+        b: {
+            c: {
+                d: 'jerry'
+            }
+        }
+    }
 }
-console.log(a, b, c);
+function func(obj, str) {
+	let res = null;
+	let s = str.split(',')
+	for(let i = 0; i < s.length; i++){
+		res = res ? res[s[i]] : obj[s[i]]
+	}
+	return res
+}
+console.log(func(obj, 'a,x,y')) // 输出'tom'
+console.log(func(obj, 'a,b,c,d')) // 输出'jerry'
