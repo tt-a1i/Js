@@ -5120,3 +5120,17 @@ Vuex 是 Vue.js 的集中式状态管理库，用于管理应用中共享状态�
 3. **触发方式**: Mutation 通过 `commit` 触发，而 Action 通过 `dispatch` 触发。
 
 在 Vuex 中，Action 是处理复杂业务逻辑和异步操作的地方，而 Mutation 则是用于真正改变状态的地方。将两者分开，可以使应用状态的变化轨迹更容易追踪，也使得业务逻辑和状态改变过程更加清晰和可管理。
+
+## 什么时候用ref，reactive
+
+proxy不能代理基础类型
+
+## vue如何监听子组件的生命周期
+
+子组件生命周期执行时调用回调
+
+vue官方文档中没有说的私有api
+
+- vue2      @hook:mounted![image-20240821213305586](F:\Js\知识点总结\assets\image-20240821213305586.png)
+
+- vue3 @vue:mounted
