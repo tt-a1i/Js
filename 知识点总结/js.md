@@ -510,10 +510,10 @@ console.log('End');
 在单线程环境中，JavaScript 是如何“并行”处理异步操作的呢？
 
 1. **异步操作的本质**：
-    
+   
     - 异步操作（如网络请求、文件读取、定时器等）不会阻塞主线程。相反，这些操作通常委托给浏览器或 Node.js 的底层实现（如 I/O 操作系统级别的支持），并且可以在其开始时安排回调函数。
 2. **事件循环**：
-    
+   
     - JavaScript 的事件循环机制允许执行异步操作的回调函数被推入事件队列中，然后在主线程空闲时依次执行。
     - 这样，尽管 JavaScript 是单线程执行代码，它仍然可以通过异步操作的处理来“同时”执行多个任务。
 ## js的定时器和promise到底是js来执行还是分配给浏览器执行
@@ -550,12 +550,12 @@ JavaScript 的定时器和 `Promise` 本身的执行是通过 JavaScript 引擎�
 - **JavaScript 引擎**：负责执行 JavaScript 代码，管理事件循环和任务队列。
 - **浏览器/Node.js**：负责底层异步任务的处理（例如计时和 I/O 操作），并在完成时将回调放入JavaScript 引擎的任务队列。
 1. **JavaScript 引擎（如 V8）**：
-    
+   
     - 负责执行 JavaScript 代码，包括同步和异步的 JavaScript 逻辑。
     - 管理任务队列和微任务队列（如 Promise 的回调）。
     - 控制事件循环的运行，决定何时执行任务队列中的任务和微任务队列中的任务。
 2. **浏览器/Node.js 环境**：
-    
+   
     - 提供系统级别的 API，如定时器、网络请求、文件系统等，这些是 JavaScript 运行时环境的一部分，而不是 JavaScript 语言本身的一部分。
     - 这些环境负责在适当的时候将已完成的异步操作（如计时器到期、I/O 完成）推入事件循环的任务队列。
 
@@ -8194,3 +8194,103 @@ Canvas 本身并不直接支持像 SVG 那样的内置事件处理（如点击�
 - **性能考虑**：在复杂的图形应用中，可能需要使用空间分割或其它加速算法来优化检测过程。
 
 使用 Canvas 时，需要对元素逻辑进行更精准的管理和事件控制，这可以提供更高的渲染性能但同时也提出了对事件管理更多的编程要求。
+
+## js如何实现函数重载
+
+在JavaScript中，函数重载不像在其他一些编程语言（如Java、C++）中那样有直接的语言级支持。因此，JavaScript的函数重载需要基于编写逻辑来手动实现。一般来说，JavaScript的函数重载可以通过检测参数的数量和类型来实现。
+
+以下是几种实现函数重载的方法：
+
+### 1. 使用参数数量来实现重载
+
+通过`arguments`对象判断传入的参数数量，从而在函数内部执行不同的逻辑。
+
+```javascript
+function doSomething() {
+  if (arguments.length === 1) {
+    console.log("One argument: ", arguments[0]);
+  } else if (arguments.length === 2) {
+    console.log("Two arguments: ", arguments[0], arguments[1]);
+  }
+}
+
+doSomething("Hello");       // Output: One argument: Hello
+doSomething("Hello", "World"); // Output: Two arguments: Hello World
+```
+
+### 2. 使用参数的类型来实现重载
+
+通过`typeof`检查参数的类型，以决定执行哪个逻辑。
+
+```javascript
+function doSomething(param) {
+  if (typeof param === "string") {
+    console.log("String argument: ", param);
+  } else if (typeof param === "number") {
+    console.log("Number argument: ", param);
+  }
+}
+
+doSomething("Hello"); // Output: String argument: Hello
+doSomething(42);      // Output: Number argument: 42
+```
+
+### 3. 使用对象作为参数
+
+通过将想传递的参数放入一个对象中，这样可以提供更多的灵活性和可读性。
+
+```javascript
+function doSomething(options) {
+  if ("name" in options && "age" in options) {
+    console.log(`Name: ${options.name}, Age: ${options.age}`);
+  } else if ("name" in options) {
+    console.log(`Name: ${options.name}`);
+  } else {
+    console.log("Unknown parameters");
+  }
+}
+
+doSomething({ name: "Alice", age: 30 });  // Output: Name: Alice, Age: 30
+doSomething({ name: "Bob" });             // Output: Name: Bob
+```
+
+### 4. 默认参数值
+
+通过使用ES6的默认参数特性，为函数的参数提供默认值，这样可以模仿某种程度上的函数重载。
+
+```javascript
+function doSomething(name = "Unknown", age = 0) {
+  console.log(`Name: ${name}, Age: ${age}`);
+}
+
+doSomething();                    // Output: Name: Unknown, Age: 0
+doSomething("Charlie");           // Output: Name: Charlie, Age: 0
+doSomething("David", 25);         // Output: Name: David, Age: 25
+```
+
+### 5. 函数的不同实现
+
+为同一个功能编写不同的实现，并在主函数中决定调用哪个实现。
+
+```javascript
+function handleStringArg(arg) {
+  console.log("Handling string: ", arg);
+}
+
+function handleNumberArg(arg) {
+  console.log("Handling number: ", arg);
+}
+
+function doSomething(arg) {
+  if (typeof arg === "string") {
+    handleStringArg(arg);
+  } else if (typeof arg === "number") {
+    handleNumberArg(arg);
+  }
+}
+
+doSomething("Hello"); // Output: Handling string: Hello
+doSomething(42);      // Output: Handling number: 42
+```
+
+在JavaScript中，实现函数重载的关键是根据传入的参数数量或类型，灵活地在一个函数内部执行不同的逻辑。

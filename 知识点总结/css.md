@@ -1756,3 +1756,230 @@ window.addEventListener('DOMContentLoaded', lazyLoad);
 - `flex-basis: 100px` 指定项目的初始尺寸。
 
 通过理解和使用`flex-grow`和`flex-shrink`，可以创建出高效、响应性强的布局，尤其在需要处理动态内容时。
+
+## css 水平居中
+
+在CSS中，可以通过多种方式实现水平居中，具体的方法取决于需要居中的元素类型（如行内元素、块级元素、或者是具有定位的元素）以及布局上下文（如Flexbox或Grid布局）。以下是一些常见的水平居中方法：
+
+### 1. 行内元素
+
+对于行内元素（如`<span>`, `<a>`等），可以通过`text-align`属性实现水平居中：
+
+```html
+<div style="text-align: center;">
+  <span>水平居中</span>
+</div>
+```
+
+### 2. 块级元素
+
+#### 方法1：使用`margin: auto;`（适用于已知宽度）
+
+对于块级元素，设置`margin: auto;`并指定宽度，可以使其水平居中。
+
+```html
+<div style="width: 50%; margin: 0 auto;">
+  块级元素水平居中
+</div>
+```
+
+#### 方法2：使用Flexbox
+
+Flexbox是一种强大而灵活的布局方式，可以非常简便地实现各种居中效果。
+
+```html
+<div style="display: flex; justify-content: center;">
+  <div>水平居中</div>
+</div>
+```
+
+#### 方法3：使用Grid布局
+
+Grid布局也可以用于简化水平居中对齐。
+
+```html
+<div style="display: grid; place-items: center;">
+  <div>水平居中</div>
+</div>
+```
+
+### 3. 绝对定位元素
+
+对于使用绝对定位的元素，可以通过组合使用`left`、`right`、`transform`属性达到居中效果。
+
+```html
+<div style="position: relative; height: 100px;">
+  <div style="position: absolute; left: 50%; transform: translateX(-50%);">
+    绝对定位元素水平居中
+  </div>
+</div>
+```
+
+### 总结
+
+选择适合的水平居中方法往往取决于具体的布局和需求：
+
+- **行内元素**：`text-align: center`
+- **块级元素，已知宽度**：`margin: auto`
+- **使用Flexbox布局**：`display: flex; justify-content: center;`
+- **使用Grid布局**：`display: grid; place-items: center;`
+- **绝对定位元素**：`left: 50%; transform: translateX(-50%);`
+
+不同的项目和布局需求可能需要不同的方法，上述方法可根据具体需求选择和组合使用。
+
+## 如果绝对定位失效可能是什么原因
+
+如果在使用绝对定位时发现其失效，通常是因为某些常见的配置问题导致的。以下是一些可能的原因及解决建议：
+
+1. **没有包含相对定位的父元素**:
+   - **原因**: 绝对定位元素以最近的已定位(具有`position: relative;`或`position: absolute;`等CSS属性)的父元素为参考。如果没有这样的父元素，元素将以`<html>`或`<body>`元素为参考，可能不会如预期定位。
+   - **解决方法**: 确保绝对定位的元素的父级元素拥有`position: relative;`或者其他定位属性。
+
+2. **CSS语法错误或冲突**:
+   - **原因**: CSS文件中可能存在语法错误或者选择器冲突，导致样式未能正确应用。
+   - **解决方法**: 使用浏览器开发者工具检查CSS是否生效，以及是否存在选择器优先级问题。
+
+3. **`z-index`设置问题**:
+   - **原因**: 元素可能被其他元素覆盖，导致它看起来像是“失效”。
+   - **解决方法**: 确保`z-index`值足够大，使绝对定位的元素位于正确的层级。
+
+4. **元素不可见或被隐藏**:
+   - **原因**: 元素可能具有`display: none;`或`visibility: hidden;`。
+   - **解决方法**: 检查元素的可见性和显示属性。
+
+5. **缺少必要的`top`, `right`, `bottom`, `left`属性**:
+   - **原因**: 绝对定位需要至少一个方向属性来定义位置。
+   - **解决方法**: 确保至少指定了`top`, `right`, `bottom`, `left`中的一个来实际定位元素。
+
+6. **缓存问题**:
+   - **原因**: 有时候浏览器会缓存旧的CSS文件。
+   - **解决方法**: 尝试清除浏览器缓存或在开发者工具中禁用缓存。
+
+7. **选择器未正确匹配**:
+   - **原因**: 如果CSS规则未能正确匹配目标元素，样式就不会应用。
+   - **解决方法**: 确认CSS选择器正确指向需要定位的元素，并不是对其他元素起效。
+
+通过系统地检查以上这些可能的原因，你可以更快地找到问题所在，并修复绝对定位失效的问题。通常使用浏览器开发者工具（如Chrome DevTools）的“元素检查”功能，会比较容易发现问题。
+
+## 了解css计算属性吗？可以通过计算属性实现三栏布局吗？
+
+CSS 中的计算属性（`calc()` 函数）允许你在样式中进行数学运算，以动态计算长度、百分比等。它常用于实现灵活的布局和响应式设计。
+
+在 `calc()` 中，你可以使用以下基本运算：
+
+- 加法：`+`
+- 减法：`-`
+- 乘法：`*`
+- 除法：`/`
+
+通过计算属性，实现三栏布局是一个常见且有效的使用场景。以下是一个简单的实现示例：
+
+### 三栏布局示例
+
+假设我们要实现一个左栏、中间内容区和右栏的三栏布局，并保证左栏和右栏有固定宽度，中间区域自适应剩余的宽度。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .left, .right {
+            width: 200px; /* 固定宽度 */
+            background-color: lightgray;
+        }
+
+        .content {
+            flex: 1; /* 自适应剩余空间 */
+            background-color: lightblue;
+        }
+    </style>
+    <title>三栏布局</title>
+</head>
+<body>
+    <div class="container">
+        <div class="left">Left Sidebar</div>
+        <div class="content">Main Content Area</div>
+        <div class="right">Right Sidebar</div>
+    </div>
+</body>
+</html>
+```
+
+### 通过 `calc()` 实现中间自适应
+
+假如需要使用 `calc()` 来进一步优化或调整布局，比如调整特定宽度间距的计算，你可以这样做：
+
+```css
+.content {
+    width: calc(100% - 400px); /* 100% 减去左右两边的固定宽度 */
+    background-color: lightblue;
+}
+```
+
+在 CSS Flexbox 布局中，使用 `flex: 1` 已经很方便地处理了这种自适应问题，通常不需要额外使用 `calc()`。 但是 `calc()` 在需要复杂计算的情况下尤其有用，比如考虑到边距、填充或其他元素的间距时。
+
+### 总结
+
+通过结合 CSS Flexbox 和计算属性 `calc()`，可以非常灵活地实现各类复杂布局需求，并保持良好的响应性和适配性。选择使用哪种方法主要取决于设计的具体需求和复杂程度。
+
+## antd 5中的`css in js`
+
+Ant Design 5 引入了 `CSS-in-JS` 方案，以提升开发体验和组件的样式定制能力。Ant Design 5 使用的主要工具是 `Emotion`，它是一个流行的 CSS-in-JS 库。通过这种方式，开发者可以在 JavaScript 中直接编写样式，使样式更为动态和具有良好的模块化支持。
+
+### 关键特性：
+
+1. **动态样式**：能够基于组件状态或 prop 动态生成样式。
+   
+2. **模块化**：样式与组件紧密结合，易于管理和维护。
+
+3. **局部作用域**：避免全局样式冲突，通过唯一的类名来确保样式的局部性。
+
+4. **主题定制**：通过变量和主题能力，更轻松地实现全局样式或主题的个性化定制。
+
+5. **提升性能**：通过 Emotion 的优化机制（如样式缓存和懒加载），提升应用的性能表现。
+
+### 基本用法：
+
+在 Ant Design 5 中，使用 `styled` 和 `css` 两种方式来定义和应用 CSS。以下是简单的例子：
+
+```jsx
+import { css, styled } from '@emotion/react';
+import { Button } from 'antd';
+
+// 使用 `css` 方法
+const buttonStyle = css`
+  background-color: hotpink;
+  font-size: 16px;
+  &:hover {
+    background-color: darkorchid;
+  }
+`;
+
+// 使用 `styled` 方法
+const StyledButton = styled(Button)`
+  background-color: hotpink;
+  font-size: 16px;
+  &:hover {
+    background-color: darkorchid;
+  }
+`;
+
+const App = () => (
+  <>
+    <Button css={buttonStyle}>Regular Button</Button>
+    <StyledButton>Styled Button</StyledButton>
+  </>
+);
+
+export default App;
+```
+
+通过以上示例，您可以将样式直接附加到组件中，并根据需求进行动态调整。这是 Ant Design 5 所倡导的 `CSS-in-JS` 使用方式的一个基本示例。随着 Ant Design 的更新和社区的参与，关于 `CSS-in-JS` 的支持可能会带来更多特性和优化。
