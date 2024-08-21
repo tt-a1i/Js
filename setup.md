@@ -139,3 +139,28 @@ setup(props) {
   },
 ```
 
+## 不卡顿但是重复输出
+
+```javascript
+const typeWriterEffect = () => {
+      const startTime = performance.now();
+      const duration = 1000; // 动画总时长，单位毫秒
+      const charsPerSecond = 10; // 每秒渲染字符数
+
+      const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        typingIndex = Math.floor(progress * fullText.value.length);
+        displayedContent.value = fullText.value.slice(0, typingIndex);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          timer = null;
+        }
+      };
+      timer = requestAnimationFrame(animate);
+      console.log(timer, "");
+    };
+```
+
