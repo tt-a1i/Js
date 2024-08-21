@@ -1860,3 +1860,126 @@ Grid布局也可以用于简化水平居中对齐。
    - **解决方法**: 确认CSS选择器正确指向需要定位的元素，并不是对其他元素起效。
 
 通过系统地检查以上这些可能的原因，你可以更快地找到问题所在，并修复绝对定位失效的问题。通常使用浏览器开发者工具（如Chrome DevTools）的“元素检查”功能，会比较容易发现问题。
+
+## 了解css计算属性吗？可以通过计算属性实现三栏布局吗？
+
+CSS 中的计算属性（`calc()` 函数）允许你在样式中进行数学运算，以动态计算长度、百分比等。它常用于实现灵活的布局和响应式设计。
+
+在 `calc()` 中，你可以使用以下基本运算：
+
+- 加法：`+`
+- 减法：`-`
+- 乘法：`*`
+- 除法：`/`
+
+通过计算属性，实现三栏布局是一个常见且有效的使用场景。以下是一个简单的实现示例：
+
+### 三栏布局示例
+
+假设我们要实现一个左栏、中间内容区和右栏的三栏布局，并保证左栏和右栏有固定宽度，中间区域自适应剩余的宽度。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .left, .right {
+            width: 200px; /* 固定宽度 */
+            background-color: lightgray;
+        }
+
+        .content {
+            flex: 1; /* 自适应剩余空间 */
+            background-color: lightblue;
+        }
+    </style>
+    <title>三栏布局</title>
+</head>
+<body>
+    <div class="container">
+        <div class="left">Left Sidebar</div>
+        <div class="content">Main Content Area</div>
+        <div class="right">Right Sidebar</div>
+    </div>
+</body>
+</html>
+```
+
+### 通过 `calc()` 实现中间自适应
+
+假如需要使用 `calc()` 来进一步优化或调整布局，比如调整特定宽度间距的计算，你可以这样做：
+
+```css
+.content {
+    width: calc(100% - 400px); /* 100% 减去左右两边的固定宽度 */
+    background-color: lightblue;
+}
+```
+
+在 CSS Flexbox 布局中，使用 `flex: 1` 已经很方便地处理了这种自适应问题，通常不需要额外使用 `calc()`。 但是 `calc()` 在需要复杂计算的情况下尤其有用，比如考虑到边距、填充或其他元素的间距时。
+
+### 总结
+
+通过结合 CSS Flexbox 和计算属性 `calc()`，可以非常灵活地实现各类复杂布局需求，并保持良好的响应性和适配性。选择使用哪种方法主要取决于设计的具体需求和复杂程度。
+
+## antd 5中的`css in js`
+
+Ant Design 5 引入了 `CSS-in-JS` 方案，以提升开发体验和组件的样式定制能力。Ant Design 5 使用的主要工具是 `Emotion`，它是一个流行的 CSS-in-JS 库。通过这种方式，开发者可以在 JavaScript 中直接编写样式，使样式更为动态和具有良好的模块化支持。
+
+### 关键特性：
+
+1. **动态样式**：能够基于组件状态或 prop 动态生成样式。
+   
+2. **模块化**：样式与组件紧密结合，易于管理和维护。
+
+3. **局部作用域**：避免全局样式冲突，通过唯一的类名来确保样式的局部性。
+
+4. **主题定制**：通过变量和主题能力，更轻松地实现全局样式或主题的个性化定制。
+
+5. **提升性能**：通过 Emotion 的优化机制（如样式缓存和懒加载），提升应用的性能表现。
+
+### 基本用法：
+
+在 Ant Design 5 中，使用 `styled` 和 `css` 两种方式来定义和应用 CSS。以下是简单的例子：
+
+```jsx
+import { css, styled } from '@emotion/react';
+import { Button } from 'antd';
+
+// 使用 `css` 方法
+const buttonStyle = css`
+  background-color: hotpink;
+  font-size: 16px;
+  &:hover {
+    background-color: darkorchid;
+  }
+`;
+
+// 使用 `styled` 方法
+const StyledButton = styled(Button)`
+  background-color: hotpink;
+  font-size: 16px;
+  &:hover {
+    background-color: darkorchid;
+  }
+`;
+
+const App = () => (
+  <>
+    <Button css={buttonStyle}>Regular Button</Button>
+    <StyledButton>Styled Button</StyledButton>
+  </>
+);
+
+export default App;
+```
+
+通过以上示例，您可以将样式直接附加到组件中，并根据需求进行动态调整。这是 Ant Design 5 所倡导的 `CSS-in-JS` 使用方式的一个基本示例。随着 Ant Design 的更新和社区的参与，关于 `CSS-in-JS` 的支持可能会带来更多特性和优化。
