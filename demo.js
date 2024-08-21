@@ -1,53 +1,32 @@
-const obj = {
-    dev: 'bfe',
-    a: function(){
-        return this.dev
-    },
-    b(){
-        return this.dev
-    },
-    c: () => {
-        return this.dev
-    },
-    d: function(){
-        return (() => {
-            return this.dev
-        })()
-    },
-    e: function(){
-        return this.b()
-    },
-    f: function(){
-        return this.b
-    },
-    g: function(){
-        return this.c()
-    },
-    h: function(){
-        return this.c
-    },
-    i: function(){
-        return () => {
-            return this.dev
+function unflattenObject(flatObject) {
+    const nestedObject = {};
+  
+    for (const flatKey in flatObject) {
+      const keys = flatKey.split('.');
+      let currentLevel = nestedObject;
+
+      keys.forEach((key, index) => {
+        if (!currentLevel[key]) {
+          currentLevel[key] = {};
         }
+  
+        if (index === keys.length - 1) {
+          currentLevel[key] = flatObject[flatKey];
+        }
+  
+        currentLevel = currentLevel[key];
+      });
     }
-}
-console.log(obj.a());
-console.log(obj.b());
-console.log(obj.c());
-console.log(obj.d());
-console.log(obj.e());
-/*---------------------------------------------------------------------------------------------- */
-console.log(obj.f()());
-/*---------------------------------------------------------------------------------------------- */
-console.log(obj.g());
-console.log(obj.h()());
-console.log(obj.i()());
-
-
-
-
-
-
-
-
+  
+    return nestedObject;
+  }
+  
+  // 示例使用
+  const flatObject = {
+    'a.b.c': 2,
+    'a.b.d': 3,
+    'x.y': 5
+  };
+  
+  const nestedObject = unflattenObject(flatObject);
+  console.log(nestedObject);
