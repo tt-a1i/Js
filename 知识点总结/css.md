@@ -1983,3 +1983,78 @@ export default App;
 ```
 
 通过以上示例，您可以将样式直接附加到组件中，并根据需求进行动态调整。这是 Ant Design 5 所倡导的 `CSS-in-JS` 使用方式的一个基本示例。随着 Ant Design 的更新和社区的参与，关于 `CSS-in-JS` 的支持可能会带来更多特性和优化。
+
+## css 实现颗粒度相关
+
+实现颗粒度效果是指在网页上创建一种粒子背景或粒子的视觉效果。这种效果可以通过纯 CSS 动画、Canvas 或使用 JavaScript 来实现。不过，仅使用 CSS，可以通过一些技巧实现类似效果，不过通常比较简单，比如使用动画、透明度和伪元素。以下是一些方法来实现基本的颗粒度效果：
+
+### 1. 使用 CSS 动画和伪元素
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颗粒度效果</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #282c34;
+        }
+
+        .particle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: moveParticles 5s infinite;
+        }
+
+        @keyframes moveParticles {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(100vw * var(--x)), calc(100vh * var(--y))) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 创建多个粒子，通过<div>标签 -->
+    <div class="particle" style="--x: 0.1; --y: 0.1;"></div>
+    <div class="particle" style="--x: 0.3; --y: 0.4;"></div>
+    <div class="particle" style="--x: 0.5; --y: 0.7;"></div>
+    <div class="particle" style="--x: 0.9; --y: 0.2;"></div>
+    <div class="particle" style="--x: 0.8; --y: 0.9;"></div>
+    <!-- 添加更多粒子以增加密度 -->
+</body>
+</html>
+```
+
+### 解释
+
+- **伪元素 `::before` 和 `::after`**：在本例中未使用，但它们通常用于创建在元素前后出现的内容。可以为元素生成更多的“颗粒”效果。
+
+- **CSS 动画**：使用 `@keyframes` 创建的动画，可以设置颗粒的运动路径。
+
+- **自定义属性 `--x` 和 `--y`**：这些是在每个粒子元素内定义的，以随机化粒子散布的效果。
+
+### 其他技术
+
+- **CSS 变量**：使用 CSS 变量可以轻松调整效果参数，如速度、颜色和大小。
+
+- **背景图像**：如果需求不需要动态效果，可以创建一张带有颗粒效果的背景图像，然后在 CSS 中设置为背景图。
+
+- **更多复杂效果**：对于更加复杂的颗粒效果，比如交互式或响应动画，JavaScript 或 canvas 是更好的选择。
+
+这些 CSS 技术适用于创建简单而适度的颗粒效果，如果需要更复杂和精细的控制与效果，可以考虑结合 JavaScript 一起使用。
