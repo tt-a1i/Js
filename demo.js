@@ -1,10 +1,7 @@
-class LinkList{
-  constructor(val){
-    this.val = val;
-    this.next = null;
-    this.prev = null;
-  }
-  add(){
-    
-  }
+function myNew(constructor, ...args) {
+  const obj = {};
+  obj.__proto__ = constructor.prototype;
+
+  const result = constructor.apply(obj, args);
+   return 
 }
