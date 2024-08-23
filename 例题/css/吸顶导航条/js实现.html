@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticky Navigation Bar with JavaScript</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #333;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+      width: 100%;
+      position: relative; /* Initial position */
+    }
+
+    .navbar.sticky {
+      position: fixed; /* Fixed position when sticky */
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .nav-item {
+      display: inline-block;
+      margin: 0 15px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .content {
+      height: 2000px; /* Just to create enough scrollable content */
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar" id="navbar">
+  <a class="nav-item" href="#">Home</a>
+  <a class="nav-item" href="#">About</a>
+  <a class="nav-item" href="#">Contact</a>
+</div>
+
+<div class="content">
+  <h1>Scroll down to see the sticky effect</h1>
+  <p>...</p> <!-- Add more content here -->
+</div>
+
+<script>
+  // When the user scrolls the page, execute myFunction
+  window.onscroll = function() {myFunction()};
+
+  // Get the navbar
+  var navbar = document.getElementById("navbar");
+
+  // Get the offset position of the navbar
+  var sticky = navbar.offsetTop;
+
+  // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
+  function myFunction() {
+    if (window.pageYOffset >= sticky) {
+      navbar.classList.add("sticky");
+    } else {
+      navbar.classList.remove("sticky");
+    }
+  }
+  /*
+  获取导航栏元素：通过 document.getElementById 获取导航栏 DOM 元素。
+获取导航栏的偏移位置：通过 offsetTop 获取导航栏距离页面顶部的距离，当页面滚动超过这个距离时，导航栏就会变成固定定位。
+监听滚动事件：使用 window.onscroll 监听滚动事件，在滚动触发时执行 myFunction。
+逻辑判断和样式变更：
+如果页面滚动超过导航栏的偏移位置，给导航栏添加一个 sticky 类。
+否则，移除 sticky 类。
+在 CSS 中，通过该类控制导航栏固定和相对位置。*/
+</script>
+
+</body>
+</html>

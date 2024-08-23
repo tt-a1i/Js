@@ -2058,3 +2058,104 @@ export default App;
 - **更多复杂效果**：对于更加复杂的颗粒效果，比如交互式或响应动画，JavaScript 或 canvas 是更好的选择。
 
 这些 CSS 技术适用于创建简单而适度的颗粒效果，如果需要更复杂和精细的控制与效果，可以考虑结合 JavaScript 一起使用。
+## css如何实现选择列表前三个
+在 CSS 中，可以使用伪类选择器来选择列表的前三个元素。最常用的两种伪类选择器是 `:nth-child()` 和 `:nth-of-type()`。下面是具体的实现方法：
+
+### 使用 `:nth-child()`
+
+`:nth-child(n)` 选择器匹配其父元素的第 n 个子元素，不考虑元素类型。如果列表元素不一定是同一类型的，这个选择器可能导致选择的结果不一致。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select First Three Items</title>
+  <style>
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 10px;
+      background-color: lightgray;
+      margin: 5px 0;
+    }
+
+    /* 选择前3个列表项 */
+    li:nth-child(-n + 3) {
+      background-color: lightblue;  /* 改变背景颜色表示选中 */
+    }
+  </style>
+</head>
+<body>
+
+<ul>
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+  <li>Item 4</li>
+  <li>Item 5</li>
+</ul>
+
+</body>
+</html>
+```
+
+在这个例子中，`:nth-child(-n + 3)` 选择器选择的是前三个子元素，无论它们是什么类型的元素。`-n + 3` 表示第一个到第三个元素。
+
+### 使用 `:nth-of-type()`
+
+`:nth-of-type(n)` 选择器只选择特定类型元素的第 n 个子元素。这在你希望选择特定类型的前几个子元素（例如 `li` 元素）时非常有用。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select First Three List Items</title>
+  <style>
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 10px;
+      background-color: lightgray;
+      margin: 5px 0;
+    }
+
+    /* 选择前3个 li 元素 */
+    li:nth-of-type(-n + 3) {
+      background-color: lightgreen;  /* 改变背景颜色表示选中 */
+    }
+  </style>
+</head>
+<body>
+
+<ul>
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+  <li>Item 4</li>
+  <li>Item 5</li>
+</ul>
+
+</body>
+</html>
+```
+
+在这个例子中，`:nth-of-type(-n + 3)` 选择前三个 `li` 元素，忽略其他类型的兄弟元素。这对于选择前 N 个特定类型的元素更为精确。
+
+### 总结
+
+伪类选择器 `:nth-child()` 和 `:nth-of-type()` 都可以用来选择列表的前三个元素，选择哪一个取决于你需要的精确度：
+
+- `:nth-child(-n + 3)`：选择父元素的第 1 到第 3 个子元素，不考虑子元素的类型。
+- `:nth-of-type(-n + 3)`：选择特定类型的第 1 到第 3 个子元素，推荐用于选择特定类型的元素。
+
+只需要选择其中一种方法即可根据具体需求进行应用。
