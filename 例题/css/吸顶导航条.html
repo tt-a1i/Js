@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticky Navigation Bar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #333;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+      width: 100%;
+      position: -webkit-sticky; /* For Safari */
+      position: sticky;
+      top: 0;
+    }
+
+    .nav-item {
+      display: inline-block;
+      margin: 0 15px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .content {
+      height: 2000px; /* Just to create enough scrollable content */
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <a class="nav-item" href="#">Home</a>
+  <a class="nav-item" href="#">About</a>
+  <a class="nav-item" href="#">Contact</a>
+</div>
+
+<div class="content">
+  <h1>Scroll down to see the sticky effect</h1>
+  <p>...</p> <!-- Add more content here -->
+</div>
+
+</body>
+</html>

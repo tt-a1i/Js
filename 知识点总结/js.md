@@ -2436,18 +2436,26 @@ abortController.abort();
 下面是一个用伪代码描述的流程：
 
 ```javascript
+//类构造函数必须通过 new 关键字调用。如果不这样做，JavaScript 引擎会抛出一个 TypeError
 function myNew(constructor, ...args) {
-    // 1. 创建一个空对象
-    let obj = {};
 
-    // 2. 将新对象的原型设置为构造函数的原型
-    obj.__proto__ = constructor.prototype;
+    // 1. 创建一个新的空对象
 
-    // 3. 将构造函数的 this 绑定到新对象，并执行构造函数
-    let result = constructor.apply(obj, args);
+    const obj = {};
 
-    // 4. 如果构造函数返回的结果是对象，返回该对象；否则返回新对象
-    return (result !== null && (typeof result === 'object' || typeof result === 'function')) ? result : obj;
+    // 2. 新对象的原型链接到构造函数的 prototype,确保实例能够访问到构造函数原型上的属性和方法
+
+    Object.setPrototypeOf(obj, constructor.prototype);
+
+    // 3. 将构造函数的 this 绑定到新创建的对象上，确保了构造函数中的 this 指向以 new 方式调用时创建的对象，
+
+    //    并且构造函数内部定义的属性和方法会被正确地添加到这个对象上
+
+    const result = constructor.apply(obj, args);
+
+    // 4. 如果 result 不是对象（即为基本类型，如字符串、数字等），则返回新创建的对象 obj
+
+    return result instanceof Object ? result : obj;
 }
 ```
 
