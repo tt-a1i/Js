@@ -1,16 +1,36 @@
-function myNew(constructor, ...args) {
-  //声名一个空对象
-  const obj = {};
-  //设置新对象的原型链,继承构造函数对象的属性和方法
-  Object.setPrototypeOf(obj, constructor.prototype)
-  //绑定this并且执行函数
-  let result = constructor.apply(obj, args)
-  //判断是否产生了新对象,如果构造函数返回一个非对象的值,则返回obj对象
-  return result instanceof Object ? result : obj
+function debouncePromise(fn, delay){
+  let timer = null;
+  let promisePendingResolve = null;
+  let promisePendingReject = null;
+  let lastArgs = null;
+  return function(...args){
+    if(timer){
+      clearTimeout(timer)
+    }
+    lastArgs = args;
+    const promise = new Promise((resolve, reject) => {
+      promisePendingResolve = resolve;
+      promisePendingReject = reject;
+    })
+    timer = setTimeout(() => {
+      fn(...lastArgs)
+        .then(promisePendingResolve)
+        .catch(promisePendingReject)
+        .finally(() => {
+          promisePendingResolve = null;
+          promisePendingReject = null;
+        })
+    }, delay)
+    return promise;
+  }
 }
-function Person(name){
-  this.name = name;
+function fetchData(query){
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(query)
+    }, 1000)
+  })
 }
-const person = myNew(Person, 'tom')
-console.log(person.name);
-console.log(Person.constructor === Person);
+const debounce = debouncePromise(fetchData, 300)
+debounce('query1').then(console.log).catch(console.error)
+debounce('query2').then(console.log).catch(console.error)

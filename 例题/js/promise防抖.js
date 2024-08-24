@@ -49,4 +49,5 @@ function debouncePromise(fn, delay) {
   // 调用防抖函数
   debouncedFetchData('query1').then(console.log).catch(console.error);
   debouncedFetchData('query2').then(console.log).catch(console.error);
+  
   // 只有最后一次调用的'query2'会被真正执行
