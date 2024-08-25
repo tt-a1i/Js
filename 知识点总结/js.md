@@ -7477,6 +7477,9 @@ Webpack 通过一系列的配置和插件机制，将复杂的前端开发环境
 1. Loader
 
 作用：
+
+![image-20240825133736886](assets/image-20240825133736886.png)
+
 - Loader 是 Webpack 的核心概念之一，它的主要作用是将不同类型的文件转换为 Webpack 可以处理的模块。
 - Loader 可以将各种类型的资源（如 CSS、图片、TypeScript 等）转换为 JavaScript 模块。
 
