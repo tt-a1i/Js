@@ -514,3 +514,372 @@ fetch('https://api.example.com/data')
 \- 在内存层面理解，在声明为一个空对象的时候，照样会在堆内存中开辟一个内存空间，声明为null的时候，这个引用会指向一个0x0的内存位置，不会在堆内存中创建一个内存空间。
 \- 在转换为布尔值的时候，空对象会转换为true，而null会转换为false
 
+## 解析html时遇到script脚本会怎么处理
+
+当浏览器遇到 HTML 中的 `<script>` 标签时，会采取特定的步骤来处理和执行脚本。这一过程涉及到多个步骤，具体行为可能因浏览器和 JavaScript 引擎的不同而有所差异，但总体流程如下：
+
+### 基本文档解析过程
+
+1. **暂停解析**：
+   当浏览器解析 HTML 文档并遇到 `<script>` 标签时，它会暂停进一步解析当前的 HTML 文档，直到脚本执行完毕。这是为了确保脚本能够及时修改 DOM 结构。
+
+2. **下载脚本内容**：
+   - 若 `<script>` 标签包含 `src` 属性，则浏览器需要先下载外部脚本文件。
+   - 若 `<script>` 标签没有 `src` 属性，而是内联脚本代码，则直接解析和执行其中包含的 JavaScript 代码。
+
+3. **执行脚本**：
+   下载完成或遇到内联 JavaScript 时，浏览器会将代码传递给 JavaScript 引擎（如 V8、SpiderMonkey 等）并立即执行。
+
+### 处理顺序和封锁行为
+
+关于脚本的下载和执行，会有以下几种情况：
+
+1. **同步脚本（默认行为）**：
+   ```html
+   <script src="example.js"></script>
+   ```
+   - 单独且逐个下载和执行脚本。
+   - 当前解析行为会暂停，直至脚本下载和执行结束。
+
+2. **异步脚本 (`async` 属性)**：
+   ```html
+   <script src="example.js" async></script>
+   ```
+   - 脚本内容会异步下载，不会阻塞后续文档解析。
+   - 下载完成后会立即执行，但并不保证顺序。
+
+3. **延迟脚本 (`defer` 属性)**：
+   ```html
+   <script src="example.js" defer></script>
+   ```
+   - 脚本内容异步下载，文档解析不会被阻塞。
+   - 全部 HTML 解析完成后，按原标签顺序执行脚本。
+
+### 特殊情况和合并下载
+
+1. **内联脚本**：
+   ```html
+   <script>
+     console.log('This is an inline script.');
+   </script>
+   ```
+   - 无需下载，直接传递给 JavaScript 引擎执行。
+
+2. **外部和内联的组合**：
+   同时存在外部和内联的情况，浏览器会分别处理，外部下载后执行，内联的立即执行。
+
+3. **使用动态脚本加载**：
+   - 动态脚本创建可以通过 JavaScript 内部创建 `<script>` 标签并加入 DOM 树。
+   ```javascript
+   let script = document.createElement('script');
+   script.src = 'dynamic.js';
+   document.body.appendChild(script);
+   ```
+   - 这种方式加载的脚本通常异步执行，不会封阻文档解析。
+
+### 特别注意点
+
+1. **文档解析暂停**：
+   若脚本执行耗时长或依赖外部资源时，会直接影响用户体验。
+
+2. **DOM Ready 和脚本顺序**：
+   同步脚本在 DOM 构建前执行，`defer` 确保顺序而 `async` 则随时执行。
+
+3. **兼容性和性能优化**：
+   - 使用 `defer` 和 `async` 来优化页面加载速度。
+   - 动态脚本加载确保模块化和减少初始加载时间。
+
+## script标签中不用defer或async，想不阻塞DOM的解析该怎么做
+
+如果你希望在 `<script>` 标签中不使用 `defer` 或 `async` 属性，但仍然避免阻塞 DOM 的解析，可以考虑使用动态脚本加载。这种方法将 `<script>` 标签动态插入到 DOM 中，从而不影响初始 DOM 的解析过程。这是一个相对灵活和高效的方法。
+
+### 动态脚本加载
+
+通过 JavaScript 动态创建和加载脚本，这样可以确保脚本在 DOM 完全解析后才被加载和执行。以下是具体实现步骤：
+
+#### 步骤 1：动态创建 `<script>` 元素
+
+```javascript
+// 创建一个新的 <script> 元素
+const script = document.createElement('script');
+
+// 设置脚本的 src 属性
+script.src = 'path/to/your/script.js';
+
+// 可选：设置其他属性，如 async
+// script.async = true; // 设置为 true 表示异步加载，false 表示同步加载
+
+// 将 <script> 元素插入到 DOM 中
+document.body.appendChild(script);
+```
+
+#### 示例代码
+
+假设你有一个外部脚本文件 `example.js`，你想在 DOM 完全解析后加载它，可以使用如下代码：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Script Loading</title>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+
+  <!-- 在页面的末尾添加一段内联 JavaScript 用于动态加载 -->
+  <script>
+    // 在 DOMContentLoaded 事件触发时加载脚本，这样确保在 DOM 完全解析后加载
+    document.addEventListener('DOMContentLoaded', function() {
+      const script = document.createElement('script');
+      script.src = 'example.js';  // 外部脚本的 URL
+
+      // 可选：设置其他属性，例如 async
+      // script.async = true;
+
+      // 将脚本添加到 body 的末尾
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>
+```
+
+### 使用即时执行函数 (IIFE)
+
+有时候你可能只需要执行一些简单的 JavaScript 代码，而不是加载外部脚本。在这种情况下，可以结合即时执行函数（IIFE）来确保代码在 DOM 完全解析后执行。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IIFE Example</title>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+
+  <script>
+    // 使用 IIFE 确保代码在 DOM 完全解析后执行
+    (function() {
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM has been fully loaded and parsed.');
+        // 你的脚本逻辑可以放在这里
+      });
+    })();
+  </script>
+</body>
+</html>
+```
+
+### 优化性能与用户体验
+
+1. **将动态脚本加载移动到页面底部**：
+   在实际开发中，通常会将动态脚本加载的逻辑放置在页面底部（即 `</body>` 标签前）。这样可以确保页面主要内容已加载和显示，提升用户体验。
+
+2. **结合多个脚本**：
+   若要加载多个脚本，可以在 `DOMContentLoaded` 事件中依次创建和插入多个 `<script>` 标签，或者使用脚本加载库（如 `require.js` 或 `webpack` 等）来管理依赖和加载顺序。
+
+### 总结
+
+通过动态加载脚本，你可以有效避免 `<script>` 标签在文档中直接阻塞 DOM 解析的问题，确保网页性能和用户体验的优化。这种方式特别适用于网页初始加载性能要求高的项目。
+
+## script标签中带defer或async属性一般会在什么情况下使用
+
+在现代 Web 开发中，`defer` 和 `async` 属性被广泛用于优化网页的加载性能和用户体验。这两个属性用于控制脚本加载和执行的方式，具体使用场景和效果如下：
+
+### `defer` 属性
+
+#### 用途和效果
+
+- **异步加载脚本**：指定了 `defer` 属性的脚本会异步下载，不会阻塞 HTML 的解析。
+- **顺序执行**：虽然脚本是异步加载的，但在所有 `defer` 脚本下载完成后，按照它们在 DOM 中的顺序执行。
+- **执行时机**：`defer` 脚本会在 HTML 解析完成后、“DOMContentLoaded”事件触发前执行。
+
+#### 适用场景
+
+1. **依赖 DOM 内容的脚本**：
+   - 适用于需要操作 DOM 但不急于立即执行的脚本。
+   - 例如：初始化界面元素、设置事件监听器等。
+
+2. **多个脚本依赖顺序**：
+   - 如果有多个脚本，它们的执行顺序非常重要。
+   - 例如：库文件（如 jQuery）+ 自定义脚本，确保库文件先被执行。
+
+#### 示例
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defer Example</title>
+  <script src="library.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+</body>
+</html>
+```
+
+在上例中，`library.js` 会先于 `main.js` 执行，尽管它们是异步加载的。
+
+### `async` 属性
+
+#### 用途和效果
+
+- **异步加载脚本**：指定了 `async` 属性的脚本也会异步下载，不会阻塞 HTML 的解析。
+- **即时执行**：脚本下载完成后立即执行，不考虑它在 DOM 中的顺序。
+- **适用于独立脚本**：由于执行顺序不保证，因此适用于无需依赖其他脚本或 DOM 的独立脚本。
+
+#### 适用场景
+
+1. **独立的、无需依赖的脚本**：
+   - 例如：广告、分析工具、社交媒体按钮等。
+   - 这些脚本通常与其他脚本无依赖关系，立即执行即可。
+
+2. **提高页面加载速度**：
+   - 在确保脚本独立的前提下使用 `async` 属性，可以显著提高页面加载速度。
+
+#### 示例
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Async Example</title>
+  <script src="analytics.js" async></script>
+  <script src="ads.js" async></script>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+</body>
+</html>
+```
+
+在这个例子中，`analytics.js` 和 `ads.js` 会尽快加载和执行，以便尽早获取用户数据和展示广告，不会彼此或与其他脚本互相阻塞。
+
+### `defer` vs `async`
+
+| 属性    | 加载方式 | 执行时机               | 适用场景                                  |
+| ------- | -------- | ---------------------- | ----------------------------------------- |
+| `defer` | 异步下载 | 文档解析完毕后，按顺序 | 需要操作 DOM，确保脚本顺序的操作          |
+| `async` | 异步下载 | 下载完成后立即执行     | 独立的脚本，无需依赖其他脚本或者 DOM 结构 |
+
+### 总结
+
+- **`defer`**：适用于需要等待完整的 HTML 解析后但又需要按顺序执行的脚本。
+- **`async`**：适用于独立、无依赖性，且无需等待全部 HTML 解析的脚本。
+
+通过合理使用 `defer` 和 `async` 属性，可以显著提升页面的加载性能和用户体验。因此，在开发过程中，根据具体的需求选择合适的属性来标记脚本。
+
+## 事件委托能够解决什么问题
+
+事件委托是一种常用的高级事件处理机制，利用事件冒泡的特性来管理事件。通过将子元素的事件处理绑定到父元素上，而不是为每个子元素单独绑定，可以解决许多性能和代码维护性的问题。以下是事件委托能够解决和优化的一些问题：
+
+### 1. **性能优化**
+
+- **减少内存消耗**: 为大量子元素单独添加事件监听器可能会占用更多的内存，事件委托通过减少事件监听器的数量来优化内存使用。
+- **提升页面加载速度和运行效率**: 通过减少事件监听器的绑定数量，可以提高页面的加载速度和响应效率。
+
+### 2. **动态元素处理**
+
+- **处理新添加的元素**: 如果在 DOM 中动态添加元素，事件委托可以自动处理这些新元素的事件，而不需要重新绑定事件监听器。
+- **适应 DOM 结构的变化**: 由于事件委托使用父元素来监听事件，即使子元素被删除或重新创建，父元素的事件处理依然有效。
+
+### 3. **代码简化和可维护性**
+
+- **简化代码**: 通过将事件处理聚合到父元素上，代码结构更加简单、清晰，易于管理。
+- **增强可维护性**: 当需要更改事件处理逻辑时，只需修改父元素的事件处理器，无需逐一修改每个子元素。
+
+### 4. **解决事件绑定** 
+
+- **减少绑定错误**: 在大型复杂 DOM 结构中，通过事件委托可以避免对每个元素错误地绑定或重复绑定事件。
+- **避免内存泄漏**: 在频繁增删 DOM 元素的情况下，事件委托可以帮助减少内存泄漏，因为父元素只需一个事件监听器。
+
+### 5. **事件冒泡处理**
+
+- **统一事件处理逻辑**: 在冒泡阶段处理事件，父元素可以通过分析事件目标(`event.target`)来识别哪个具体的子元素触发了事件，从而执行特定的逻辑。
+- **提高用户交互体验**: 由于事件委托减少了绑定事件的数量，交互响应可以更为迅速和平滑。
+
+### 示例用法
+
+```javascript
+// 假设有一个包含多个按钮的列表，我们希望对每个按钮的点击事件进行处理
+document.querySelector('#parentElement').addEventListener('click', function(event) {
+    if (event.target && event.target.nodeName === 'BUTTON') {
+        // 处理按钮点击事件
+        console.log('Button clicked:', event.target);
+    }
+});
+```
+
+在这个例子中，我们只在父元素上绑定了一次点击事件处理器，通过检查 `event.target` 来确定实际触发事件的元素，而不需要在每个按钮上单独绑定事件处理器。
+
+综上，事件委托是一种强大的技术，能够提高网页的性能并简化代码管理，非常适合处理诸如动态元素和大型 DOM 树等场景。
+
+## 怎么优化首屏加载速度
+
+优化首屏加载速度是提升用户体验的重要环节，它可以显著降低用户感知的等待时间，使网站在访问时表现得更快速和响应迅速。以下是一些优化首屏加载速度的技术和策略：
+
+### 1. **优化资源加载**
+
+- **懒加载 (Lazy Loading)**: 对非首屏资源（如图片和视频）实现懒加载，使浏览器只在需要时才加载这些资源。
+  
+- **预加载 (Preloading)**: 预加载关键资源，比如字体和 CSS 文件，确保它们在页面渲染之前就已被加载。
+
+- **按需加载**: 使用代码拆分技术（例如通过 Webpack 等工具）来按需加载 JavaScript 模块，只加载当前视图所必须的模块。
+
+### 2. **优化网络传输**
+
+- **压缩资源**: 启用 Gzip 或 Brotli 压缩以减小 CSS、JS 和 HTML 文件大小。
+  
+- **缩减重定向**: 尽量减少 URL 重定向，确保用户直接到达最终页面。
+
+- **利用内容分发网络 (CDN)**: 使用 CDN 来分发静态资源，它可以将资源存储到离用户更近的节点，从而加快资源加载速度。
+
+### 3. **优化 CSS 和 JavaScript**
+
+- **内联关键 CSS**: 将渲染关键的 CSS 内联到 HTML 中，以减少 CSS 文件的加载时间。
+
+- **异步加载非关键 CSS**: 通过 `media="print"` 等延迟加载样式表，或者使用 `loadCSS` 等工具异步加载非关键 CSS。
+
+- **延迟非关键 JS**: 将不影响首屏显示的 JavaScript 文件延迟加载或设为异步 (`async`)。
+
+### 4. **减少 HTTP 请求数量**
+
+- **合并文件**: 将多个 CSS 和 JavaScript 文件合并，以减少 HTTP 请求次数。
+
+- **利用浏览器缓存**: 通过设置适当的缓存头，确保资源能在下一次访问时从缓存中加载。
+
+### 5. **优化图像**
+
+- **图像压缩**: 使用工具（如 ImageOptim、TinyPNG）压缩图像文件，以减小文件大小。
+
+- **使用现代格式**: 尽量使用新型图像格式（如 WebP）来代替传统的 JPEG 和 PNG，以获得更好的压缩性能。
+
+- **响应式图像**: 使用 `srcset` 和 `sizes` 属性，为不同屏幕密度设备提供合适尺寸的图像。
+
+### 6. **提高 HTML 渲染速度**
+
+- **减少 DOM 元素数量**: 简化 DOM 结构以加快浏览器解析速度。
+
+- **避免使用阻塞渲染的插件**: 如大的广告脚本或第三方插件，这些往往会阻塞浏览器的渲染过程。
+
+### 7. **使用服务端渲染 (SSR)**
+
+- **服务端渲染**: 将页面在服务器上渲染为完整的 HTML 然后发送给客户端，这样可以减少浏览器首次内容渲染的等待时间。
+
+### 8. **测试和监测**
+
+- **测速工具**: 使用 Lighthouse、GTmetrix 或 WebPageTest 等工具对页面进行性能分析和瓶颈检测。
+
+- **分析接入点**: 通过分析用户的网络接入点和设备，优化服务器的配置和资源分发策略。
+
+通过全面应用以上这些策略，可以显著提高网页的首屏加载速度，提供更好的用户体验。
