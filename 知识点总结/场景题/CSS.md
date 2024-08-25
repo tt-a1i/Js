@@ -136,3 +136,52 @@ CSS Grid 提供了对间距的良好控制：
 对于某些情形，伪元素也是一种灵活的选择，但通常需要更加复杂的布局和效果，建议在非必要情况下优先使用前面的方法。
 
 以上每种方法的选择遵循具体需求和项目需求与可维护性。`flexbox` 和 `grid` 方法优点是对响应式和复杂布局友好，而改变 `margin` 的方法最适用于简单布局。根据项目实际需要选择最适合的方法来实现间距控制。
+
+##  css做动画有哪些方案
+
+在 CSS 中，为元素创建动画有多种方案，主要包括以下几种：
+
+1. **CSS Transition**：
+   - **简介**：CSS 过渡（transition）允许在属性变化时，平滑地进行从一个状态到另一个状态的动画效果。
+   - **适用场景**：适用于响应用户交互的简单动画，比如鼠标悬停或者焦点变化。
+   - **示例使用**：
+     ```css
+     .box {
+       width: 100px;
+       height: 100px;
+       background-color: blue;
+       transition: background-color 0.5s ease;
+     }
+     .box:hover {
+       background-color: red;
+     }
+     ```
+   - **特点**：只在元素状态改变时触发。
+
+2. **CSS Animation**：
+   - **简介**：CSS 动画（animation）使用关键帧（@keyframes），定义元素从一种样式变化到另一种样式的一系列关键步骤。
+   - **适用场景**：适合更复杂的、需要精细控制的动画，比如循环动画、独立于用户交互的动画。
+   - **示例使用**：
+     ```css
+     @keyframes slide {
+       from { transform: translateX(0); }
+       to { transform: translateX(100px); }
+     }
+     .box {
+       width: 100px;
+       height: 100px;
+       background-color: blue;
+       animation: slide 2s infinite alternate;
+     }
+     ```
+   - **特点**：可以脱离状态变化独立运行，支持更多控制如延迟、重复、方向等。
+
+3. **Background Position Animation**：
+   - **简介**：背景位置动画通过改变背景图像的位置来实现简单的动画效果，比如循环帧图像。
+   - **特点**：主要用于背景精灵图，实现帧动画。
+
+4. **CSS Transforms with Animation/Transition**：
+   - **简介**：结合 transform 属性（如 `translate`, `rotate`, `scale` 等）可以通过 transitions 或 animations，提供平滑的几何动画效果。
+   - **适用场景**：适合需要元素位置、大小、旋转改变的动画。
+
+这些 CSS 动画技术各有优劣，其中 `transition` 更加适用于简单的触发性动画，而 `animation` 更灵活，适用于更复杂和动态的动画效果。在创建较复杂动画时，使用 CSS Animation 通常是最佳选择，因为它提供了更高的控制能力。
