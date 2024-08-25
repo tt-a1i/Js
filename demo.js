@@ -1,36 +1,19 @@
-function debouncePromise(fn, delay){
-  let timer = null;
-  let promisePendingResolve = null;
-  let promisePendingReject = null;
-  let lastArgs = null;
-  return function(...args){
-    if(timer){
-      clearTimeout(timer)
-    }
-    lastArgs = args;
-    const promise = new Promise((resolve, reject) => {
-      promisePendingResolve = resolve;
-      promisePendingReject = reject;
-    })
-    timer = setTimeout(() => {
-      fn(...lastArgs)
-        .then(promisePendingResolve)
-        .catch(promisePendingReject)
-        .finally(() => {
-          promisePendingResolve = null;
-          promisePendingReject = null;
-        })
-    }, delay)
-    return promise;
-  }
+async function async1() {
+  console.log('async1 start')
+  await async2()
+  console.log('async end')
 }
-function fetchData(query){
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      reject(query)
-    }, 1000)
-  })
+async function async2() {
+  console.log('async2')
 }
-const debounce = debouncePromise(fetchData, 300)
-debounce('query1').then(console.log).catch(console.error)
-debounce('query2').then(console.log).catch(console.error)
+console.log('script start')
+async1()
+setTimeout(() => {console.log('settimeout')})
+new Promise((resolve) => {
+  console.log('promise')
+  resolve()
+}).then(res => {
+  console.log('promise then')
+})
+console.log('script end')
+
