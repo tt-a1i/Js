@@ -331,3 +331,91 @@ npm 脚本是一种便捷的机制，用于在 Node.js 环境中定义和运行�
 - 执行完成后，npm 返回控制权给当前环境，并提供执行结果的输出。
 
 通过 npm 脚本机制，你可以在项目中定义各种自动化任务，并使用 Node.js 环境中已有的工具，以一种结构化的方式执行它们。这极大地方便了前端及全栈开发流程中的各种任务管理。
+
+## commonjs和esmoudle的区别
+
+### 一、语法区别
+
+#### CommonJS
+
+CommonJS模块使用`require`和`module.exports`进行导入和导出，主要应用在Node.js环境中。
+
+```javascript
+// 导出模块
+// moduleA.js
+const data = 'CommonJS Module';
+module.exports = data;
+
+// 导入模块
+// main.js
+const moduleA = require('./moduleA');
+console.log(moduleA);  // 输出: CommonJS Module
+```
+
+#### ESModule (ESM)
+
+ESM使用`import`和`export`关键字进行导入和导出，广泛用于浏览器和现代JavaScript环境（包括Node.js的ESM支持）。
+
+```javascript
+// 导出模块
+// moduleA.mjs
+export const data = 'ESModule';
+
+// 或者使用默认导出
+//export default data;
+
+// 导入模块
+// main.mjs
+import { data } from './moduleA.mjs';
+console.log(data);  // 输出: ESModule
+
+// 或者导入默认导出
+//import data from './moduleA.mjs';
+//console.log(data);
+```
+
+### 二、模块加载机制
+
+#### CommonJS
+
+1. **同步加载**：CommonJS模块是同步加载的，这意味着模块在加载时会立即执行，主要适用于服务器端环境。
+2. **单一导出对象**：CommonJS模块导出的是一个对象，`module.exports`和`exports`指向同一个对象。
+3. **缓存机制**：加载的模块会被缓存起来，后续的加载会从缓存中读取。
+
+#### ESModule (ESM)
+
+1. **异步加载**：ESM模块是异步加载的，这意味着模块的加载和解析是非阻塞的，更适用于浏览器环境。
+2. **静态结构**：ESM模块的依赖关系在编译时就能确定，这使得静态分析和优化成为可能，如Tree Shaking。
+3. **顶层作用域**：ESM模块具有顶层作用域，`import`和`export`必须在模块的顶层使用。
+
+### 三、语法约束与特性
+
+#### CommonJS
+
+- **动态加载**：CommonJS允许在代码的任意位置动态地使用`require`导入模块。
+- **模块导入是值的拷贝**：导入的变量是模块导出的值的一个拷贝。
+- **重赋值**：可以重赋值给`module.exports`来改变导出对象。
+
+```javascript
+const moduleName = './moduleA';
+const moduleA = require(moduleName);  // 动态加载
+module.exports = { newFeature: 'new feature' };  // 重赋值导出对象
+```
+
+#### ESModule (ESM)
+
+- **静态导入**：`import`语句只能在模块的顶层作用域中使用，不能在函数或代码块中使用，也不能动态改变被导入的模块路径。
+- **模块导入是引用**：导入的变量是模块导出值的引用，因此导入的数据会实时更新。
+- **导出文件类型**：可以使用`.js`或者`.mjs`文件后缀来表明是ES模块，在较新的Node.js中可以通过指明`type: "module"`来使用ES模块。
+
+```javascript
+//import moduleName from './moduleA';  // 不允许动态导入
+import * as moduleA from './moduleA.js';  // 静态导入
+```
+
+### 总结
+
+- **CommonJS**：传统上用于 Node.js 后端开发，导入同步，在首次调用时加载并执行。适合服务器端环境。
+- **ES Module（ESM）**：现代标准，支持静态分析、实时绑定和异步导入，原生支持于浏览器，逐渐成为 Node.js 的首选模块格式。
+
+在选择使用哪种模块化标准时，一般考虑项目的执行环境及兼容性需求，前端通常使用 ESM，而后端（尤其是现代项目）也逐渐转向 ESM。
