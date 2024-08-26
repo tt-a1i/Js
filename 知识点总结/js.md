@@ -8398,3 +8398,116 @@ nextTick inside setImmediate
 2. 微任务有最高优先级，会在事件循环的每个阶段完成后立即执行。
 3. `process.nextTick` 和 `Promise` 是创建微任务的主要方式。
 4. 最佳实践是在合适的阶段使用合适的机制，以确保代码的高效执行。
+
+## service worker和 web worker
+
+前端开发中的 Service Worker 和 Web Worker 是两种不同的技术，它们分别具有不同的用途和特点。虽然它们的名字里都有 "Worker" 且都是在后台执行任务的脚本，但它们并不是相同的东西。
+
+### Web Worker
+
+#### 定义：
+Web Worker 是用于在后台线程运行 JavaScript 代码的一种方式，目的在于避免阻塞主线程（UI线程），从而提高网页的性能和响应速度。
+
+#### 特点：
+1. **线程分离：** 运行在独立的线程中，不会阻塞主线程。
+2. **无 DOM 访问：** 不能直接访问 DOM 和主线程中的 JavaScript 变量。
+3. **与主线程通信：** 使用 `postMessage` 和 `onmessage` 事件与主线程通信。
+4. **长时间任务：** 适用于执行需要大量计算的长时间任务，而不影响主线程的响应。
+5. **没有网络拦截能力：** 与 Service Worker 不同，Web Worker 不能拦截网络请求。
+
+#### 示例：
+
+主线程（JavaScript 文件）：
+```javascript
+const worker = new Worker('worker.js');
+
+worker.onmessage = function(event) {
+    console.log('Result from worker:', event.data);
+}
+
+worker.postMessage('Start');
+```
+
+Web Worker 线程文件（`worker.js`）：
+```javascript
+onmessage = function(event) {
+    const data = event.data;
+    // 进行复杂计算
+    const result = doComplexCalculation(data);
+    postMessage(result);
+}
+
+function doComplexCalculation(data) {
+    // 模拟复杂计算
+    let sum = 0;
+    for (let i = 0; i < 1e6; i++) {
+        sum += i;
+    }
+    return sum;
+}
+```
+
+### Service Worker
+
+#### 定义：
+Service Worker 是一种运行在浏览器背后的独立于网页的脚本，主要用于控制和缓存网络请求，从而实现离线访问、推送通知和后台数据同步等功能。
+
+#### 特点：
+1. **网络代理：** 可以拦截和处理网络请求，这使得它非常适合做离线缓存（类似应用程序缓存）。需要https环境
+2. **事件驱动：** 工作在事件循环中，通过不同的事件（如 `fetch`、`install`、`activate`）来执行任务。
+3. **无DOM访问：** 同样不能直接访问 DOM，但可以与页面进行通信。
+4. **离线支持：** 通过缓存资源，能让网页在离线状态下仍然可以使用。
+5. **长期运行：** 即使关闭浏览器，它仍然可以在后台运行，以处理诸如推送通知等任务。
+
+#### 示例：
+
+注册 Service Worker：
+```javascript
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('Service Worker registered with scope:', registration.scope);
+        }).catch(function(error) {
+            console.log('Service Worker registration failed:', error);
+        });
+    });
+}
+```
+
+Service Worker 文件（`service-worker.js`）：
+```javascript
+self.addEventListener('install', function(event) {
+    event.waitUntil(
+        caches.open('my-cache').then(function(cache) {
+            return cache.addAll([
+                '/',
+                '/index.html',
+                '/styles.css',
+                '/script.js'
+            ]);
+        })
+    );
+});
+
+self.addEventListener('fetch', function(event) {
+    event.respondWith(
+        caches.match(event.request).then(function(response) {
+            return response || fetch(event.request);
+        })
+    );
+});
+```
+
+### 总结
+
+- **Web Worker**
+  - 用于后台执行计算密集型任务，避免阻塞主线程。
+  - 不能访问 DOM。
+  - 通过 `postMessage` 与主线程通信。
+
+- **Service Worker**
+  - 用于拦截和处理网络请求，提供离线支持、推送通知等功能。
+  - 不能访问 DOM。
+  - 通过事件驱动机制（`install`、`fetch` 等）在后台运行。
+
+二者各有用途，通常在实际开发中需要根据具体的需求选择合适的技术。
