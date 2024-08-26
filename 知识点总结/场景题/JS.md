@@ -883,3 +883,59 @@ document.querySelector('#parentElement').addEventListener('click', function(even
 - **分析接入点**: 通过分析用户的网络接入点和设备，优化服务器的配置和资源分发策略。
 
 通过全面应用以上这些策略，可以显著提高网页的首屏加载速度，提供更好的用户体验。
+
+## map和foreach的区别
+
+**map()** 和 **forEach()** 都是 JavaScript 数组方法，用于迭代数组元素，但它们在功能和返回值方面有所不同。
+
+**1. 返回值：**
+
+- **map()** 返回一个**新数组**，其中包含对原始数组中每个元素执行回调函数后的结果。
+- **forEach()** **不返回值**（返回 `undefined`），它只是对数组中的每个元素执行回调函数。
+
+**2. 用途：**
+
+- **map()** 用于**转换**数组，创建一个新数组，其中包含原始数组元素的修改版本。
+- **forEach()** 用于对数组中的每个元素执行**副作用**操作，例如打印、修改外部变量或进行 API 调用。
+
+**3. 可链接性：**
+
+- **map()** 是**可链接的**，因为它返回一个新数组，可以在其上调用其他数组方法。
+- **forEach()** **不可链接**，因为它不返回值。
+
+**4. 示例：**
+
+```javascript
+// map() 示例：将数组中的每个数字乘以 2
+const numbers = [1, 2, 3, 4];
+const doubledNumbers = numbers.map(number => number * 2);
+console.log(doubledNumbers); // [2, 4, 6, 8]
+
+// forEach() 示例：打印数组中的每个元素
+const fruits = ['apple', 'banana', 'orange'];
+fruits.forEach(fruit => console.log(fruit));
+// 输出：
+// apple
+// banana
+// orange
+```
+
+**总结：**
+
+| 特性     | map()    | forEach()  |
+| -------- | -------- | ---------- |
+| 返回值   | 新数组   | undefined  |
+| 用途     | 转换数组 | 执行副作用 |
+| 可链接性 | 可链接   | 不可链接   |
+
+**何时使用 map()：**
+
+- 需要创建一个包含原始数组元素修改版本的新数组时。
+- 需要对数组进行转换操作时。
+
+**何时使用 forEach()：**
+
+- 需要对数组中的每个元素执行副作用操作时。
+- 不需要创建新数组时。
+
+希望这个解释能够帮助你理解 `map()` 和 `forEach()` 之间的区别！

@@ -1617,6 +1617,8 @@ if (stream || modelType !== "pharm") {
 
 # 使用@microsoft/fetch-event-source库实现Server-Sent Events（SSE）和使用原生JavaScript方法实现SSE
 
+![image-20240826100625490](assets/image-20240826100625490.png)
+
 使用 @microsoft/fetch-event-source 改善服务器发送事件的请求@microsoft/fetch-event-source - npm
 在前端开发中，处理服务器发送事件（server-sent events）时，我们通常使用浏览器提供的 EventSource API。然而，该默认 API 存在一些限制，本文介绍了一个名为 @microsoft/fetch-event-source 的包，它提供了更强大的 API，使我们能够更灵活地进行服务器发送事件的请求。
 
