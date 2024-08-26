@@ -939,3 +939,312 @@ fruits.forEach(fruit => console.log(fruit));
 - 不需要创建新数组时。
 
 希望这个解释能够帮助你理解 `map()` 和 `forEach()` 之间的区别！
+
+## 字节面经
+
+先是个人介绍，这个面试官比较直接，在我介绍到第一个项目的时候就开始问问题了，后面就直接开始拷打项目了，没让我接着往下讲。不得不说，这个面试官的风格就是极具侵略性，会对着你的一个失误猛攻，有些人可能会慌，我的经验就是平常心对待，反正我就是个正常人，我又不是超人，犯错是很正常的事情罢了。
+
+1. Vue-Router的几种路由方式
+   1. hash模式和history模式
+2. SPA是什么，和MPA的区别，有什么缺点？怎么优化？
+   1. 单页面应用/切功能不需要跳页面/首屏速度慢/SSR
+3. 为什么SSR可以优化，别的不可以吗？
+   1. SPA慢是因为渲染需要js参与，SSR通过服务器直接渲染拿到html，从而加速了访问
+   2. SSR是针对SPA做的优化，别的当然也可以，比如CDN/减少静态资源大小/雪碧图/减少CSS和JS对DOM构建的阻塞
+4. 还有什么优化的释放，比如我首屏不需要的东西可以不可以异步加载？
+   1. 懒加载，Vue-Router 直接在component后面写箭头回调import；React直接用一个lazy包一个import回调
+5. 你提到了尽可能减少对DOM的阻塞，什么会阻塞DOM构建？
+   1. CSS 和没有 defer/async 标签的 JS
+6. 向后端发请求的时候，经常会遇到先选一个选项发请求，这个请求可能有一段时间才能相应，然后又选了另一个选项，你怎么保证我的数据是正确的？
+   1. 请求是可以打断的，比如fetch可以通过AbortController中断请求，然后去发最新的请求就行了
+7. 有了解过他是怎么实现的吗？
+   1. 就是跟拿到timeoutId去clearTiemout类似，拿到一个句柄，就可以给他发信号让他切断
+   2. **"`AbortController` 的工作原理是通过创建一个控制器和信号 (`AbortSignal`) 来实现。你可以将这个信号传递给 `fetch` 请求或其他支持中断的异步操作。当你调用 `AbortController.abort()` 时，传递的 `AbortSignal` 会触发中断信号，导致异步操作立即停止，并通常会抛出一个 `AbortError` 异常。"**
+8. 如果不用 axios，只让你用HTTP Request，你如何实现？
+   1. 用 Promise 封装一下，http request正常返回的时候就resolve，然后有异常就reject
+9. 看到你移动端布局使用了tailwindCSS，为什么要用这个？
+   1. 写起来比较简单，不用想类名，然后写起来读起来都比较清晰，开发效率会更高
+10. 没有缺点吗？
+    1. 从性能上，他最坏不会坏过原生的 CSS，加上他本身是一个 css 的预处理器，可以获得很多预处理器带来的性能提升，比如自动移除未使用的类，打包后更小的css文件体积等
+    2. 从人为因素上来讲，tailwindCSS 可能会间接地让部分开发者写很长的classname，从而降低代码的可读性
+11. 你的布局里用了flex和grid，为什么用这些？
+    1. grid 主要用来实现一些异形卡片布局，比如我可能要1*2,2*1,2*2的卡片，这样的布局用grid写起来会非常方便
+    2. flex 作为现代的弹性布局方式，在对齐、多列布局方面非常方便
+    3. 配合css的媒体查询去做移动端的响应式布局
+12. 有没有了解过其他的响应式布局方式？
+    1. 还可以通过UA来判断用户设备，然后返回不同的布局
+13. 那这个布局是如何转换的？
+    1. 聊了一些vw、vh、rem之类的方式
+14. 下面是无聊的八股部分
+    1. css如何局中一个元素
+    2. 定位/浮动/BFC
+15. 为什么从今年的1月份到现在做了这么多项目？
+    1. 因为要学习，要找工作😅
+16. CDN解决什么问题？
+    1. 静态资源加载缓慢
+17. 浏览器渲染网页的过程
+    1. 八股复读
+18. js的代码输出题，常规的宏任务/微任务事件循环考察
+19. async await 背后的具体实现有了解过吗？
+    1. 就是Promise的语法糖，可以等价的转化为Promise.then之类的，但是面试官对这个答案不是很满意，说你这个是用法，不是原理
+    2. **我猜他想听：`async` 函数是返回一个 `Promise` 的函数。即使函数内部没有显式地返回 `Promise`，也会自动将返回值包装成 `Promise` ；`await` 会暂停 `async` 函数的执行，直到 `Promise` 被解析（即变为成功或失败），然后恢复函数的执行，并返回 `Promise` 的结果。如果 `Promise` 被拒绝，`await` 表达式会抛出异常，这可以通过 `try/catch` 块来捕获。**
+20. 手撕：最长公共前缀
+21. 继续八股：
+    1. 常见的数据结构/特性/用法/场景
+    2. js里的数据类型/复杂类型和简单类型的区别
+    3. 值传递和引用传递的区别
+    4. 事件冒泡/可以用这个机制实现什么？（事件代理）
+22. 看你这里手写了一个进度条，如果需要你将其封装成一个通用的组件，你怎么写？
+    1. 一开始说了自定义hooks，后来聊下来发现其实介绍一个prop作为百分比然后更新就行了
+23. 然后面试官就开始拷打，说你为什么一上来就说自定义hooks？
+    1. 我就花了不到3s思考这个问题，难免有不周到的地方，实际开发过程中肯定有更充足的思考时间（这个面试官问的非常有侵略性，但我还是努力在反驳，我觉得几秒钟的考虑时间有点失误也很正常吧）
+24. 继续延伸，如果你想让这个组件支持自定义样式，你该如何实现？
+    1. 拿一个属性去接受className就行了
+25. 然后又开始跟我纠结为什么不是style而是className，我怎么知道用户一定就用tailwindCSS？
+    1. 反正你拿两个属性都接受不就完了吗，支持tailwindCSS是个额外的feature，大不了你不用呗
+26. 当你封装一个组件的时候，最重要的是什么？
+    1. 高内聚，低耦合（面试官觉得太虚了，让我细说）根据Vue官方文档的推荐，你的组件应该提供详细的props的类型定义甚至validator，因为你的props的定义其实就是你的组件的使用文档
+27. 你的项目上提了一些性能指标，都是什么意思，什么问题会导致某个指标高，如何优化？
+    1. 八股复读
+28. 那这些优化你有实现过吗？
+    1. 我写的这些网页都比较简单，所以没有做过具体的性能优化
+29. 那你为什么要写这个性能指标？
+    1. 因为我care性能
+30. 你care性能为什么不去优化他，那你关心他干嘛？
+    1. 因为我不去优化是因为我认为他足够好，而不是我不知道性能可以优化
+31. 你如何做性能分析？
+    1. lighthouse/performace
+32. JS 里捕获异常的方式有哪些呢？
+    1. try/catch Promise.catch之类的
+33. 你说的都是局部的，我不可能每个地方都try/catch吧
+    1. 我一开始说的高阶组件，面试官又问说那我不用框架呢
+    2. 那你最上层try/catch呗
+    3. **可以用一些全局异常捕获的api，比如window.onerror, window.onunhandledrejection**
+
+## async await 背后的具体实现有了解过吗？
+
+`async/await` 是 JavaScript 中用于处理异步操作的语法糖，它们基于 `Promise`，使得异步代码看起来像同步代码，增强了代码的可读性和可维护性。为了更好地理解`async/await`的具体实现，我们需要深入了解它的工作原理和底层机制。
+
+### 背景知识
+
+#### Promise
+在了解 `async/await` 之前，需要熟悉 `Promise`，它是一种用于处理异步操作的模式，包含三个状态：
+- **Pending**（进行中）：初始状态，既不是成功也不是失败。
+- **Fulfilled**（已成功）：操作成功完成。
+- **Rejected**（已失败）：操作失败。
+
+#### Generator 函数
+`async/await` 的实现与 ES6 中的 Generator 函数密切相关。Generator 函数是一个可以在执行过程中暂停和恢复的函数形式。它使用 `function*` 语法定义和 `yield` 关键字控制执行。
+
+```javascript
+function* generatorFunction() {
+  console.log('Start');
+  yield 'paused at first yield';
+  console.log('Resume');
+  yield 'paused at second yield';
+  console.log('Finish');
+}
+
+const gen = generatorFunction();
+console.log(gen.next());
+console.log(gen.next());
+console.log(gen.next());
+```
+
+### async/await 的具体实现
+
+在 JavaScript 引擎内部，`async/await` 通过生成器和 Promise 实现。以下是一个简化的解释：
+
+1. **将 `async` 函数转换为一个内置 Generator 函数**：当 JavaScript 遇到 `async` 关键字时，它会将函数转换为一个生成器函数，这个生成器函数在内部使用 `try-catch` 语句来处理错误，并在需要等待的地方使用 `yield` 语句。
+
+2. **自动调用生成器**：每次 `await` 遇到 `Promise`，JavaScript 引擎会暂停生成器的执行，直到 `Promise` 解决（fulfilled 或 rejected）。`await` 关键字会暂停函数的执行并返回 Promise 的结果。
+
+3. **处理 Promise 的结果或错误**：通过内部机制捕获生成器的值并推进到下一个 `yield`，直到生成器完成。对于未完成的 Promise，它将继续等待，直到状态变为 fulfilled 或 rejected。
+
+### 用 Generator 模拟 async/await
+
+为了更深入地理解 `async/await` 的实现，我们可以使用 Generator 函数和 Promise 来模拟其行为。下面我们通过一个例子来展示：
+
+```javascript
+// 普通的async函数
+async function asyncFunction() {
+  const value1 = await new Promise((resolve) => setTimeout(() => resolve(1), 1000));
+  console.log(value1); // 1
+  
+  const value2 = await new Promise((resolve) => setTimeout(() => resolve(2), 1000));
+  console.log(value2); // 2
+
+  return 'done';
+}
+
+// 使用 generator 函数和 promise 手动实现
+function generatorFunction() {
+  return new Promise((resolve, reject) => {
+    const gen = function* () {
+      try {
+        const value1 = yield new Promise((resolve) => setTimeout(() => resolve(1), 1000));
+        console.log(value1); // 1
+
+        const value2 = yield new Promise((resolve) => setTimeout(() => resolve(2), 1000));
+        console.log(value2); // 2
+
+        resolve('done');
+      } catch (err) {
+        reject(err);
+      }
+    }();
+
+    function step(result) {
+      if (result.done) return;
+
+      result.value
+        .then(res => step(gen.next(res)))
+        .catch(err => gen.throw(err));
+    }
+
+    step(gen.next());
+  });
+}
+
+asyncFunction().then(console.log); // done
+generatorFunction().then(console.log); // done
+```
+
+### 解释代码
+
+#### asyncFunction
+一个简单的异步函数使用 `await` 关键字等待两个 `Promise` 完成，并打印其结果。
+
+#### generatorFunction
+通过 Generator 函数和 Promise 实现相同逻辑：
+1. 定义一个生成器函数 `gen`，内部使用 `yield` 关键字暂停执行。
+2. 使用 Promise 包装生成器函数的执行逻辑。
+3. 定义一个 `step` 函数来推进生成器的执行，每次通过 `result.value.then` 推动生成器，并将下一个值传入 `gen.next()`。
+4. 捕获并处理可能的错误。
+
+### 其他实现细节
+
+#### try-catch 处理
+`async/await` 引擎内部会使用 `try-catch` 语句来捕获错误：
+```javascript
+async function errorHandlingAsyncFunction() {
+  try {
+    const value = await Promise.reject('error');
+  } catch (e) {
+    console.error('Caught:', e);
+  }
+}
+errorHandlingAsyncFunction();
+```
+类似地，用生成器模拟：
+```javascript
+function errorHandlingGeneratorFunction() {
+  return new Promise((resolve, reject) => {
+    const gen = function* () {
+      try {
+        const value = yield Promise.reject('error');
+      } catch (e) {
+        console.error('Caught:', e);
+      }
+    }();
+
+    function step(result) {
+      if (result.done) return;
+
+      result.value
+        .then(res => step(gen.next(res)))
+        .catch(err => step(gen.throw(err)));
+    }
+
+    step(gen.next());
+  });
+}
+errorHandlingGeneratorFunction();
+```
+
+### 结论
+
+通过生成器和 Promise，我们可以了解 `async/await` 是如何在幕后工作的。实际上，异步函数被转换成生成器，在遇到 `await` 时暂停执行，并通过 Promise 处理结果或错误。通过这种机制，我们得以在 JavaScript 中编写更清晰、更易读的异步代码。
+
+## JS 里捕获异常的方式有哪些呢
+
+在 JavaScript 中，您可以使用以下几种方式捕获异常：
+
+**1. `try...catch` 语句**
+
+这是 JavaScript 中最常见的异常处理机制。它允许您在 `try` 代码块中运行代码，并在发生错误时捕获并处理异常。
+
+```javascript
+try {
+  // 可能会抛出异常的代码
+  throw new Error('这是一个错误！');
+} catch (error) {
+  // 处理异常
+  console.error('发生错误：', error.message); 
+}
+```
+
+* `try` 代码块：包含可能抛出异常的代码。
+* `catch` 代码块：在 `try` 代码块中发生异常时执行，并接收一个包含异常信息的 `error` 对象。
+
+**2. `finally` 代码块 (可选)**
+
+您可以添加一个可选的 `finally` 代码块，无论是否抛出异常，都会在 `try...catch` 语句执行完毕后执行。这对于清理资源（如关闭文件或数据库连接）非常有用。
+
+```javascript
+try {
+  // 可能会抛出异常的代码
+} catch (error) {
+  // 处理异常
+} finally {
+  // 无论是否发生异常都会执行的代码
+}
+```
+
+**3.  `Promise` 的 `catch` 方法**
+
+处理 Promise 中的错误可以使用 `catch` 方法。
+
+```javascript
+somePromise()
+  .then(result => {
+    // 处理成功的结果
+  })
+  .catch(error => {
+    // 处理 Promise 链中发生的错误
+  });
+```
+
+**4.  `async/await`  中的  `try...catch`**
+
+在使用  `async/await`  语法时，您仍然可以使用  `try...catch`  来处理异步操作中抛出的异常。
+
+```javascript
+async function myFunction() {
+  try {
+    const result = await someAsyncFunction();
+    // 处理结果
+  } catch (error) {
+    // 处理异步操作中发生的错误
+  }
+}
+```
+
+**5. `window.onerror` 事件处理程序 (全局)**
+
+您可以使用 `window.onerror` 事件处理程序捕获未被其他 `try...catch` 块捕获的全局错误。
+
+```javascript
+window.onerror = function(message, source, lineno, colno, error) {
+  // 处理错误
+  console.error('全局错误:', message, source, lineno, colno, error);
+};
+```
+
+**一些额外的注意事项:**
+
+* 在选择异常处理机制时，请考虑代码的结构和异步操作的使用情况。
+* 尽可能在靠近异常发生的地方处理异常，以便更精确地控制程序流程。
+* 记录错误信息对于调试和解决问题至关重要。
+* 不要吞咽异常！ 捕捉到异常后，如果没有进行适当的处理，可能会导致更难以调试的问题。 
+

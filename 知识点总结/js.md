@@ -8186,7 +8186,7 @@ array.forEach((value, index, arr) => {
 
 ## webworker是线程还是进程
 
-Web Worker 是线程，不是进程。让我详细解释一下：
+`Web Worker 是线程`，不是进程。让我详细解释一下：
 
 1. Web Worker 的本质：
    Web Worker 提供了在 Web 应用程序中运行脚本的背景线程。它允许长时间运行的脚本在后台执行，而不会影响网页的性能或响应性。
