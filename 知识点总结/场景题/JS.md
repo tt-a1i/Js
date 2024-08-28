@@ -1894,3 +1894,87 @@ window.addEventListener('resize', function(event) {
    - `addEventListener` 是现代浏览器标准的API。如果需要支持非常旧的浏览器（如IE8及更早版本），可以使用 `attachEvent`（这个API已经过时，通常现代开发中不再考虑这些旧载体）。
 
 使用这些方法，你可以在浏览器窗口大小变化时动态调整页面布局或实现其他相应的功能。
+
+## 如果不用trycatch，怎么捕获异常，防止浏览器报错
+
+在JavaScript中，错误处理通常通过`try...catch`来实现。然而，如果不想使用`try...catch`，仍然有一些其他方法可以捕获和处理异常，尤其是在异步操作中。以下是几种替代方案：
+
+### 1. 使用Promise的`.catch()`
+
+对于异步代码，`Promise`提供了一种内置的方式来捕获错误，那就是使用`.catch()`方法。在Promise链中，如果遇到异常或Rejected状态，`.catch()`会被调用。
+
+```javascript
+function asyncOperation() {
+  return new Promise((resolve, reject) => {
+    // 模拟异步操作
+    setTimeout(() => {
+      reject(new Error("Something went wrong!"));
+    }, 1000);
+  });
+}
+
+asyncOperation().then(result => {
+  console.log(result);
+}).catch(error => {
+  console.error("Caught by .catch():", error);
+});
+```
+
+### 2. 使用`async/await`结合`.catch()`
+
+尽管`async/await`通常与`try...catch`一起使用，但也可以使用`.catch()`来处理异常。
+
+```javascript
+async function fetchData() {
+  let data = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+  return data.json();
+}
+
+fetchData()
+  .then(data => console.log(data))
+  .catch(error => console.error("Caught by .catch():", error));
+```
+
+### 3. 全局错误处理
+
+对于未捕获的异常，可以使用以下事件处理程序来统一处理：
+
+- **`window.onerror`**：捕获全局范围内的错误。
+
+  ```javascript
+  window.onerror = function(message, source, lineno, colno, error) {
+    console.error("Global Error Caught by window.onerror:", error);
+    return true; // 返回true，以防止默认行为（即浏览器控制台日志记录）
+  };
+  ```
+
+- **`window.addEventListener('unhandledrejection', handler)`**：专门捕获未处理的Promise拒绝。
+
+  ```javascript
+  window.addEventListener('unhandledrejection', event => {
+    console.error("Unhandled promise rejection caught:", event.reason);
+  });
+  ```
+
+### 4. 使用库或框架
+
+可以使用一些流行的JavaScript库或框架，它们可能内置了更复杂的错误处理机制。例如，RxJS能够处理流中的错误，以及Sentry、LogRocket等专门的日志记录和错误监控服务。
+
+### 5. 封装异步函数
+
+通过编写一个辅助函数来处理异步操作中的错误：
+
+```javascript
+function handleErrors(asyncFunc) {
+  return function (...args) {
+    return asyncFunc(...args).catch(error => {
+      console.error("Error handled by wrapper:", error);
+    });
+  };
+}
+
+const safeFetchData = handleErrors(fetchData);
+safeFetchData().then(data => console.log(data));
+```
+
+尽管`try...catch`是同步和异步代码常用的错误处理机制，但通过上述方法，开发者可以以不同的方式捕获和处理错误。选择适合特定项目和代码风格的方案至关重要。
