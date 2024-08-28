@@ -1849,3 +1849,48 @@ JavaScript会影响上面的多个阶段：
 3. **非阻塞资源**：将某些不需要渲染时就加载的资源设为非阻塞，例如将不关键的CSS放到页面底部加载。
 4. **CSS在`<head>`**：将关键CSS文件尽早放在`<head>`部分。
 5. **JavaScript在底部或使用异步加载**：将JavaScript文件放在页面底部，或者使用异步加载技术，以避免阻塞HTML解析和CSS加载。
+
+## 监听窗口大小变化的事件
+
+在JavaScript中，你可以使用 `window.resize` 事件来监听浏览器窗口大小的变化。要添加一个事件监听器，可以使用 `addEventListener` 方法。以下是如何实现这一点的示例：
+
+```javascript
+window.addEventListener('resize', function(event) {
+    // 在这里编写处理窗口调整大小的代码
+    console.log('窗口大小发生变化');
+    console.log('新的宽度: ' + window.innerWidth);
+    console.log('新的高度: ' + window.innerHeight);
+});
+```
+
+在这个示例中，当浏览器窗口的大小发生变化时，注册的回调函数会被调用。函数内部，通过 `window.innerWidth` 和 `window.innerHeight` 可以获得窗口的新宽高值。
+
+### 注意事项
+
+1. **性能问题**：
+   - 如果在 `resize` 事件中执行大量计算或DOM操作，可能会导致性能问题，尤其是在窗口调整大小的过程中。可以考虑使用防抖（debounce）或节流（throttle）技巧来优化性能。以下是使用简易防抖函数的例子：
+
+     ```javascript
+     function debounce(func, wait) {
+         let timeout;
+         return function(...args) {
+             clearTimeout(timeout);
+             timeout = setTimeout(() => func.apply(this, args), wait);
+         }
+     }
+     
+     const handleResize = debounce(function(event) {
+         console.log('窗口大小发生变化');
+         console.log('新的宽度: ' + window.innerWidth);
+         console.log('新的高度: ' + window.innerHeight);
+     }, 250);
+     
+     window.addEventListener('resize', handleResize);
+     ```
+
+   这个 `handleResize` 函数会在窗口大小停止变化后250毫秒内只执行一次。
+
+2. **兼容性**：
+   - `addEventListener` 是现代浏览器标准的API。如果需要支持非常旧的浏览器（如IE8及更早版本），可以使用 `attachEvent`（这个API已经过时，通常现代开发中不再考虑这些旧载体）。
+
+使用这些方法，你可以在浏览器窗口大小变化时动态调整页面布局或实现其他相应的功能。

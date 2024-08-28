@@ -8628,3 +8628,4 @@ self.addEventListener('fetch', function(event) {
    ```
 
 使用时需要根据具体应用场景选择合适的方法，例如，如果不希望用户通过后退按钮返回到当前页面，可以选择 `window.location.replace()`。如果只是要简单的页面跳转，则 `window.location.href` 是最方便的方法。
+
