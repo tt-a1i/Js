@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>盒子滑动和变大动画</title>
+		<style>
+			body {
+				display: flex;
+				justify-content: flex-start; /* 初始位置在左边缘 */
+				align-items: flex-start; /* 初始位置在顶部 */
+				height: 100vh;
+				margin: 0;
+				background-color: #f0f0f0;
+				overflow: hidden;
+			}
+
+			.box {
+				width: 50px;
+				height: 50px;
+				background-color: #3498db;
+				position: absolute;
+				top: 10px;
+				left: 10px;
+				transition: transform 1s, top 1s, left 1s, width 1s, height 1s;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box" id="box"></div>
+
+		<script>
+			const box = document.getElementById("box");
+
+			let isExpanded = false;
+
+			box.addEventListener("click", function () {
+				if (isExpanded) {
+					// 返回到初始位置和大小
+					box.style.transform = "translate(0, 0)";
+					box.style.width = "50px";
+					box.style.height = "50px";
+					box.style.top = "10px";
+					box.style.left = "10px";
+				} else {
+					// 移动到屏幕中心并变大
+					box.style.top = "50%";
+					box.style.left = "50%";
+					box.style.transform = "translate(-50%, -50%)";
+					box.style.width = "200px";
+					box.style.height = "200px";
+				}
+				isExpanded = !isExpanded;
+			});
+		</script>
+	</body>
+</html>
