@@ -1897,7 +1897,30 @@ window.addEventListener('resize', function(event) {
 
 ## 如果不用trycatch，怎么捕获异常，防止浏览器报错
 
-在JavaScript中，错误处理通常通过`try...catch`来实现。然而，如果不想使用`try...catch`，仍然有一些其他方法可以捕获和处理异常，尤其是在异步操作中。以下是几种替代方案：
+### 3. 全局错误处理
+
+对于未捕获的异常，可以使用以下事件处理程序来统一处理：
+
+- **`window.onerror`**：捕获全局范围内的错误。
+
+  ```javascript
+  window.onerror = function(message, source, lineno, colno, error) {
+    console.error("Global Error Caught by window.onerror:", error);
+    return true; // 返回true，以防止默认行为（即浏览器控制台日志记录）
+  };
+  ```
+
+- **`window.addEventListener('unhandledrejection', handler)`**：专门捕获未处理的Promise拒绝。
+
+  ```javascript
+  window.addEventListener('unhandledrejection', event => {
+    console.error("Unhandled promise rejection caught:", event.reason);
+  });
+  ```
+
+
+
+
 
 ### 1. 使用Promise的`.catch()`
 
@@ -1935,27 +1958,6 @@ fetchData()
   .catch(error => console.error("Caught by .catch():", error));
 ```
 
-### 3. 全局错误处理
-
-对于未捕获的异常，可以使用以下事件处理程序来统一处理：
-
-- **`window.onerror`**：捕获全局范围内的错误。
-
-  ```javascript
-  window.onerror = function(message, source, lineno, colno, error) {
-    console.error("Global Error Caught by window.onerror:", error);
-    return true; // 返回true，以防止默认行为（即浏览器控制台日志记录）
-  };
-  ```
-
-- **`window.addEventListener('unhandledrejection', handler)`**：专门捕获未处理的Promise拒绝。
-
-  ```javascript
-  window.addEventListener('unhandledrejection', event => {
-    console.error("Unhandled promise rejection caught:", event.reason);
-  });
-  ```
-
 ### 4. 使用库或框架
 
 可以使用一些流行的JavaScript库或框架，它们可能内置了更复杂的错误处理机制。例如，RxJS能够处理流中的错误，以及Sentry、LogRocket等专门的日志记录和错误监控服务。
@@ -1978,3 +1980,60 @@ safeFetchData().then(data => console.log(data));
 ```
 
 尽管`try...catch`是同步和异步代码常用的错误处理机制，但通过上述方法，开发者可以以不同的方式捕获和处理错误。选择适合特定项目和代码风格的方案至关重要。
+
+## for in 和 for of区别
+
+`for...in` 和 `for...of` 是 JavaScript 中用于迭代不同类型集合的两种循环形式，它们之间存在一些重要的区别。
+
+### `for...in` 循环
+
+`for...in` 用于遍历对象的可枚举属性。它适用于对象，当你需要迭代一个对象的所有属性（包括继承的可枚举属性）时使用。
+
+#### 特点：
+1. **对象迭代**：主要用于遍历对象的所有可枚举属性，包括从原型链继承的属性。
+2. **返回键**：`for...in` 循环返回的是对象的键（字符串或 Symbol），而不是值。
+3. **适用于对象**：虽然可以用来遍历数组的索引，但不推荐这样使用，因为数组是有序的，而 `for...in` 无法保证顺序。
+
+#### 示例：
+```javascript
+const obj = { a: 1, b: 2, c: 3 };
+
+for (let key in obj) {
+  console.log(key); // 输出 'a', 'b', 'c'
+  console.log(obj[key]); // 输出 1, 2, 3
+}
+```
+
+### `for...of` 循环
+
+`for...of` 用于遍历可迭代对象（包括数组、字符串、Maps、Sets等）。它不能被用来遍历普通对象，因为普通对象不是可迭代的。
+
+#### 特点：
+1. **可迭代对象**：主要用于遍历 iterable 对象（如 `Array`、`String`、`Set`、`Map`、`TypedArray`）。
+2. **返回值**：`for...of` 循环返回的是集合元素的值。
+3. **适用于数组和其他可迭代对象**：更适合于遍历数组等结构，保持顺序。
+
+#### 示例：
+```javascript
+const array = [10, 20, 30];
+
+for (let value of array) {
+  console.log(value); // 输出 10, 20, 30
+}
+```
+
+### 关键区别
+
+1. **适用场景**：
+   - `for...in`：适合用于遍历对象的所有可枚举属性。
+   - `for...of`：适合用于遍历数组和其他可迭代对象的元素值。
+
+2. **返回内容**：
+   - `for...in`：返回对象属性的键名。
+   - `for...of`：返回可迭代对象的每个元素的值。
+
+3. **原型链**：
+   - `for...in` 会遍历对象及其原型链上的可枚举属性。
+   - `for...of` 仅遍历集合对象中的元素，不关心对象的原型链。
+
+这两种循环结构在使用中需要根据具体的使用场景进行选择，以便提高代码的效率和可读性。
