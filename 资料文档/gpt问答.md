@@ -396,6 +396,10 @@ marked.setOptions({
 
 # 输出内容渲染
 
+![image-20240829132318155](assets/image-20240829132318155.png)
+
+模型输出内容本身就为markdown格式的字符
+
 ### 代码渲染:highlight.js库
 
 ![image-20240809164007098](assets/image-20240809164007098.png)
