@@ -1,19 +1,17 @@
-function myReduce(arr, callback, initialValue) {
-	let accumulator = initialValue;
+function myReduce(arr, callback, initialValue){
 	let startIndex = 0;
-	if (!accumulator) {
-		if (arr.length === 0) {
-			throw new TypeError("reduce of empty array with no initial value");
+	let acc = initialValue;
+	if(!acc){
+		if(arr.length === 0){
+			throw new TypeError('argument error')
 		}
-		accumulator = arr[0];
-		startIndex = 1;
+		acc = arr[0]
+		startIndex = 1
 	}
-	for (let i = startIndex; i < arr.length; i++) {
-		accumulator = callback(accumulator, arr[i], i, arr);
+	for(let i = startIndex; i < arr.length; i++){
+		acc = callback(acc, arr[i], i, arr);
 	}
-	return accumulator;
+	return acc;
 }
 let arr = [1,2,3,5]
-let sum = myReduce(arr, (acc, curr) => acc += curr, 0)
-console.log(sum);
-
+console.log(myReduce(arr, (acc, curr) => acc + curr, 1));

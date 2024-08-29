@@ -8582,6 +8582,170 @@ self.addEventListener('fetch', function(event) {
 4. **CSS在`<head>`**：将关键CSS文件尽早放在`<head>`部分。
 5. **JavaScript在底部或使用异步加载**：将JavaScript文件放在页面底部，或者使用异步加载技术，以避免阻塞HTML解析和CSS加载。
 
+## 讲讲路由的两种模式,hash和history
+
+你说得对，在 **客户端路由** 中，常用的两种模式是 **Hash 模式** 和 **History 模式**，它们分别利用了 URL 中的不同部分来实现路由功能。
+
+**1. Hash 模式 (#)**
+
+* **原理**: 利用 URL 中 hash 符号（#）后面的片段来表示不同的路由状态。当 # 后面的片段发生变化时，浏览器不会向服务器发送请求，而是会触发 `hashchange` 事件，JavaScript 可以监听该事件并动态更新页面内容。
+
+* **例如**:
+
+   ```
+   https://www.example.com/#/home
+   https://www.example.com/#/about
+   https://www.example.com/#/products/123
+   ```
+
+* **优点**:
+
+   *  **兼容性好**: 兼容所有浏览器，包括旧版本的浏览器。
+   *  **配置简单**: 无需服务器端配合，可以**直接在客户端实现**。
+
+* **缺点**:
+
+   *  **URL 不美观**:  # 符号的存在使得 URL 看起来不够简洁。
+   *  **不利于 SEO**:  由于 hash 部分不会发送到服务器，搜索引擎无法抓取到不同的路由状态。
+
+
+**2. History 模式 (HTML5 History API)**
+
+* **原理**:  利用 HTML5 History API 中的 `pushState` 和 `replaceState` 方法来操作浏览器历史记录，改变 URL  的同时不会向服务器发送请求。监听 `popstate` 事件，可以捕获到 URL 的变化，从而进行相应的页面更新。
+
+* **例如**:
+
+   ```
+   https://www.example.com/home
+   https://www.example.com/about
+   https://www.example.com/products/123
+   ```
+
+* **优点**:
+
+   *  **URL 美观**:  没有 # 符号，URL 看起来更自然。
+   *  **有利于 SEO**:  URL 的变化会被记录在浏览器历史记录中，搜索引擎可以抓取到不同的路由状态。
+
+* **缺点**:
+
+   * **兼容性不如 Hash 模式**:  需要浏览器支持 HTML5 History API。
+   *  **需要服务器端配合**:  当用户直接访问非首页的路由时，服务器需要返回正确的 HTML 页面，否则会出现 404 错误。
+
+
+**总结**
+
+| 特性     | Hash 模式             | History 模式        |
+| -------- | --------------------- | ------------------- |
+| 原理     | URL 中的 hash 部分    | HTML5 History API   |
+| URL 示例 | `example.com/#/about` | `example.com/about` |
+| 兼容性   | 所有浏览器            | 部分现代浏览器      |
+| SEO      | 不利于 SEO            | 有利于 SEO          |
+| 配置     | 简单                  | 需要服务器端配合    |
+
+**选择建议:**
+
+-  如果需要兼容旧版浏览器，或者对 SEO 要求不高，可以选择 Hash 模式。
+-  如果追求更好的用户体验和 SEO 效果，可以选择 History 模式，但需要服务器端进行相应的配置。
+
+希望以上信息能够帮助你更好地理解 Hash 模式和 History 模式的区别！
+
+## history模式的pushstate和replacestate的区别
+
+**1.  `pushState()`**
+
+- **作用**:  向浏览器历史记录中 **添加** 一个新的状态，包括 URL、页面标题和可选的状态对象。
+- **结果**: 
+    * 浏览器地址栏的 URL 会更新为新的 URL。
+    * 历史记录中会新增一条记录，可以通过“前进”按钮访问到。
+    * **不会** 触发页面刷新，也不会向服务器发送请求。
+    * 会触发 `popstate` 事件。
+
+**2. `replaceState()`**
+
+- **作用**:  **替换** 浏览器历史记录中的当前状态，包括 URL、页面标题和可选的状态对象。
+- **结果**:
+    * 浏览器地址栏的 URL 会更新为新的 URL。
+    * 历史记录中的 **当前记录** 会被替换，不会新增记录。
+    * **不会** 触发页面刷新，也不会向服务器发送请求。
+    * **不会** 触发 `popstate` 事件。
+
+
+**简单来说：**
+
+- `pushState()`  像是在历史记录堆栈中 **"推入"**  一个新状态，用户可以通过浏览器的前进/后退按钮在历史记录中导航。
+- `replaceState()`  则是 **"替换"**  当前状态，用户无法通过浏览器的前进按钮回到之前的状态。
+
+**使用场景举例：**
+
+- **`pushState()`**:  适合在用户进行页面跳转、页面操作需要记录历史状态的时候使用，例如：
+    - 点击分页按钮，加载下一页数据并更新 URL。
+    - 展开/折叠页面上的某个区域，将展开/折叠状态记录在 URL 中。
+- **`replaceState()`**:  适合在需要更新 URL 但不希望影响用户历史记录的时候使用，例如：
+    -  页面加载完成后，根据初始状态修改 URL，避免用户刷新页面后回到初始状态。
+    -  用户修改了一些表单信息，希望将修改后的信息体现在 URL 中，但不需要记录为一个新的历史记录。
+
+
+**总结:**
+
+| 特性                | `pushState()`        | `replaceState()`     |
+| ------------------- | -------------------- | -------------------- |
+| 操作                | 添加新的历史记录     | 替换当前历史记录     |
+| 对历史记录的影响    | 可以通过前进按钮访问 | 无法通过前进按钮访问 |
+| 是否触发 `popstate` | 是                   | 否                   |
+
+## 页面是怎么切换的
+
+1. **监听 `popstate` 事件:**
+
+   - 当用户点击浏览器的前进/后退按钮，或者使用 JavaScript 调用 `history.back()`、`history.forward()`、`history.go()` 等方法时，就会触发 `popstate` 事件。
+
+   ```javascript
+   window.addEventListener('popstate', function(event) {
+     // 处理页面切换逻辑
+   });
+   ```
+
+2. **获取当前路由信息:**
+
+   - 在 `popstate` 事件处理函数中，可以通过 `event.state` 获取到当前路由状态对象（如果设置了的话），也可以通过解析当前 URL 来获取路由信息。
+
+   ```javascript
+   function handlePopState(event) {
+     const state = event.state || {};  // 获取路由状态对象
+     const url = window.location.pathname; // 获取当前 URL 路径
+     // 根据 state 或 url 判断当前路由，并加载对应页面内容
+   }
+   ```
+
+3. **动态更新页面内容:**
+
+   - 根据获取到的路由信息，使用 AJAX 请求获取对应页面的数据，然后使用 JavaScript 动态更新页面上的 DOM 元素。
+
+   ```javascript
+   function handlePopState(event) {
+     // ... 获取路由信息 ...
+   
+     if (url === '/home') {
+       // 发起 AJAX 请求获取首页数据
+       fetch('/api/home')
+         .then(response => response.json())
+         .then(data => {
+           // 使用 data 更新页面上的 DOM 元素
+           document.getElementById('content').innerHTML = data.html;
+         });
+     } else if (url === '/about') {
+       // ... 加载关于页面内容 ...
+     } else {
+       // ... 处理其他路由 ...
+     }
+   }
+   ```
+
+**关键点:**
+
+- **页面内容需要通过 JavaScript 动态加载和更新**，而不是通过服务器端渲染整个页面。
+- **可以使用前端框架或库来简化路由管理和页面渲染**，例如 React Router、Vue Router 等。
+
 ## JS怎么实现URL的跳转
 
 在JavaScript中，实现URL跳转有多种方式，可以根据需要选择使用。以下是几种常见的方法：
