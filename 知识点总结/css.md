@@ -2473,3 +2473,191 @@ export default App;
 - `:nth-of-type(-n + 3)`：选择特定类型的第 1 到第 3 个子元素，推荐用于选择特定类型的元素。
 
 只需要选择其中一种方法即可根据具体需求进行应用。
+
+## 前端动画是怎么执行的
+
+前端动画的执行可以通过多种技术来实现，这些技术主要包括 CSS 动画、JavaScript 动画以及 Web 动画 API。每种方法的实现和工作原理如下：
+
+### 1. CSS 动画
+
+- **CSS 过渡 (Transitions)**:
+  - 允许在元素的样式属性变化时，定义从一个状态到另一个状态的平滑过渡。
+  - 需要定义要过渡的样式属性、过渡的持续时间、过渡函数（如`ease-in-out`）和延迟时间。
+
+- **CSS 动画 (Animations)**:
+  - 使用 `@keyframes` 来定义动画序列，可以在指定的时间内创建复杂的动画效果。
+  - 需要指定动画名称、关键帧（`from` 和 `to` 或百分比）、动画持续时间、动画曲线等。
+
+CSS 动画的最大优点是它们通常在浏览器的合成层处理，不涉及主线程，从而提供了较好的性能。
+
+### 2. JavaScript 动画
+
+- **直接操作 DOM**:
+  - 通过周期性地更新 DOM 元素的样式属性，例如使用 `setInterval` 或 `setTimeout`，通常用于简单动画。
+  - **`requestAnimationFrame`** 是推荐的方式。它允许浏览器在下一次重绘前执行指定的动画代码，提供更流畅的动画效果并减少不必要的性能消耗。
+
+JavaScript 动画的灵活性很强，可以与用户交互进行复杂的动画控制，但需要对性能进行优化，避免频繁的DOM操作导致的重排和重绘。
+
+### 3. Web 动画 API
+
+- Web 动画 API 提供了一种在 JavaScript 中控制动画的标准化方式。
+- 通过 `Element.animate()` 方法，允许对元素的 CSS 属性进行动画设置，比如关键帧、持续时间、时序函数等。
+- 该 API 提供了对动画播放、暂停、停止等更细粒度的控制，并提供了事件监听器来响应动画的开始、结束等事件。
+
+### 执行过程
+
+1. **初始化**: 动画的初始状态和参数（如位置、颜色等）准备好。
+
+2. **更新和计算**: 
+   1. **CSS 动画**：浏览器计算动画的中间帧，更新元素的样式属性。
+   2. **JavaScript 动画**：通过 `requestAnimationFrame` 或定时器，逐帧计算和更新元素的样式属性。
+
+3. **重绘和重排**:
+   - 浏览器会根据新的样式属性更新元素的位置、大小和其他样式。
+   - **重绘 (Repaint)**: 如果只改变了样式（如颜色），页面的重绘会更高效。
+   - **重排 (Reflow)**: 如果更改了影响元素布局的属性（如宽高、位置），可能会导致页面布局的重新计算和较大开销。
+
+4. 帧渲染：
+   - 浏览器的渲染引擎基于计算结果，依次绘制每一帧。
+
+5. 硬件加速：
+   - 浏览器尝试将动画移交给 GPU 进行硬件加速，特别是对于 `transform` 和 `opacity` 动画，这大大提高了动画的流畅性和性能。
+
+
+通过合理地使用这些动画技术，可以创建从简单的过渡到复杂动效的各种网页动画效果。实际开发中选择哪种方法通常取决于具体的需求、性能考虑以及开发的便捷性。
+
+## 动画每改变一次位置就会触发回流或重绘嘛
+
+### 哪些动画会触发回流或重绘？
+
+1. **触发回流的动画**
+
+改变元素的几何属性（如宽度、高度、位置）会触发回流。例如：
+
+```css
+@keyframes moveRight {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100px;
+  }
+}
+
+.box {
+  position: absolute;
+  animation: moveRight 2s infinite;
+}
+```
+
+在这个例子中，每次 `left` 属性的变化都会触发回流，因为它改变了元素的几何属性。
+
+1. **触发重绘的动画**
+
+改变元素的外观属性（如颜色、透明度）会触发重绘。例如：
+
+```css
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.box {
+  animation: fade 2s infinite;
+}
+```
+
+在这个例子中，每次 `opacity` 属性的变化都会触发重绘，因为它改变了元素的可见性但没有改变几何属性。
+
+1. **CSS 变换和不透明度**
+
+使用 `transform` 和 `opacity` 属性通常不会触发回流或重绘。这些属性可以利用 GPU 加速，从而避免回流和重绘。例如：
+
+```css
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100px);
+  }
+}
+
+.box {
+  animation: slide 2s infinite;
+}
+```
+
+在这个例子中，`transform` 属性只会触发复合 (composite) 操作，而不会触发回流或重绘。复合操作由 GPU 处理，通常性能更好。
+
+### JavaScript 动画中的回流与重绘
+
+如果在 JavaScript 中直接操作 DOM 元素并改变其样式属性，同样会触发回流或重绘：
+
+#### 触发回流的 JavaScript 代码：
+
+```javascript
+const box = document.querySelector('.box');
+function move() {
+  box.style.left = `${parseInt(box.style.left, 10) + 1}px`;
+  requestAnimationFrame(move);
+}
+move();
+```
+
+#### 触发重绘的 JavaScript 代码：
+
+```javascript
+const box = document.querySelector('.box');
+function fade() {
+  box.style.opacity = parseFloat(box.style.opacity) + 0.01;
+  if (parseFloat(box.style.opacity) < 1) {
+    requestAnimationFrame(fade);
+  }
+}
+fade();
+```
+
+### 优化动画性能
+
+1. **使用 `transform` 和 `opacity` 属性**：这些属性通常由 GPU 加速，避免了回流和重绘：
+
+   ```css
+   .box {
+     transition: transform 2s ease, opacity 2s ease;
+   }
+   ```
+
+2. **优化复杂布局**：减少和优化可能触发回流的属性更改，尤其是在复杂的页面布局中。
+
+3. **合并 DOM 操作**：尽量在一次帧刷新周期内合并多次 DOM 操作，减少重新计算样式和回流的频率。
+
+   ```javascript
+   // 使用文档碎片 (Document Fragment) 批量操作 DOM：
+   const fragment = document.createDocumentFragment();
+   for (let i = 0; i < 100; i++) {
+     const item = document.createElement('div');
+     item.className = 'item';
+     fragment.appendChild(item);
+   }
+   document.body.appendChild(fragment);
+   ```
+
+4. **分离读写操作**：把对 DOM 的读操作和写操作分离，避免在同一帧内交替进行读写操作。
+
+   ```javascript
+   // 把读操作和写操作分离
+   const box = document.querySelector('.box');
+   const currentLeft = box.offsetLeft; // 读操作
+   box.style.left = `${currentLeft + 100}px`; // 写操作
+   ```
+
+### 总结
+
+- **回流**：布局变化，如宽度、高度、位置改变。
+- **重绘**：视觉变化，如颜色、背景、透明度改变。
+- **优化策略**：使用 `transform` 和 `opacity` 属性，减少和优化可能触发回流的操作，合并 DOM 操作，以及分离读写操作。
