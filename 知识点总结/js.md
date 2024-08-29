@@ -8870,3 +8870,59 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
    - 通过闭包，可以避免使用过多的全局变量。变量可以被封装在闭包内，减少全局作用域的污染，利于提升代码的可维护性和可读性。
 
 在许多高级编程语言中，比如JavaScript、Python和Swift，闭包都被广泛使用，帮助开发者编写更高效、模块化和安全的代码。通过闭包，程序员能够更灵活地保持和操作函数内部的状态，实现复杂的功能逻辑和异步工作流。
+
+## js函数传参是传值还是传引用
+
+在JavaScript中，函数参数的传递方式可以分为两种：**传值**（pass by value）和**传引用**（pass by reference），这取决于传入参数的数据类型。
+
+### 基本数据类型（传值）
+
+对于基本数据类型（primitive types），包括 `number`, `string`, `boolean`, `undefined`, `null`, `bigint`, 和 `symbol`，JavaScript在函数调用时会**传值**。
+
+- **行为**：当基本数据类型作为参数传递时，函数内部接收到的是这个值的拷贝。因此，在函数内部对参数的修改不会影响到函数外部的原始变量。
+
+```javascript
+function modifyValue(x) {
+  x = 20;
+  console.log("Inside function:", x); // 20
+}
+
+let a = 10;
+modifyValue(a);
+console.log("Outside function:", a);  // 10
+```
+
+在这个例子中，即使在函数`modifyValue`内部修改了`x`的值，外部的变量`a`仍然保持它的初始值 `10`。
+
+### 引用数据类型（传引用）
+
+对于引用数据类型（reference types），包括`object`、`array`、和 `function`，JavaScript在函数调用时会**传引用**。
+
+- **行为**：当引用数据类型作为参数传递时，函数内部接收到的是这个对象的引用。因此，函数内部对参数的修改会影响到函数外部的原始对象。
+
+```javascript
+function modifyObject(obj) {
+  obj.property = 20;
+  console.log("Inside function:", obj.property); // 20
+}
+
+let myObj = { property: 10 };
+modifyObject(myObj);
+console.log("Outside function:", myObj.property); // 20
+```
+
+在这个例子中，`myObj`对象被传递到函数中。通过引用进行的修改直接影响了外部的 `myObj`，即在函数外部也能看到 `property` 的值被修改为 `20`。
+
+### 理解细节
+
+- **传值**：基本数据类型的参数传递类似于复制，它们的值在函数调用时被复制，任何变化仅限于函数内部。
+  
+- **传引用**：引用数据类型的参数传递是通过共享同一个对象引用进行的，因此修改会影响所有持有该引用的变量。
+
+### 小结
+
+- 对于基本数据类型，JavaScript是**传值**。
+- 对于引用数据类型，JavaScript是**传引用**。
+  
+
+了解这两种传参方式及其区别能够帮助你在编写JavaScript代码时预测函数内对参数的修改会如何影响外部变量。这是JavaScript中一个重要的概念，特别是在涉及对象和数组操作时需要尤其注意。
