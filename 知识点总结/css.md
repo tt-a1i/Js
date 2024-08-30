@@ -1,3 +1,37 @@
+## UI更新是在事件循环的哪个阶段
+
+在浏览器的事件循环（Event Loop）机制中，UI更新通常发生在**渲染阶段（渲染帧）**。但是，为了全面理解UI更新的时机，我们需要了解事件循环的各个阶段。
+
+### 浏览器事件循环的简化过程
+
+1. **宏任务队列（Macro-task Queue）**：
+   - 包含整体脚本、定时器（如`setTimeout`、`setInterval`）、UI事件处理、I/O等。
+   - 每次迭代循环时，浏览器会从宏任务队列中取出并执行一个宏任务，然后检查微任务队列。
+
+2. **微任务队列（Micro-task Queue）**：
+   - 包含Promise回调（`.then()`、`.catch()`、`.finally()`）、`MutationObserver`等。
+   - 在当前宏任务执行结束后，会立即执行微任务队列中的所有任务。
+
+3. **渲染阶段（Rendering）**：
+   - 在所有微任务完成后，浏览器将开始准备更新UI。
+   - 如果需要重绘或回流（即渲染更新），渲染阶段会处理这些。
+
+### UI更新
+
+UI更新是**在所有的微任务执行完毕后和下一个宏任务开始之前进行的**。具体概述如下：
+
+- **渲染触发时机**：
+  - 浏览器通常执行一次宏任务后——包括其相关的所有微任务——会检查是否需要进行UI更新。
+  - UI更新包括重新计算样式、布局和绘制等过程。
+  
+- **优化机制**：
+  - 多数浏览器有自己的优化机制，如在高频率操作时（比如持续触发JavaScript事件、快速变动DOM、快速改变CSS样式等），它们会合并这些操作，减少不必要的渲染，以提高性能。
+
+- **requestAnimationFrame**：
+  - 浏览器提供的`requestAnimationFrame`是一个可以在下一次重绘前执行的回调，非常适合用于动画等需要精确控制的UI更新。
+
+通过了解事件循环的这些阶段，我们知道UI更新通常发生在每个宏任务和关联微任务完成后的渲染阶段。当你编写涉及频繁UI变化的JavaScript代码时，记得善用`requestAnimationFrame`来优化性能，确保平滑的用户体验。
+
 ## 判断设备类型
 
 使用 JavaScript 判断用户端设备类型可以通过多种方法。其中最常用的方法是检查 `navigator.userAgent` 属性，该属性包含一个字符串，描述了浏览器和操作系统的相关信息。基于这个字符串，可以检测设备是桌面设备、手机还是平板。
@@ -861,7 +895,76 @@ BFC（块级格式化上下文）是 CSS 中的一种布局模式，用于定义
 
 ## 圣杯布局
 
+圣杯布局是一个经典的网页布局模式，用于实现三栏布局，其中左右两侧是固定宽度的边栏，中间是自适应宽度的内容区。这种布局的需求往往出现在需要侧边栏和主内容区域的网页中，比如新闻网站、博客等。它的目标是使左右两边的侧栏在中间内容的顶部和底部保持固定，同时中间内容能自适应填充剩余空间。
 
+实现圣杯布局有多种方法，以下是其中一种常用的方法，使用现代的CSS技术，如Flexbox，在简化代码的同时提供了良好的兼容性。
+
+### 使用 Flexbox 实现圣杯布局
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holy Grail Layout</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header, .footer {
+            background-color: #f8f8f8;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .container {
+            flex: 1; /* Fills all the available space between header and footer */
+            display: flex; /* Flex container for central layout */
+        }
+
+        .sidebar {
+            background-color: #f0f0f0;
+            flex: 0 0 200px; /* Fixed width for sidebars */
+        }
+
+        .main {
+            background-color: #fff;
+            flex: 1; /* Take the remaining space */
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Header</div>
+    <div class="container">
+        <div class="sidebar">Left Sidebar</div>
+        <div class="main">Main Content</div>
+        <div class="sidebar">Right Sidebar</div>
+    </div>
+    <div class="footer">Footer</div>
+</body>
+</html>
+```
+
+### 说明：
+
+- **Flexbox布局**：我们使用了Flexbox，这使得布局的实现变得非常简单和直观。
+  
+  - `body`被设置为一个垂直方向的Flex容器，以便让`header`与`footer`固定在页面的顶部和底部。
+  
+  - `container`是一个水平的Flex容器，包含左侧栏、主内容区和右侧栏。
+
+- **侧栏宽度**：通过`flex: 0 0 200px;`来指定侧栏的宽度。这里的`flex`属性的`0 0`部分表示侧栏的宽度是固定的。
+
+- **主内容区**：通过`flex: 1;`让主内容区自适应填满剩余空间。将其放在中间确保了主内容的自适应性。
+
+- **兼容性与现代性**：使用Flexbox是一种现代的方式，可以在大多数现代浏览器中有良好的支持。相比于传统的浮动或使用复杂的CSS技巧实现圣杯布局，Flexbox让布局代码更加易读和维护。
+
+这种使用Flexbox的方法是实现圣杯布局的高效而简洁的方式，非常适用于大多数现代Web项目中。
 
 ## flexbox（弹性盒布局模型）,以及适用场景
 
