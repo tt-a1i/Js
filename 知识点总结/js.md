@@ -8926,3 +8926,124 @@ console.log("Outside function:", myObj.property); // 20
   
 
 了解这两种传参方式及其区别能够帮助你在编写JavaScript代码时预测函数内对参数的修改会如何影响外部变量。这是JavaScript中一个重要的概念，特别是在涉及对象和数组操作时需要尤其注意。
+
+## 你用 localStorage 做过什么缓存
+
+我个人确实使用过 localStorage 来实现一些简单的客户端缓存策略。以下是我曾经使用 localStorage 进行缓存的一些具体场景和实现方式：
+
+### 缓存 API 响应数据：
+
+对于一些不经常变化的数据，我会将 API 的响应缓存到 localStorage 中，以减少不必要的网络请求。
+
+```javascript
+function fetchData(url) {
+  const cachedData = localStorage.getItem(url);
+  if (cachedData) {
+    return Promise.resolve(JSON.parse(cachedData));
+  }
+  
+  return fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      localStorage.setItem(url, JSON.stringify(data));
+      return data;
+    });
+}
+```
+
+### 用户偏好设置：
+
+保存用户的主题选择、语言偏好等设置。
+
+```javascript
+// 保存主题设置
+function setTheme(theme) {
+  localStorage.setItem('userTheme', theme);
+  applyTheme(theme);
+}
+
+// 应用保存的主题
+function applyStoredTheme() {
+  const storedTheme = localStorage.getItem('userTheme');
+  if (storedTheme) {
+    applyTheme(storedTheme);
+  }
+}
+```
+
+### 表单数据的自动保存：
+
+为了防止用户意外关闭页面导致表单数据丢失，我会周期性地将表单数据保存到 localStorage。
+
+```javascript
+function autoSaveForm() {
+  const formData = getFormData();
+  localStorage.setItem('formDraft', JSON.stringify(formData));
+}
+
+// 每30秒自动保存一次
+setInterval(autoSaveForm, 30000);
+
+// 页面加载时恢复表单数据
+function restoreFormData() {
+  const savedData = localStorage.getItem('formDraft');
+  if (savedData) {
+    const formData = JSON.parse(savedData);
+    populateForm(formData);
+  }
+}
+```
+
+### 实现简单的离线功能：
+
+对于一些简单的应用，我会使用 localStorage 来存储关键数据，使得即使在离线状态下也能访问部分功能。
+
+```javascript
+function saveArticleForOffline(article) {
+  const offlineArticles = JSON.parse(localStorage.getItem('offlineArticles') || '[]');
+  offlineArticles.push(article);
+  localStorage.setItem('offlineArticles', JSON.stringify(offlineArticles));
+}
+
+function getOfflineArticles() {
+  return JSON.parse(localStorage.getItem('offlineArticles') || '[]');
+}
+```
+
+### 缓存控制：
+
+为了确保缓存的数据不会过期，我会在存储数据时加入时间戳，并在读取时检查是否过期。
+
+```javascript
+function setWithExpiry(key, value, ttl) {
+  const now = new Date();
+  const item = {
+    value: value,
+    expiry: now.getTime() + ttl,
+  }
+  localStorage.setItem(key, JSON.stringify(item));
+}
+
+function getWithExpiry(key) {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
+  }
+  const item = JSON.parse(itemStr);
+  const now = new Date();
+  if (now.getTime() > item.expiry) {
+    localStorage.removeItem(key);
+    return null;
+  }
+  return item.value;
+}
+```
+
+使用 localStorage 进行缓存时，需要注意以下几点：
+
+1. localStorage 的存储容量有限（通常为 5MB 左右）。
+2. localStorage 中存储的数据是明文的，不要存储敏感信息。
+3. localStorage 是同步操作，对大量数据的读写可能会影响性能。
+4. 要考虑数据的时效性，适时清理或更新缓存。
+
+这些是我个人在使用 localStorage 进行缓存时的一些经验和实践。根据具体的应用场景和需求，可能还会有其他更复杂或更优化的使用方式。
