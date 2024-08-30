@@ -2586,3 +2586,76 @@ console.log('计算结果:', result.toString());
    - `Cache API`允许将网络请求及其响应缓存下来，用于提高性能或离线访问。
 
 在选择客户端存储机制时，需要根据存储数据的性质以及应用需求（如数据大小、访问机制、安全性等）来决定使用哪种存储方式。
+
+## instanceof原理
+
+`instanceof` 操作符是 JavaScript 中用于检测对象的原型链上是否存在某构造函数的 `prototype` 属性的一个关键字。理解 `instanceof` 操作符的工作原理需要了解其底层机制，尤其是 JavaScript 中的原型链（prototype chain）。
+
+### `instanceof` 操作符的基本语法
+
+```javascript
+object instanceof constructor
+```
+
+- `object`：需要检测的对象。
+- `constructor`：检测的构造函数。
+
+### `instanceof` 的执行过程
+
+`instanceof` 操作符通过检查对象的原型链（prototype chain），来判断该对象是否是某一个构造函数的实例。具体来说，它检查对象的原型是否能在构造函数的原型链（Prototype chain）中找到，这个过程可以抽象为以下步骤：
+
+1. 首先获取 `constructor` 的 `prototype` 属性，即 `constructor.prototype`。
+2. 然后获取 `object` 的原型，即 `object.__proto__`（通常通过 `Object.getPrototypeOf(object)` 来获取）。
+3. 一直沿着 `object` 的原型链向上查找，直到找到与 `constructor.prototype` 相同的原型为止。
+4. 如果在原型链中找到了匹配的原型，则返回 `true`；否则，如果到达原型链顶端（`null`），仍然没有找到匹配的原型，则返回 `false`。
+
+### 代码示例
+
+下面是一个简单的示例来演示 `instanceof` 操作符的工作原理：
+
+```javascript
+function Person() {}
+function Car() {}
+
+var person = new Person();
+
+console.log(person instanceof Person); // true
+console.log(person instanceof Car); // false
+console.log(person instanceof Object); // true
+```
+
+### 复杂情况
+
+1. **跨框架或上下文环境**
+
+   在浏览器环境中，如果你在不同的 iframe 或窗口中创建对象和构造函数，`instanceof` 可能不会如预期地工作，因为每个 iframe 有自己独立的 JavaScript 全局环境和不同的 `Object` 原型。
+
+2. **手动更改原型**
+
+   如果直接更改对象的原型，可能会影响 `instanceof` 的结果。
+
+   ```javascript
+   function Animal() {}
+   const animal = new Animal();
+   
+   console.log(animal instanceof Animal); // true
+   Object.setPrototypeOf(animal, {});
+   console.log(animal instanceof Animal); // false
+   ```
+
+3. **自定义 `Symbol.hasInstance`**
+
+   ES6 引入了 `Symbol.hasInstance`，允许自定义 `instanceof` 的行为：
+
+   ```javascript
+   class MyClass {
+       static [Symbol.hasInstance](instance) {
+           return false;
+       }
+   }
+   
+   const obj = new MyClass();
+   console.log(obj instanceof MyClass); // false
+   ```
+
+在这段代码中，`MyClass` 自定义了 `Symbol.hasInstance` 方法，该方法会使所有 `MyClass` 的实例表现出 `instanceof` 检查返回 `false` 的现象。
