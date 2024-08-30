@@ -2719,3 +2719,98 @@ console.log(obj); // 输出: {}
 4. **避免意外错误**：`Reflect` 方法在失败时返回 `false` 或 `undefined`，而不是抛出错误。这可以减少需要的错误处理代码，使代码更加简洁和健壮。
 
 总结来说，`Reflect` 提供了一组统一、函数化且与 `Proxy` 对象良好协同工作的对象操作方法，这不仅增加了代码的可读性和一致性，还减少了错误处理的复杂度，提升了代码的健壮性。
+
+## webworker如何跟主线程通信
+
+Web Worker 是一个在后台运行的JavaScript，允许在独立线程中执行脚本。它不能直接操作 DOM，也不能直接访问主线程的变量或函数。为了与主线程通信，Web Worker 主要依赖于消息传递机制。
+
+### 主线程与 Web Worker 通信的基本步骤
+
+1. **在主线程中创建 Web Worker**
+2. **使用 `postMessage` 发送消息**
+3. **监听 `message` 事件接收消息**
+
+### 创建 Web Worker
+
+首先，在主线程中创建一个 Web Worker：
+
+```javascript
+// 创建一个新的 Worker 实例，并传入 Worker 脚本的 URL
+const worker = new Worker('worker.js');
+```
+
+### 主线程发送消息到 Web Worker
+
+在主线程中使用 `postMessage` 方法发送消息到 Worker：
+
+```javascript
+// 向 Worker 发送消息
+worker.postMessage('Hello, Worker!');
+```
+
+### Web Worker 接收消息并响应
+
+在 Worker 脚本 (如 `worker.js`) 中，可以通过监听 `onmessage` 事件接收来自主线程的消息，并使用 `postMessage` 方法发送消息回主线程：
+
+```javascript
+// 监听来自主线程的消息
+self.onmessage = function(event) {
+  console.log('Message received from main thread:', event.data);
+
+  // 做一些处理，然后发送消息回主线程
+  self.postMessage('Hello, Main Thread!');
+};
+```
+
+### 主线程接收 Web Worker 的响应
+
+在主线程中，通过监听 Worker's `onmessage` 事件来接收 Worker 发回的消息：
+
+```javascript
+// 监听来自 Worker 的消息
+worker.onmessage = function(event) {
+  console.log('Message received from worker:', event.data);
+};
+```
+
+### 完整示例
+
+#### 主线程代码 (main.js)
+
+```javascript
+// 创建 Worker 实例
+const worker = new Worker('worker.js');
+
+// 向 Worker 发送消息
+worker.postMessage('Hello, Worker!');
+
+// 监听来自 Worker 的消息
+worker.onmessage = function(event) {
+  console.log('Message received from worker:', event.data);
+};
+
+// 处理 Worker 出错事件
+worker.onerror = function(event) {
+  console.error('Error in worker:', event.message);
+};
+```
+
+#### Worker 代码 (worker.js)
+
+```javascript
+// 监听来自主线程的消息
+self.onmessage = function(event) {
+  console.log('Message received from main thread:', event.data);
+
+  // 做一些处理，然后发送消息回主线程
+  self.postMessage('Hello, Main Thread!');
+};
+```
+
+### 注意事项
+
+1. **数据类型**：`postMessage` 传递的数据必须是可序列化的。这意味着不能直接传递包含函数、DOM 节点等非序列化对象的数据。不过，ArrayBuffer、Blob 和 StructuredClone (甚至是 Transferrable objects) 可以直接发送。
+2. **错误处理**：主线程和 Worker 都应设置错误处理回调，以便在通信或脚本错误时进行处理。
+3. **CORS 限制**：加载 Worker 脚本时需要注意同源策略。如果 Worker 脚本和主线程脚本不在同一源，会受到 CORS 限制。
+
+通过以上步骤，主线程和 Worker 可以实现双向通信，从而允许更复杂的数据处理和后台任务执行，而不阻塞主线程的 UI 操作。
