@@ -2659,3 +2659,63 @@ console.log(person instanceof Object); // true
    ```
 
 在这段代码中，`MyClass` 自定义了 `Symbol.hasInstance` 方法，该方法会使所有 `MyClass` 的实例表现出 `instanceof` 检查返回 `false` 的现象。
+
+## 简单讲讲reflect,他是做什么的,为什么需要他,用它有什么好处
+
+`Reflect` 是一个在 ECMAScript 2015（ES6）引入的内置对象，提供了一组静态方法，用于更直接和一致地操作 JavaScript 对象。以下是对 `Reflect` 的简单介绍、其用途和优点。
+
+### `Reflect` 是做什么的？
+
+`Reflect` 主要提供了一系列操作对象的静态方法。这些方法大致分为几类：
+- **对象属性的操作**：获取、设置和删除对象属性。
+- **对象的元数据操作**：比如获取对象的属性描述符、判断对象是否可扩展等。
+- **函数调用和构造**：调用函数或构造新的实例。
+
+例如：
+```javascript
+const obj = { a: 1 };
+
+// 使用 Reflect.get() 获取属性值
+console.log(Reflect.get(obj, 'a')); // 输出: 1
+
+// 使用 Reflect.set() 设置属性值
+Reflect.set(obj, 'a', 2);
+console.log(obj.a); // 输出: 2
+
+// 使用 Reflect.has() 检查属性是否存在
+console.log(Reflect.has(obj, 'a')); // 输出: true
+
+// 使用 Reflect.deleteProperty() 删除属性
+Reflect.deleteProperty(obj, 'a');
+console.log(obj); // 输出: {}
+```
+
+### 为什么需要 `Reflect`？
+
+在 `Reflect` 引入之前，JavaScript 提供了一些类似的对对象操作的方法，但它们分散在不同的地方，不够统一。例如，获取属性值可以直接通过点操作符（`obj.prop`）或方括号操作符（`obj['prop']`），而删除属性则通过 `delete` 操作符。引入 `Reflect` 统一了这些操作，使得代码更具一致性和可预测性。
+
+此外，`Reflect` 与 `Proxy` 对象协同工作，提供一致的行为。当使用 `Proxy` interceptor 挡住某些操作时，`Reflect` 方法可以作为对这些操作的默认实现，使得 `Proxy` 的使用变得更加便捷和直观。
+
+### 用 `Reflect` 有什么好处？
+
+1. **一致性和可读性**：`Reflect` 提供了一组统一的方法，使代码更具一致性和可读性。例如，不再需要混合使用 `delete` 和 `Object.defineProperty` 等操作，`Reflect` 方法提供了一致的接口。
+
+2. **函数化的设计**：`Reflect` 方法都是函数，这与大多数函数式编程的原则一致，使得代码更易于组合和测试。
+
+3. **与 Proxy 协同工作**：`Reflect` 方法经常与 `Proxy` 对象一起使用，在代理对象上执行默认操作。例如，在` Proxy` 的 `get` trap 中，可以使用 `Reflect.get` 来执行默认的属性获取操作：
+   ```javascript
+   const handler = {
+     get(target, prop, receiver) {
+       console.log(`Getting ${prop}`);
+       return Reflect.get(target, prop, receiver);
+     }
+   };
+   
+   const target = { a: 1 };
+   const proxy = new Proxy(target, handler);
+   console.log(proxy.a); // 输出: Getting a 1
+   ```
+
+4. **避免意外错误**：`Reflect` 方法在失败时返回 `false` 或 `undefined`，而不是抛出错误。这可以减少需要的错误处理代码，使代码更加简洁和健壮。
+
+总结来说，`Reflect` 提供了一组统一、函数化且与 `Proxy` 对象良好协同工作的对象操作方法，这不仅增加了代码的可读性和一致性，还减少了错误处理的复杂度，提升了代码的健壮性。
