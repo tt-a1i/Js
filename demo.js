@@ -1,13 +1,18 @@
-function shuffleArray(arr) {
-	for (let i = 0; i < arr.length - 1; i++) {
-		let n = Math.floor(Math.random() * (i + 1));
-		[arr[i], arr[n]] = [
-			arr[n],
-			arr[i],
-		];
+function func(fn, time, delay){
+	let timer = null;
+	function recurve(n = 0){
+		if(n >= time) {
+			clearTimeout(timer)
+			return;
+		}
+		clearTimeout(timer)
+		timer = setTimeout(() => {
+			fn()
+			recurve(n + 1)
+		} , delay)
 	}
+	return recurve
 }
-// 使用示例
-const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-console.log("Original Array:", arr);
-console.log("Shuffled Array:", shuffleArray(arr));
+const log = () => console.log(1)
+let fn = func(log, 3, 1000)
+fn()
