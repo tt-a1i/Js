@@ -1,8 +1,8 @@
-getName()
-var getName = () => console.log(4);
-function getName() {
-	console.log(5);
+function log() {
+	console.log('a')
 }
-getName()
+const debounceFn = debounce(log, 350)//防抖函数
 
-
+for(let i = 1; i <= 10; i++){
+	setTimeout(debounceFn, i * 100)
+}
