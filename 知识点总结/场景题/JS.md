@@ -2814,3 +2814,43 @@ self.onmessage = function(event) {
 3. **CORS 限制**：加载 Worker 脚本时需要注意同源策略。如果 Worker 脚本和主线程脚本不在同一源，会受到 CORS 限制。
 
 通过以上步骤，主线程和 Worker 可以实现双向通信，从而允许更复杂的数据处理和后台任务执行，而不阻塞主线程的 UI 操作。
+
+## typeof和instanceof的区别
+
+- **typeof**主要用于检查**原始数据类型**（如number, string, boolean等）
+- **instanceof**主要用于检查**对象类型和继承关系**
+
+### `typeof`
+
+- **用途**：用于检测基本数据类型（primitive types）。返回一个字符串表示数据类型。
+
+- **返回值**：返回一个表示数据类型名称的字符串，比如 `"string"`, `"number"`, `"boolean"`, `"object"`, `"undefined"`, `"function"` 和 `"symbol"` （ES6中加入）。
+
+- **适用范围**：适用于检测基本数据类型（number, string, boolean, function, undefined, symbol）和一些特殊对象类型（如`null`和普通对象）。
+
+- 注意事项
+
+  ：
+
+  - 对于基本数据类型来说，`typeof`很直观。
+  - `typeof null` 返回 `"object"`，这被认为是JavaScript的一个历史性错误。
+  - 对于数组，`typeof` 会返回 `"object"`，因为在JavaScript中数组是对象。
+  - 对于未定义的变量使用`typeof`不会抛出错误，而是返回 `"undefined"`。
+
+### `instanceof`
+
+- **用途**：用于检测对象的类型，判断一个对象是否是某个构造函数的实例。
+
+- **返回值**：返回一个布尔值，表示对象是否为特定构造函数的实例。
+
+- **适用范围**：适用于复杂数据类型，特别是对象和类实例。
+
+- **工作机制**：检查对象的原型链，看是否某个特定构造函数的原型存在于该原型链上。
+
+- 注意事项
+
+  ：
+
+  - `instanceof`只能用于对象，不能用于原始值（比如字符串、数字等），否则会抛出错误。
+  - 可以检测自定义类的实例。
+  - 在不同的JavaScript环境或框架中，可能会由于不同的原型链而导致`instanceof`判断失效。
