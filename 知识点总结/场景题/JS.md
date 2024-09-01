@@ -2854,3 +2854,297 @@ self.onmessage = function(event) {
   - `instanceof`只能用于对象，不能用于原始值（比如字符串、数字等），否则会抛出错误。
   - 可以检测自定义类的实例。
   - 在不同的JavaScript环境或框架中，可能会由于不同的原型链而导致`instanceof`判断失效。
+
+## vue怎么控制子组件的刷新
+
+在Vue中，控制子组件的刷新可以通过几种常见的方法来实现，主要是基于Vue的响应式机制和组件的生命周期钩子。以下是一些常见的方式来控制子组件的刷新或重新渲染：
+
+### 1. 通过Props更新
+
+当父组件传递给子组件的`props`发生变化时，子组件会自动重新渲染。你可以通过改变传递给子组件的`props`值来触发更新。
+
+```vue
+<!-- ParentComponent.vue -->
+<template>
+  <ChildComponent :data="parentData" />
+  <button @click="updateData">Update Data</button>
+</template>
+
+<script>
+import ChildComponent from './ChildComponent.vue';
+
+export default {
+  components: { ChildComponent },
+  data() {
+    return {
+      parentData: 'Initial Data'
+    };
+  },
+  methods: {
+    updateData() {
+      this.parentData = 'Updated Data';  // 这会导致子组件重新渲染
+    }
+  }
+};
+</script>
+```
+
+### 2. 使用`key`属性重置组件
+
+通过改变组件的`key`来强制其完全重新渲染。`key`属性的变化会使Vue认为这是一个全新的组件实例，从而完全卸载之前的实例并挂载一个新的。
+
+```vue
+<!-- ParentComponent.vue -->
+<template>
+  <ChildComponent :key="componentKey" />
+  <button @click="resetComponent">Reset Component</button>
+</template>
+
+<script>
+import ChildComponent from './ChildComponent.vue';
+
+export default {
+  components: { ChildComponent },
+  data() {
+    return {
+      componentKey: 0
+    };
+  },
+  methods: {
+    resetComponent() {
+      this.componentKey += 1;  // 改变key值强制子组件重新创建
+    }
+  }
+};
+</script>
+```
+
+### 3. 使用事件和方法
+
+父组件可以通过事件机制和子组件的方法来控制子组件的状态或数据，从而触发重新渲染。
+
+```vue
+<!-- ParentComponent.vue -->
+<template>
+  <ChildComponent ref="child" />
+  <button @click="refreshChild">Refresh Child</button>
+</template>
+
+<script>
+import ChildComponent from './ChildComponent.vue';
+
+export default {
+  components: { ChildComponent },
+  methods: {
+    refreshChild() {
+      this.$refs.child.refresh();  // 调用子组件的方法来触发更新
+    }
+  }
+};
+</script>
+```
+
+```vue
+<!-- ChildComponent.vue -->
+<template>
+  <div>{{ message }}</div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      message: 'Hello'
+    };
+  },
+  methods: {
+    refresh() {
+      this.message = 'Refreshed';  // 改变数据从而触发更新
+    }
+  }
+};
+</script>
+```
+
+### 4. 使用Vuex或其他状态管理工具
+
+在Vuex或类似的状态管理工具中管理数据，可以在状态变化时自动更新组件。子组件只需监听或映射所需的状态。
+
+```javascript
+// store.js (Vuex)
+export default new Vuex.Store({
+  state: {
+    sharedData: 'Original Data'
+  },
+  mutations: {
+    updateData(state, payload) {
+      state.sharedData = payload;
+    }
+  }
+});
+
+// ParentComponent.vue
+<template>
+  <ChildComponent />
+  <button @click="changeData">Change Data</button>
+</template>
+
+<script>
+import { mapMutations } from 'vuex';
+import ChildComponent from './ChildComponent.vue';
+
+export default {
+  components: { ChildComponent },
+  methods: {
+    ...mapMutations(['updateData']),
+    changeData() {
+      this.updateData('New Data');
+    }
+  }
+};
+</script>
+
+// ChildComponent.vue
+<template>
+  <div>{{ sharedData }}</div>
+</template>
+
+<script>
+import { mapState } from 'vuex';
+
+export default {
+  computed: {
+    ...mapState(['sharedData'])
+  }
+};
+</script>
+```
+
+这些方法都依赖于Vue的响应式系统，可以根据具体的需求和场景选择最合适的方案来控制子组件的刷新。
+
+## 讲讲什么是原型，这个原型对象指向谁，有什么一样的属性
+
+
+
+在 JavaScript 中，原型（prototype）是一个**用于创建对象的共享属性和方法的机制**。原型在 JavaScript 中的所有对象和构造函数中都发挥着关键作用。
+
+### 什么是原型
+
+1. **原型对象**：这是一个对象，用于存储特定类或构造函数的共享属性和方法。任何通过该构造函数创建的实例对象都可以访问其原型对象上的属性和方法。
+2. **`prototype`属性**：在函数对象中，`prototype`是一个特殊的对象，所有由该函数创建的对象实例将共享这个原型对象。注意，`prototype`属性**仅存在于函数对象上**。
+3. **`__proto__`属性**：每个JavaScript对象都有一个名为`__proto__`的内部属性（现代浏览器中实现为可以访问的属性），指向它的原型对象，即`[[Prototype]]`。这个属性是通过`Object.create()`或构造函数生成的。
+
+### 原型链
+
+JavaScript中的继承机制依赖于原型链。当访问一个对象的属性时，如果在对象自身中没有找到那个属性，JavaScript会沿着原型链向上查找直到找到该属性或原型链的末端为止。
+
+### 原型对象指向谁
+
+- **函数对象的`prototype`属性**：指向一个对象（原型对象），这个对象上有`constructor`属性指回这个函数本身。
+- **实例对象的`__proto__`属性**：当通过`new`关键字使用构造函数创建对象时，实例对象的`__proto__`属性会被设置为构造函数的`prototype`属性所指向的对象。
+
+
+
+### 什么是原型
+
+每个 JavaScript 对象都具有一个内部属性 `[[Prototype]]`（通常以 `__proto__` 访问），**该属性指向另一个对象**，这个对象就是**原型对象**（prototype）。当试图**访问对象的某个属性或方法时**，**如果对象本身不存在该属性或方法**，**JavaScript 就会沿着原型链向上查找**，**直到找到或达到原型链的顶端**（即 `null`）。
+
+### 构造函数与原型对象
+
+在 JavaScript 中，任何函数都可以作为构造函数。当使用 `new` 关键字调用构造函数时，JavaScript 会创建一个新对象，并将该新对象的 `[[Prototype]]` 指向该构造函数的 `prototype` 属性。
+
+示例如下：
+
+```javascript
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.sayHello = function() {
+  console.log('Hello, my name is ' + this.name);
+};
+
+const alice = new Person('Alice');
+const bob = new Person('Bob');
+
+alice.sayHello(); // Hello, my name is Alice
+bob.sayHello();   // Hello, my name is Bob
+```
+
+在上面的例子中：
+
+1. `Person` 是一个构造函数。
+2. `Person.prototype` 是 `Person` 的原型对象，所有由 `Person` 构造函数创建的对象都会共享这个原型对象。
+3. `alice` 和 `bob` 是由 `Person` 构造函数创建的实例，这些实例的 `__proto__` 属性指向 `Person.prototype`。
+4. `sayHello` 方法被添加到 `Person.prototype`，因此 `alice` 和 `bob` 实例都可以访问这个方法。
+
+### 原型对象指向谁
+
+- **构造函数的 `prototype` 指向其原型对象**。
+- **实例对象的 `[[Prototype]]` 指向其构造函数的 `prototype` 属性**。
+
+```javascript
+console.log(alice.__proto__ === Person.prototype); // true
+console.log(Person.prototype.constructor === Person); // true
+```
+
+### 核心属性和方法
+
+- **constructor 属性**：每个原型对象都有一个 `constructor` 属性，指向其关联的构造函数。
+
+```javascript
+console.log(Person.prototype.constructor === Person); // true
+```
+
+- **__proto__ 属性**：用于访问对象的内部 `[[Prototype]]` 属性，指向其构造函数的 `prototype`。`__proto__` 是非标准但广泛使用的访问方式。
+
+```javascript
+console.log(alice.__proto__ === Person.prototype); // true
+```
+
+- **isPrototypeOf 方法**：用于判断一个对象是否存在于另一个对象的原型链上。
+
+```javascript
+console.log(Person.prototype.isPrototypeOf(alice)); // true
+```
+
+- **Object.getPrototypeOf 方法**：标准方法，用于获取对象的原型。
+
+```javascript
+console.log(Object.getPrototypeOf(alice) === Person.prototype); // true
+```
+
+### 原型链
+
+原型链是通过原型（prototype）实现的属性和方法查找机制。一个对象通过 `[[Prototype]]` 属性指向其原型，依次向上查找，直到 `null` 为止。
+
+```javascript
+function Animal() {}
+Animal.prototype.eat = function() {
+  console.log('Eating');
+};
+
+function Dog() {}
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+const dog = new Dog();
+dog.eat(); // Eating
+
+console.log(dog.__proto__ === Dog.prototype); // true
+console.log(Dog.prototype.__proto__ === Animal.prototype); // true
+```
+
+在这个例子中：
+
+1. `Dog.prototype` 通过 `Object.create` 方法继承自 `Animal.prototype`。
+2. 所有 `Dog` 的实例将会继承 `Animal` 的方法，形成这样一条原型链 `dog -> Dog.prototype -> Animal.prototype -> Object.prototype -> null`。
+
+### 总结
+
+- **原型** 是用于在 JavaScript 对象间共享属性和方法的机制。
+- **构造函数的 `prototype` 属性** 是其原型对象，实例对象的 `[[Prototype]]` 指向该原型对象。
+- **核心属性和方法**包括 `constructor`、`__proto__`、`Object.getPrototypeOf` 和 `isPrototypeOf` 等。
+- **原型链** 定义了对象属性和方法的查找机制，通过原型指向逐级向上查找，直到 `null` 为止。
+
+通过理解原型和原型链，能更好地掌握 JavaScript 的继承机制和代码重用方式。
