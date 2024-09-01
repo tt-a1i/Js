@@ -3148,3 +3148,183 @@ console.log(Dog.prototype.__proto__ === Animal.prototype); // true
 - **原型链** 定义了对象属性和方法的查找机制，通过原型指向逐级向上查找，直到 `null` 为止。
 
 通过理解原型和原型链，能更好地掌握 JavaScript 的继承机制和代码重用方式。
+
+## document.write和innerHTML区别
+
+`document.write` 和 `innerHTML` 均可以用于在网页中插入HTML内容，但它们之间有显著的区别。以下是它们的主要区别以及适用场景：
+
+### `document.write`
+
+#### 概述
+`document.write` 是浏览器中最早期的操作 DOM 元素的方式之一。它用于将文本直接写入到HTML文档中。
+
+#### 使用示例
+```javascript
+document.write("<p>Hello, World!</p>");
+```
+
+#### 主要特点
+1. **即时性**：
+   - `document.write` 会立即执行，可以在 HTML 文档正在加载时写入内容。
+  
+2. **重写文档**：
+   - 如果在文档加载完成之后使用 `document.write`，它会清空整个文档并替换为新写入的内容。
+   - 示例（会清空所有内容）：
+     ```javascript
+     window.onload = function() {
+       document.write("<p>This will replace the entire document content!</p>");
+     };
+     ```
+
+3. **阻塞文档解析**：
+   - 使用 `document.write` 会阻塞页面的解析和渲染，因为它在执行时会暂停页面的加载。
+
+#### 适用场景
+- **动态脚本加载**：
+  - `document.write` 有时用于在页面加载时动态插入 `<script>` 标签以加载外部脚本，但这种用法已逐渐被其他技术（例如异步或延迟加载脚本）所取代。
+
+### `innerHTML`
+
+#### 概述
+`innerHTML` 是HTML元素的属性，可以用于获取或设置元素的HTML内容。它是一种更现代的操作DOM的方式。
+
+#### 使用示例
+```javascript
+document.getElementById("myDiv").innerHTML = "<p>Hello, World!</p>";
+```
+
+#### 主要特点
+1. **灵活性**：
+   - `innerHTML` 可以在任何时候重写元素的内容，而不会影响整个文档。
+  
+2. **安全性和性能**：
+   - 设置 `innerHTML` 会重新解析并重绘整个元素的内容，可能导致性能问题，特别是在处理大量数据时。
+   - 容易受到跨站脚本（XSS）攻击，需要注意避免直接插入未经处理的用户输入。
+
+3. **标准支持**：
+   - `innerHTML` 被所有现代浏览器广泛支持，并且在处理的灵活性上优于 `document.write`。
+
+#### 适用场景
+- **动态内容更新**：
+  - `innerHTML` 常用于在运行时动态更新网页元素的内容，例如从服务器获取的数据。
+
+### 总结
+
+| 特点                    | `document.write`     | `innerHTML`                |
+| ----------------------- | -------------------- | -------------------------- |
+| **即时执行**            | 是                   | 否                         |
+| **影响文档结构**        | 重写整个文档         | 仅更新目标元素             |
+| **阻塞文档解析**        | 是                   | 否                         |
+| **适用场景**            | 动态脚本加载（过时） | 动态内容更新               |
+| **跨站脚本（XSS）风险** | 较低                 | 较高（需注意处理用户输入） |
+| **现代性和普及性**      | 过时                 | 现代和普及                 |
+
+### 总体建议
+- **避免使用 `document.write`**：除非在非常特定的情况下（如在页面加载时插入脚本），否则不推荐使用，因为它会有潜在的性能和可维护性问题。
+- **推荐使用 `innerHTML`**：但一定要注意安全性，避免直接插入用户提供的数据，必要时可以使用 `textContent` 等其他方法来处理文本内容。
+
+## 为什么xss风险innerhtml更高
+
+跨站脚本（XSS，Cross-Site Scripting）是一种常见的Web安全漏洞，允许攻击者将恶意代码注入到可信的网站中。`innerHTML` 操作在处理页面内容时会解析并执行注入的HTML和JavaScript，因此如果用户输入未经过滤直接插入，XSS风险会更高。以下是更详细的原因：
+
+### 1. `innerHTML` 解析和执行HTML内容
+
+`innerHTML` 设置时，会解析字符串中的所有HTML标记，并将其作为网页内容的一部分进行渲染。这意味着任何包含的脚本代码也可能会被执行。
+
+#### 示例
+假设我们有一个输入框和一个按钮，当用户点击按钮时，通过 `innerHTML` 将输入框的内容插入到页面中：
+
+```html
+<input type="text" id="userInput">
+<button onclick="updateContent()">Submit</button>
+<div id="content"></div>
+
+<script>
+function updateContent() {
+  const input = document.getElementById("userInput").value;
+  document.getElementById("content").innerHTML = input;
+}
+</script>
+```
+
+在上面的例子中，如果用户输入以下内容：
+
+```html
+<script>alert('XSS Attack');</script>
+```
+
+点击按钮后，这段恶意代码会被直接插入到页面并执行，触发一个弹窗警告。这就是典型的XSS攻击。
+
+### 2. XSS 攻击示例
+```html
+<input type="text" id="userInput">
+<button onclick="updateContent()">Submit</button>
+<div id="content"></div>
+
+<script>
+function updateContent() {
+  const input = document.getElementById("userInput").value;
+  document.getElementById("content").innerHTML = input;
+}
+</script>
+```
+
+上面的代码有严重的安全漏洞。如果一个恶意用户在输入框中输入：
+
+```html
+<script>alert('XSS');</script>
+```
+
+然后点击按钮，这段恶意脚本就会被执行，触发一个弹框。
+
+### 3. 如何防止XSS攻击
+为了防止XSS攻击，应避免直接将用户输入作为HTML内容插入到页面中。以下是一些防范XSS的建议和方法：
+
+#### 1. **使用 `textContent` 或 `innerText`**
+`textContent` 和 `innerText` 只会插入纯文本而不解析为HTML，因此避免了脚本执行。
+
+```javascript
+function updateContent() {
+  const input = document.getElementById("userInput").value;
+  document.getElementById("content").textContent = input;
+}
+```
+
+#### 2. **字符转义**
+在将用户输入插入到HTML中之前，对特殊字符进行转义，这些逃逸字符包括 `<`, `>`, `&`, `"` 等。
+
+```javascript
+function escapeHTML(input) {
+  return input.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#039;');
+}
+
+function updateContent() {
+  const input = document.getElementById("userInput").value;
+  const safeInput = escapeHTML(input);
+  document.getElementById("content").innerHTML = safeInput;
+}
+```
+
+#### 3. **使用安全的HTML模板库**
+现代前端框架（如React, Vue.js, Angular）提供了模板渲染功能，自动处理转义以防止XSS攻击。例如，在React中，默认情况下，所有数据插入到DOM时都会被转义。
+
+```jsx
+function updateContent() {
+  const input = document.getElementById("userInput").value;
+  ReactDOM.render(<div>{input}</div>, document.getElementById('content'));
+}
+```
+
+#### 4. **内容安全策略（CSP）**
+配置内容安全策略（CSP），规定加载外部资源的方式及来源，来防止内联脚本执行。
+
+```html
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+```
+
+### 结论
+`innerHTML` 高XSS风险主要因为其会解析并执行被插入的HTML内容。因此，在使用 `innerHTML` 时要格外小心，特别是在处理用户输入时。推荐使用 `textContent` 而不是 `innerHTML` 来避免这种风险，或者通过转义用户输入和使用现代前端框架来安全地操作DOM。

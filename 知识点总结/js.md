@@ -9216,3 +9216,13 @@ requestAnimationFrame(step);
 - 可以使用嵌套 `setTimeout` 或 `requestAnimationFrame` 来提高时间间隔的准确性。
 
 具体选择哪种方法，取决于你的应用场景和对时间精度的需求。
+
+## instanceof工作机制
+
+### `instanceof` 的工作机制
+
+当你使用 `obj instanceof Constructor` 时，JavaScript会进行以下步骤检查：
+
+1. **获取构造函数的`prototype`属性**：首先，`instanceof`会尝试获取右操作数（即构造函数）的`prototype`属性。这个`prototype`应该是一个对象。
+2. **沿着对象的原型链查找**：然后，`instanceof`会检查左操作数（即对象）的原型链，看看是否有任何一个原型是与上一步获取到的`prototype`对象相同。
+3. **返回结果**：如果在原型链中找到了相同的`prototype`，则返回`true`；否则，返回`false`。
