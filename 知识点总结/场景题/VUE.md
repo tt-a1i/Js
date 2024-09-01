@@ -291,3 +291,146 @@ computed: {
 6. **渲染到屏幕**: 最后，浏览器将更新的内容渲染到用户的屏幕上。用户看到的是更新后的UI状态。
 
 现代浏览器和前端框架的优化使得这些步骤在大多数情况下都非常快速，以至于用户几乎感受不到延迟。然而，对于大量DOM操作或者复杂的计算，开发者需要关注性能优化，避免过渡频繁的重排和重绘。
+
+## 兄弟组件怎么传参
+
+在Vue.js中，兄弟组件之间的通信可以通过以下几种方式实现：
+
+1. **通过父组件中转**：
+   - **事件传递**：兄弟组件之间可以通过父组件作为中介来进行通信。一个兄弟组件可以通过事件将数据发送给父组件，父组件再通过props将数据传递给另一个兄弟组件。
+     1. 在子组件A中，用`$emit`发射一个事件给父组件，并将需要传递的数据作为参数。
+     2. 父组件监听这个事件，并在处理函数中接收数据。
+     3. 父组件将数据传递给兄弟组件B作为props。
+
+   示例：
+   ```vue
+   <!-- 父组件 -->
+   <template>
+     <ChildA @send-data="handleData"/>
+     <ChildB :data="data"/>
+   </template>
+   
+   <script>
+   export default {
+     data() {
+       return {
+         data: null
+       };
+     },
+     methods: {
+       handleData(data) {
+         this.data = data;
+       }
+     }
+   }
+   </script>
+   ```
+
+   ```vue
+   <!-- 子组件A -->
+   <template>
+     <button @click="sendData">Send Data</button>
+   </template>
+   
+   <script>
+   export default {
+     methods: {
+       sendData() {
+         this.$emit('send-data', { /* your data */ });
+       }
+     }
+   }
+   </script>
+   ```
+
+   ```vue
+   <!-- 子组件B -->
+   <template>
+     <div>{{ data }}</div>
+   </template>
+   
+   <script>
+   export default {
+     props: ['data']
+   }
+   </script>
+   ```
+
+2. **使用Vuex**：
+   - 如果项目已经在使用Vuex进行状态管理，可以将兄弟组件的数据存储在Vuex中。子组件A更新Vuex的状态，子组件B从Vuex中读取状态。
+   ```javascript
+   // Vuex store
+   export default new Vuex.Store({
+     state: {
+       sharedData: null
+     },
+     mutations: {
+       setSharedData(state, data) {
+         state.sharedData = data;
+       }
+     }
+   });
+   ```
+
+   然后在子组件A和子组件B中分别读写这个状态。
+
+   ```vue
+   <!-- 子组件A -->
+   <template>
+     <button @click="updateData">Update Data</button>
+   </template>
+   
+   <script>
+   export default {
+     methods: {
+       updateData() {
+         this.$store.commit('setSharedData', { /* your data */ });
+       }
+     }
+   }
+   </script>
+   ```
+
+   ```vue
+   <!-- 子组件B -->
+   <template>
+     <div>{{ sharedData }}</div>
+   </template>
+   
+   <script>
+   import { mapState } from 'vuex';
+   
+   export default {
+     computed: {
+       ...mapState(['sharedData'])
+     }
+   }
+   </script>
+   ```
+
+3. **事件总线（不推荐新项目使用）**：
+   - Vue 2中可以通过创建一个事件总线（Event Bus）来实现，但在Vue 3中不推荐这种方式。
+   - 如果在Vue 2使用，可以在Vue实例或者单独的文件中创建一个新的Vue实例作为事件总线，通过它来发射和监听事件。
+
+   ```javascript
+   // EventBus.js
+   import Vue from 'vue';
+   export const EventBus = new Vue();
+   ```
+
+   在组件中使用：
+   ```javascript
+   // 组件A
+   import { EventBus } from './EventBus.js';
+   
+   EventBus.$emit('eventName', data);
+   
+   // 组件B
+   import { EventBus } from './EventBus.js';
+   
+   EventBus.$on('eventName', (data) => {
+     // 处理 data
+   });
+   ```
+
+针对具体项目以及所使用的Vue版本，选择最佳的方式进行兄弟组件间的通信。对于较大和复杂的项目，建议使用Vuex以保持状态管理的一致性和可维护性。

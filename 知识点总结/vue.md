@@ -3713,7 +3713,7 @@ export default {
    - Vue3 支持树摇（Tree-shaking），可以更好地优化打包大小。
    - 核心库被分成了多个包，可以按需引入。
 5. Fragment、Teleport、Suspense：
-   - Fragment：允许组件有多个根节点。
+   - Fragment：**允许组件有多个根节点**。
    - Teleport：可以将组件内部的一部分模板"传送"到组件外的 DOM 中。
    - Suspense：可以等待异步组件加载完成，并在加载时显示占位内容。
 6. 生命周期钩子的变化：

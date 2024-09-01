@@ -1,18 +1,19 @@
-function func(fn, time, delay){
-	let timer = null;
-	function recurve(n = 0){
-		if(n >= time) {
-			clearTimeout(timer)
-			return;
-		}
-		clearTimeout(timer)
-		timer = setTimeout(() => {
-			fn()
-			recurve(n + 1)
-		} , delay)
-	}
-	return recurve
+Function.prototype.a = () => {
+	console.log(1);
+	
 }
-const log = () => console.log(1)
-let fn = func(log, 3, 1000)
-fn()
+Object.prototype.b = () => {
+	console.log(2);
+	
+}
+function A(){
+
+}
+const a = new A()
+
+// a.a()
+a.b()
+A.a()
+A.b()
+
+console.log(a);
