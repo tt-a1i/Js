@@ -2794,3 +2794,353 @@ server.listen(3000, () => {
 
 通过采取这些措施，可以有效减少公式渲染造成的卡顿现象，提升用户体验。
 
+# marked库的output都可以为什么
+
+KaTeX 提供了多种输出选项，每种选项都有其特定的用途和优势。主要的输出选项包括：
+
+1. HTML（默认）
+2. MathML
+3. SVG
+
+让我们详细了解每种输出选项：
+
+1. HTML（默认）:
+   - 优点：
+     - 渲染速度快
+     - 与网页结构良好集成
+     - 可以通过 CSS 轻松修改样式
+   - 缺点：
+     - 在某些情况下可能不如 SVG 清晰
+     - 依赖于用户系统的字体
+
+2. MathML:
+   - 优点：
+     - 是数学公式的标准标记语言
+     - 对屏幕阅读器友好，提高可访问性
+     - 某些浏览器原生支持
+   - 缺点：
+     - 并非所有浏览器都完全支持
+     - 渲染质量可能因浏览器而异
+
+3. SVG:
+   - 优点：
+     - 矢量格式，可无损缩放
+     - 跨平台一致性好
+     - 不依赖系统字体
+     - 可以嵌入元数据，有利于 SEO
+   - 缺点：
+     - 对于简单公式可能过于复杂
+     - 在某些旧版浏览器中可能不被完全支持
+
+选择哪种输出格式取决于你的具体需求：
+
+- 如果你需要最快的渲染速度和良好的浏览器兼容性，选择默认的 HTML 输出。
+- 如果可访问性是首要考虑因素，并且你的目标用户使用支持 MathML 的浏览器，可以选择 MathML。
+- 如果你需要高质量的显示效果，特别是在高分辨率屏幕上，或者需要公式在不同设备上保持一致的外观，SVG 是一个很好的选择。
+
+在你的代码中，选择 SVG 作为输出格式是一个很好的决定，因为它提供了高质量的渲染结果和良好的跨平台一致性。但是，你也可以根据具体需求调整输出格式。例如：
+
+```javascript
+katex.renderToString(math, {
+  throwOnError: false,
+  displayMode: true,
+  output: "html", // 或 "mathml"
+});
+```
+
+通过更改 `output` 参数，你可以轻松切换不同的输出格式，以满足不同的需求或在不同的场景中使用。
+
+# return `<p>${katex.renderToString(math, {为什么要有个$符号
+
+在 JavaScript 中，`${}` 是模板字符串（Template Literals）的一个特性，用于在字符串中嵌入表达式。这里使用 `${}` 的原因是为了将 KaTeX 渲染的结果插入到 HTML 字符串中。让我解释一下：
+
+```javascript
+return `<p>${katex.renderToString(math, { ... })}</p>`;
+```
+
+这行代码的作用是：
+
+1. 创建一个 HTML 段落元素 `<p>...</p>`。
+2. 在段落内部，使用 KaTeX 渲染数学公式。
+3. `${}` 允许我们在模板字符串中嵌入 JavaScript 表达式。
+
+具体来说：
+
+- `` ` `` （反引号）用来定义模板字符串。
+- `${...}` 用于在字符串中插入 JavaScript 表达式的值。
+- `katex.renderToString(math, { ... })` 是一个 JavaScript 表达式，它调用 KaTeX 的函数来渲染数学公式。
+
+这种写法的好处是：
+
+1. 可读性强：清楚地表示我们正在创建一个段落元素，并在其中插入渲染后的数学公式。
+2. 灵活性：允许我们轻松地在 HTML 字符串中插入动态内容（在这个例子中是渲染后的数学公式）。
+3. 避免字符串拼接：相比传统的字符串拼接（如 `'<p>' + katex.renderToString(...) + '</p>'`），这种方式更简洁、更不容易出错。
+
+如果不使用 `${}`，我们就需要使用字符串拼接，例如：
+
+```javascript
+return '<p>' + katex.renderToString(math, { ... }) + '</p>';
+```
+
+这种方式虽然也能达到同样的效果，但相比之下不如模板字符串直观和易于维护。
+
+总之，`${}` 在这里的作用是允许我们在创建 HTML 字符串时，方便地插入 KaTeX 渲染的结果。
+
+# 为什么我的代码输出设置为svg,但是实际内容还是文本
+
+![image-20240902213934943](assets/image-20240902213934943.png)
+
+日志调试的输出
+
+根据提供的错误日志，`katex.renderToString` 试图渲染的数学公式中遇到了错误。主要问题是 `KaTeX` 解析过程中出现了 `ParseError`，无法正确解析传递的数学公式。
+
+日志中的错误信息如下：
+
+```
+ParseError: KaTeX parse error: Unexpected character: '\` at position 12: frac{5}{2} \
+```
+
+### 分析问题
+
+1. **意外字符**：
+   - 错误提示 `Unexpected character: '\`，这说明在解析 `frac{5}{2} \` 这个公式时，遇到了意外的字符 `\`。`KaTeX` 解析器认为这个字符是非法的。
+
+2. **公式格式错误**：
+   - 公式 `frac{5}{2} \` 看起来像是不完整的。正则表达式或者输入的数学公式可能存在问题，导致公式解析失败。
+
+### 解决方法
+
+1. **检查正则表达式是否正确捕获公式**：
+   - 确认正则表达式能正确匹配到完整的数学公式。
+
+2. **修正输入公式**:
+   - 修正数学公式中的错误，使其符合 `KaTeX` 的解析规则。
+
+### 具体修正步骤
+
+#### 1. 检查正则表达式
+
+确保正则表达式 `inlineMathRegex` 能正确捕获到正确的数学公式。
+
+```javascript
+const inlineMathRegex = /\\\(([^)]+)\\\)/g;
+```
+
+此正则表达式匹配 `\(` 和 `\)` 包裹的内容作为一个整体数学公式。
+
+#### 2. 修改 `renderer.paragraph` 函数
+
+调整 `renderer.paragraph` 函数中的公式捕获和解析逻辑，确保公式未被意外截断。
+
+```javascript
+renderer.paragraph = (text) => {
+  return text
+    .replace(displayMathRegex, (match, math) => {
+      try {
+        console.log("block");
+        return `<p>${katex.renderToString(math.trim(), {
+          throwOnError: false,
+          displayMode: true,
+          output: "svg",
+        })}</p>`;
+      } catch (e) {
+        console.error("KaTeX rendering error:", e);
+        return `<p>${Math.escape()}</p>`;
+      }
+    })
+    .replace(inlineMathRegex, (match, math) => {
+      try {
+        console.log("inline");
+        return katex.renderToString(math.trim(), {
+          throwOnError: false,
+          output: "svg",
+        });
+      } catch (e) {
+        console.error("KaTeX rendering error:", e);
+        return match;
+      }
+    });
+};
+```
+
+注意在 `katex.renderToString` 调用之前，对捕获到的数学公式进行 `trim()` 操作，以剔除多余的空格或换行符，这可能会导致解析错误。
+
+#### 3. 确保 `marked` 不转义 SVG 标签：
+
+确保 `marked` 设置选项时，`sanitize` 被设置为 `false`，以免 `marked` 解析过程中转义 SVG 标签。
+
+```javascript
+marked.setOptions({
+  renderer: renderer,
+  sanitize: false, // 关闭 sanitize，以免 SVG 被转义
+  pedantic: false,
+  silent: false,
+  breaks: true,
+  highlight(code) {
+    return hljs.highlightAuto(code).value;
+  },
+});
+```
+
+
+
+通过上述步骤，完整而详细地检查和校正了 `katex` 公式解析及渲染过程中可能出现的问题。希望这些调整能够解决公式无法正确显示的问题。
+
+# katex3种输出模式区别
+
+下面是 `KaTeX` 的三种输出模式（HTML、MathML 和 SVG）的区别，以及每种模式的优缺点。
+
+### 1. HTML (默认) 输出模式
+`HTML` 是 `KaTeX` 的默认输出格式。
+
+#### 优点:
+- **快速渲染**: HTML渲染速度通常较快，特别是对于不太复杂的数学公式。
+- **CSS 可定制**: 可以使用 CSS 来定制显示风格。
+- **浏览器兼容性高**: 大多数现代浏览器都支持。
+
+#### 缺点:
+- **复杂数学公式的限制**: 对于非常复杂的数学公式，HTML可能会稍显不足。
+- **依赖于 Web 字体**: 如果用到特定的数学字体，依赖于用户的网络连接来加载这些Web字体。
+
+### 2. MathML 输出模式
+`MathML` 是一种基于XML的标记语言，用于表示数学符号和结构。
+
+#### 优点:
+- **语义化标记**: MathML 提供了语义化的数学表达，对机器学习和解析器更友好。
+- **可访问性**: MathML 可以更好地集成到辅助技术中，如屏幕阅读器，这对于有视觉障碍的用户很重要。
+
+#### 缺点:
+- **浏览器支持较差**: 并不是所有浏览器都完全支持 MathML，尤其是某些版本的 Chrome 和其他非 Firefox 浏览器。
+- **渲染速度慢**: 与 HTML 和 SVG 相比，复杂公式的渲染可能会更慢。
+- **样式控制难**: MathML 的样式定制相对困难，不如 HTML 和 SVG 灵活。
+
+### 3. SVG 输出模式
+`SVG` 是基于 XML 的矢量图形格式。
+
+#### 优点:
+- **高质量渲染**: SVG 提供了高质量的数学公式渲染，非常适合复杂公式，无论缩放多大都不会失真。
+- **独立于分辨率**: 适合于所有显示设备，尤其是需要高分辨率显示的情形。
+- **CSS 可定制**: 可以使用 CSS 定制 SVG 样式。
+
+#### 缺点:
+- **渲染效率**: SVG 生成较多的 DOM 元素，对于特别复杂和大型的公式可能渲染速度较慢。
+- **文件大小**: 生成的 SVG 代码可能较多，从而增大页面大小。
+
+### 选用不同模式的决策指南
+1. **一般应用场景**：大多数场景下可以选择默认的 HTML 输出，渲染速度和浏览器兼容性都相对不错。
+2. **语义化需求**：需要更好的辅助技术集成，可以选择 MathML 输出，尽管需要注意其浏览器兼容性问题。
+3. **高质量显示需求**：如果希望在高分辨率设备上显示高质量的数学公式，那么 SVG 是一个很好的选择。
+
+### 通过不同的选项生成不同的输出模式
+```javascript
+// HTML (默认)
+katex.renderToString(mathExpression, { output: "html" });
+
+// MathML
+katex.renderToString(mathExpression, { output: "mathml" });
+
+// SVG
+katex.renderToString(mathExpression, { output: "svg" });
+```
+
+选择具体的输出方式取决于你对性能、兼容性以及输出质量的要求。在你的情况中，若要生成高质量的数学公式，可以考虑使用 SVG；如果更多的是关注页面加载速度与浏览器兼容性，则可以按照默认的 HTML 输出模式。
+
+# marked配置项
+
+好的，我来详细解释一下 `display` 配置项的含义，以及 `marked` 的配置项。
+
+### `katex` 的 `displayMode` 配置项
+
+在 `katex` 中，`displayMode` 是一个重要的配置项，它决定了数学公式是以“行内模式”（inline mode）还是以“显示模式”（display mode）进行渲染：
+
+1. **行内模式（Inline Mode）**：
+   - `displayMode: false`（默认值）
+   - 数学公式将与文本在同一行中显示。
+   - 适合短小的数学表达式，例如：`\(E=mc^2\)`。
+   - 示例代码：
+     ```javascript
+     katex.renderToString("E=mc^2", { displayMode: false });
+     ```
+
+2. **显示模式（Display Mode）**：
+   - `displayMode: true`
+   - 数学公式将独立成行，并通常居中显示。
+   - 适合较长或复杂的公式，例如：`\[\sum_{i=1}^n i = \frac{n(n+1)}{2}\]`。
+   - 示例代码：
+     ```javascript
+     katex.renderToString("\sum_{i=1}^n i = \frac{n(n+1)}{2}", { displayMode: true });
+     ```
+
+### `marked` 的配置项
+
+`marked` 是一个非常流行的 Markdown 解析库，能够解析 Markdown 语法并输出 HTML。它提供了许多配置项来定制其行为。以下是一些重要的配置项及其说明：
+
+1. **renderer（类型：Object）**：
+   - 自定义渲染器，用于覆盖内置的 Markdown 渲染逻辑。可以通过扩展 `marked.Renderer` 类来实现。
+   - 示例：
+     ```javascript
+     const renderer = new marked.Renderer();
+     renderer.paragraph = (text) => `<p>${text}</p>`;
+     marked.setOptions({ renderer });
+     ```
+
+2. **gfm（类型：boolean，默认：true）**：
+   - 启用/禁用 GFM（GitHub Flavored Markdown）扩展。
+   - 示例：
+     ```javascript
+     marked.setOptions({ gfm: false });
+     ```
+
+3. **headerIds（类型：boolean，默认：true）**：
+   - 启用/禁用对标题元素生成的 ID。
+   - 示例：
+     ```javascript
+     marked.setOptions({ headerIds: false });
+     ```
+
+4. **headerPrefix（类型：string，默认：''）**：
+   - 为生成的标题 IDs 添加前缀。
+   - 示例：
+     ```javascript
+     marked.setOptions({ headerPrefix: 'prefix-' });
+     ```
+
+5. **mangle（类型：boolean，默认：true）**：
+   - 启用/禁用对标头 IDs 的混淆处理。
+   - 示例：
+     ```javascript
+     marked.setOptions({ mangle: false });
+     ```
+
+6. **sanitize（类型：boolean，默认：false）**：
+   - 启用/禁用输出 HTML 的清理，以防止潜在的 XSS 攻击。开启这个选项具有安全性，但可能会移除合法的 HTML 标签。
+   - 示例：
+     ```javascript
+     marked.setOptions({ sanitize: true });
+     ```
+
+7. **breaks（类型：boolean，默认：false）**：
+   - 启用/禁用 GFM 换行符扩展。
+   - 示例：
+     ```javascript
+     marked.setOptions({ breaks: true });
+     ```
+
+8. **highlight（类型：function，默认：null）**：
+   - 提供一个自定义的代码高亮函数，用于高亮代码块。通常与 `highlight.js` 一起使用。
+   - 示例：
+     ```javascript
+     marked.setOptions({
+       highlight: (code, lang) => {
+         const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+         return hljs.highlight(code, { language }).value;
+       }
+     });
+     ```
+
+9. **langPrefix（类型：string，默认：hljs-）**：
+   - 为代码块的类名添加前缀。
+   - 示例：
+     ```javascript
+     marked.setOptions({ langPrefix: 'language-' });
+     ```
