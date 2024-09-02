@@ -966,6 +966,145 @@ BFC（块级格式化上下文）是 CSS 中的一种布局模式，用于定义
 
 这种使用Flexbox的方法是实现圣杯布局的高效而简洁的方式，非常适用于大多数现代Web项目中。
 
+## flex原理
+
+Flexbox（Flexible Box Module，弹性盒模型）是一种一维布局模型，专门用于在容器内高效排列子元素（或称为“弹性子项”）。它是CSS3的一个模块，主要用于替代旧的浮动布局和表格布局，能够提供更灵活和更高效的布局方式。
+
+### 核心概念
+
+1. **Flex容器（Flex Container）：**
+   任何一个HTML元素可以通过将其`display`属性设置为`flex`或`inline-flex`来变成Flex容器。
+   ```css
+   .container {
+       display: flex;
+   }
+   ```
+
+2. **Flex子项（Flex Item）：**
+   Flex容器内的所有直接子元素自动成为Flex子项。
+
+### 主轴和交叉轴
+
+- **主轴（Main Axis）**：定义了Flex子项的排列方向。可以通过`flex-direction`属性来设置，默认是从左到右（即横向）。
+  
+  ```css
+  .container {
+      display: flex;
+      flex-direction: row; /* 可以是 row, row-reverse, column, column-reverse */
+  }
+  ```
+
+- **交叉轴（Cross Axis）**：垂直于主轴的方向。无论主轴是水平还是垂直，交叉轴总是以90度角形式存在。
+
+### Flex容器的主要属性
+
+1. **`flex-direction`**：定义主轴的方向。
+2. **`flex-wrap`**：定义如果子项在主轴方向上溢出，是否应该换行。
+   ```css
+   .container {
+       flex-wrap: wrap; /* 可选：nowrap, wrap, wrap-reverse */
+   }
+   ```
+
+3. **`flex-flow`**：是`flex-direction`和`flex-wrap`的简写形式。
+   ```css
+   .container {
+       flex-flow: row wrap;
+   }
+   ```
+
+4. **`justify-content`**：定义Flex子项在主轴方向上的对齐方式。
+   ```css
+   .container {
+       justify-content: center; /* 可选：flex-start, flex-end, center, space-between, space-around, space-evenly */
+   }
+   ```
+
+5. **`align-items`**：定义Flex子项在交叉轴方向上的对齐方式。
+   ```css
+   .container {
+       align-items: center; /* 可选：flex-start, flex-end, center, baseline, stretch */
+   }
+   ```
+
+6. **`align-content`**：定义多根轴线在交叉轴方向上的对齐方式（只有多行时有效）。
+   ```css
+   .container {
+       align-content: center; /* 可选：flex-start, flex-end, center, space-between, space-around, stretch */
+   }
+   ```
+
+### Flex子项的主要属性
+
+1. **`order`**：定义子项的排列顺序，数值越小，越靠前。
+   ```css
+   .item {
+       order: 1;
+   }
+   ```
+
+2. **`flex-grow`**：定义子项如何分配伸展空间，默认是0（即不伸展）。
+   ```css
+   .item {
+       flex-grow: 1;
+   }
+   ```
+
+3. **`flex-shrink`**：定义子项如何分配收缩空间，默认是1（即允许收缩）。
+   ```css
+   .item {
+       flex-shrink: 1;
+   }
+   ```
+
+4. **`flex-basis`**：在分配剩余空间之前，定义子项的初始大小，可以是长度单位或关键字`auto`。
+   ```css
+   .item {
+       flex-basis: 100px;
+   }
+   ```
+
+5. **`flex`**：`flex-grow`、`flex-shrink`和`flex-basis`的简写形式。
+   ```css
+   .item {
+       flex: 1 0 100px; /* 分别是：flex-grow, flex-shrink, flex-basis */
+   }
+   ```
+
+6. **`align-self`**：允许单个子项在交叉轴上对齐，覆盖align-items的设置。
+   ```css
+   .item {
+       align-self: center; /* 可选：auto, flex-start, flex-end, center, baseline, stretch */
+   }
+   ```
+
+### 实际应用
+
+```html
+<div class="container">
+    <div class="item">Item 1</div>
+    <div class="item">Item 2</div>
+    <div class="item">Item 3</div>
+</div>
+
+<style>
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.item {
+    flex: 1;
+    margin: 10px;
+}
+</style>
+```
+
+这种灵活的布局方式可以帮助更直观地控制页面元素，创建响应式和复杂的布局，同时提高代码的可读性和可维护性。
+
 ## flexbox（弹性盒布局模型）,以及适用场景
 
 Flexbox（弹性盒布局模型）是 CSS3 中的一种布局模式，用于在容器中对子元素进行灵活的排列和对齐。它通过在父元素上设置一些灵活的属性来控制子元素的布局，适用于各种不同的布局需求。

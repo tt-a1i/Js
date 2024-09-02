@@ -648,3 +648,355 @@ CSS Grid 是另一种现代布局方法，适合用于二维布局，非常适�
 ### 结论
 
 这个示例展示了一个基本的拖放框架。根据实际应用需求，你可能需要更复杂的逻辑，例如限制某些元素的接收，更新元素的位置或样式等。有时，你可能需要额外的拖拽视觉反馈，例如高亮显示目标区域，提示用户可以放置元素。
+
+## css实现0.5px下划线
+
+在CSS中要实现一个0.5px的下划线，其实会遇到一些挑战，因为很多浏览器不支持子像素（sub-pixel）渲染，对于0.5px这样的值通常会四舍五入为1px或者忽略。
+
+然而，可以通过一些技巧和替代方案实现接近0.5px下划线效果。以下这几种方法可以尝试：
+
+### 方法1：使用 `box-shadow`
+
+```html
+<p class="underline">This is an underlined text with 0.5px.</p>
+
+<style>
+.underline {
+    display: inline-block;
+    box-shadow: inset 0 -0.25px 0 0 #000; /* Create a 0.5px (0.25px on either side) shadow to simulate the underline */
+}
+</style>
+```
+
+### 方法2：使用 `transform: scaleY()`
+
+这个方法通过缩放变换，将1px的线条缩放至0.5px。
+
+```html
+<p class="underline">This is an underlined text with 0.5px.</p>
+
+<style>
+.underline {
+    display: inline-block;
+    position: relative;
+}
+
+.underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-bottom: 1px solid #000;
+    transform: scaleY(0.5); /* Scale down the height of the border to simulate 0.5px */
+    transform-origin: bottom;
+}
+</style>
+```
+
+### 方法3：使用 background-image
+
+使用渐变模拟半像素线条。
+
+```html
+<p class="underline">This is an underlined text with 0.5px.</p>
+
+<style>
+.underline {
+    display: inline;
+    background-image: linear-gradient(to right, currentColor 50%, transparent 50%);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position-y: 100%;
+}
+</style>
+```
+
+### 方法4：使用 `::after` 和 `transform: scaleY()`
+
+类似方法2，但将下划线放在伪元素中，然后缩放伪元素。
+
+```html
+<p class="underline">This is an underlined text with 0.5px.</p>
+
+<style>
+.underline {
+    display: inline;
+    position: relative;
+}
+
+.underline::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid #000;
+    transform: scaleY(0.5);
+    transform-origin: bottom;
+}
+</style>
+```
+
+### 方法5：SVG使用
+
+使用SVG来得到精确控制的线条宽度。
+
+```html
+<p class="underline">This is an underlined text with 0.5px.</p>
+<svg width="100" height="2" style="display:block;">
+  <line x1="0" y1="1" x2="100" y2="1" stroke="black" stroke-width="0.5" />
+</svg>
+```
+
+### 浏览器支持和注意事项
+- 子像素渲染的效果在不同的设备、浏览器和显示特性下可能会有所不同，尤其是在1x DPI屏幕上。
+- 较新的浏览器对子像素渲染支持更好，但在一些较旧的浏览器中可能存在渲染差异。
+- 测试显示效果时需要在多种设备上进行验证，以确保一致性。
+
+### 总结
+尽管CSS并未对0.5px的线条提供直接支持，可以通过上述各种方法和技巧，达到近似的效果。具体方法的选择，依赖于实际项目的需求和浏览器支持情况。
+
+## h5新特性
+
+HTML5（H5）引入了许多新特性，旨在增强Web应用的功能和用户体验。以下是HTML5的一些重要新特性：
+
+### 1. 语义标签
+引入了新的语义标签，以提供更清晰的文档结构：
+
+- `<header>`：定义文档或节的头部。
+- `<footer>`：定义文档或节的页脚。
+- `<section>`：定义文档中的一个节。
+- `<article>`：定义独立的内容块。
+- `<aside>`：定义其内容在文档中属于侧边栏的内容。
+- `<nav>`：定义导航链接的部分。
+- `<main>`：定义文档的主内容区。
+
+### 2. 增强的表单
+新类型的输入和表单属性，使表单验证和用户输入体验更加良好：
+
+- 新的输入类型：`<input type="email">`, `<input type="url">`, `<input type="number">`, `<input type="date">`, `<input type="time">`，等等。
+- 新的属性：`placeholder`, `required`, `pattern`, `min`, `max`, `step`，等等。
+- `<datalist>`：定义选项列表，可以与 `<input>` 元素配合使用。
+
+```html
+<form>
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" placeholder="Enter your email" required>
+</form>
+```
+
+### 3. 多媒体元素
+内置了对音频和视频的支持：
+
+- `<audio>`：用于嵌入音频内容。
+- `<video>`：用于嵌入视频内容。
+
+```html
+<audio controls>
+  <source src="audiofile.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<video controls>
+  <source src="videofile.mp4" type="video/mp4">
+  Your browser does not support the video element.
+</video>
+```
+
+### 4. 画布元素
+`<canvas>` 元素及其API允许动态、脚本化地在网页上绘图。
+
+```html
+<canvas id="myCanvas" width="200" height="200"></canvas>
+<script>
+  const canvas = document.getElementById('myCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'green';
+  ctx.fillRect(10, 10, 150, 100);
+</script>
+```
+
+### 5. 本地存储
+提供了客户端存储数据的能力，无需服务器端协助：
+
+- `localStorage`：存储没有过期时间的数据。
+- `sessionStorage`：存储在浏览器会话期间的数据。
+
+```javascript
+localStorage.setItem('key', 'value');
+const value = localStorage.getItem('key');
+
+sessionStorage.setItem('sessionKey', 'sessionValue');
+const sessionValue = sessionStorage.getItem('sessionKey');
+```
+
+### 6. 地理定位
+通过Geolocation API获取用户的地理位置。
+
+```javascript
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(function(position) {
+    console.log('Latitude: ' + position.coords.latitude);
+    console.log('Longitude: ' + position.coords.longitude);
+  });
+} else {
+  console.log('Geolocation is not supported by this browser.');
+}
+```
+
+### 7. 拖放API
+支持更直观的拖放操作，增强用户交互体验。
+
+```html
+<div id="dragElement" draggable="true">Drag me!</div>
+<script>
+  document.getElementById('dragElement').addEventListener('dragstart', function(event) {
+    event.dataTransfer.setData('text/plain', event.target.id);
+  });
+</script>
+```
+
+### 8. Web Workers
+允许在后台运行脚本，避免阻塞UI线程。
+
+```javascript
+const worker = new Worker('worker.js');
+worker.postMessage('Hello World');
+
+worker.onmessage = function(event) {
+  console.log('Worker says: ' + event.data);
+};
+```
+`worker.js`：
+```javascript
+self.onmessage = function(event) {
+  self.postMessage('Hello from Worker!');
+};
+```
+
+### 9. WebSocket
+提供了全双工的通讯通道，在客户端和服务器之间进行数据交换。
+
+```javascript
+const socket = new WebSocket('ws://example.com/socket');
+socket.onopen = function(event) {
+  socket.send('Hello Server!');
+};
+socket.onmessage = function(event) {
+  console.log('Server says: ' + event.data);
+};
+```
+
+### 10. 自定义数据属性
+允许在元素中嵌入自定义数据。
+
+```html
+<div data-custom="value">Content</div>
+<script>
+  const div = document.querySelector('div');
+  console.log(div.dataset.custom); // 输出 "value"
+</script>
+```
+
+### 11. 其他API
+- History API：允许脚本管理浏览历史。
+- File API：允许通过 JavaScript 处理文件。
+- Web Storage API：允许存储不同于之前的cookie更多的数据。
+- Fullscreen API：允许网页进入全屏显示模式。
+
+HTML5加强了对语义化、可访问性、多媒体、本地存储和丰富用户体验的支持，使得Web应用的开发更加强大和灵活。
+
+## 行内元素,块级元素,行内块级元素
+
+HTML中的元素可以根据其显示特性分为三大类：行内元素、块级元素和行内块级元素。理解这些元素的显示行为对于网页布局和样式的控制非常重要。以下是对这三类元素的详细介绍：
+
+### 1. 块级元素（Block-level Elements）
+#### 特性：
+- 每个块级元素都会从新的一行开始显示。
+- 宽度默认填满其父容器宽度。
+- 可以设置宽度、高度、内边距（padding）和外边距（margin）。
+- 可以包含其他块级元素或行内元素。
+
+#### 常见的块级元素：
+- `<div>`
+- `<p>`
+- `<h1>` 至 `<h6>`
+- `<ul>` 和 `<ol>`
+- `<li>`
+- `<blockquote>`
+- `<section>`
+- `<article>`
+- `<header>`
+- `<footer>`
+- `<nav>`
+- `<aside>`
+
+#### 示例：
+```html
+<div>
+  <p>This is a paragraph.</p>
+  <h1>Heading</h1>
+  <div>Another block-level element</div>
+</div>
+```
+
+### 2. 行内元素（Inline Elements）
+#### 特性：
+- 不会从新的一行开始，多个行内元素可以在一行显示。
+- 宽度和高度由内容决定，不能设置宽度和高度。
+- 可以设置水平的内边距（padding）和外边距（margin），但垂直的内边距和外边距通常无效。
+- 只能包含其他行内元素或文本。
+
+#### 常见的行内元素：
+- `<span>`
+- `<a>`
+- `<strong>`
+- `<em>`
+- `<img>`
+- `<code>`
+- `<br>`
+- `<small>`
+
+#### 示例：
+```html
+<p>This is a <span>span element</span> inside a paragraph.</p>
+<a href="#">This is a link</a>
+```
+
+### 3. 行内块级元素（Inline-block Elements）
+#### 特性：
+- 像行内元素一样，不会从新的一行开始，多个行内块级元素可以在一行显示。
+- 像块级元素一样，可以设置宽度和高度。
+- 可以设置内边距和外边距，且有效。
+- 通常用于需要内联排列的具有块级特性的内容。
+
+#### 常见的行内块级元素：
+有些HTML元素天然地具有行内块级元素的特性，例如 `<img>`。然而，我们可以通过CSS将任何元素设置为行内块级元素：
+
+```css
+display: inline-block;
+```
+
+#### 示例：
+```html
+<style>
+.inline-block {
+    display: inline-block;
+    width: 100px;
+    height: 50px;
+    border: 1px solid #000;
+    margin: 5px;
+}
+</style>
+
+<div class="inline-block">Block 1</div>
+<div class="inline-block">Block 2</div>
+<div class="inline-block">Block 3</div>
+```
+
+### 总结
+- **块级元素**占据其父容器的整个宽度，默认情况下元素前后会有换行，适用于大块内容和布局。
+- **行内元素**只占据其内容的空间，不会换行，适用于装饰和格式化文本。
+- **行内块级元素**结合了两者的优点，可以在一行内排布但具有块级元素的属性，适用于需要布局控制但要保持内联排列的场景。
