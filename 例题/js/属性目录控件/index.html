@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			.directory ul {
+				list-style-type: none;
+				padding-left: 20px;
+			}
+
+			.hidden {
+				display: none;
+			}
+
+			.toggle {
+				cursor: pointer;
+			}
+
+			.folder::before {
+				content: "\1F4C1";
+				margin-right: 5px;
+			}
+
+			.file::before {
+				content: "\1F4C4";
+				margin-right: 5px;
+			}
+		</style>
+		<title>Tree View Example</title>
+	</head>
+	<body>
+		<div id="directory" class="directory"></div>
+
+		<script src="treeview.js"></script>
+	</body>
+</html>
