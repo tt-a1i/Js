@@ -1,3 +1,4 @@
+//浏览器环境运行
 var length = 10;
 function fn() {
 	return this.length + 1;
