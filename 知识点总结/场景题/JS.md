@@ -3769,3 +3769,83 @@ console.log(instance.getPrivateField());  // 输出：Hello, Private Fields usin
 - **使用闭包**：如果需要兼容旧的环境或者需要更复杂的私有逻辑，闭包是一个灵活的解决方案。
 
 根据您的具体需求和开发环境，选择合适的方法来实现JavaScript类的私有属性。
+
+## try catch能捕获then中的错误码,.catch呢？
+
+在JavaScript中，`try...catch` 语句和 `.catch` 方法用于捕获和处理错误。它们在捕获错误方面有所不同，尤其是当涉及到Promises时。
+
+### `try...catch`
+
+`try...catch` 只能同步地捕获错误，这意味着如果错误在异步代码（例如，Promise中的`.then`处理程序）中发生，无法通过 `try...catch` 捕获。
+
+```javascript
+try {
+    Promise.resolve().then(() => {
+        throw new Error('Error in then');
+    });
+} catch (err) {
+    // 这个catch块不会执行，因为错误是在异步代码中抛出的
+    console.log('Caught by try...catch:', err);
+}
+```
+
+在上面的代码中，`try...catch` 无法捕获 `Promise` 中 `.then` 处理程序中抛出的错误，因为 `Promise` 本质上是异步的。
+
+### `.catch`
+
+`.catch` 方法可以用来处理Promise链中任何地方抛出的错误。
+
+```javascript
+Promise.resolve().then(() => {
+    throw new Error('Error in then');
+}).catch(err => {
+    // 这个.catch块会执行，因为它捕获了Promise链中的错误
+    console.log('Caught by .catch:', err);
+});
+```
+
+在上面的代码中，`.catch` 方法捕获了 `.then` 中抛出的错误。
+
+### 示例对比
+
+```javascript
+// 示例一：try...catch 无法捕获异步代码中的错误
+try {
+    Promise.resolve().then(() => {
+        throw new Error('Error in then');
+    });
+} catch (err) {
+    console.log('Caught by try...catch:', err); // 不会执行
+}
+
+// 示例二：.catch 捕获异步代码中的错误
+Promise.resolve().then(() => {
+    throw new Error('Error in then');
+}).catch(err => {
+    console.log('Caught by .catch:', err); // 输出：Caught by .catch: Error in then
+});
+```
+
+### 如何处理Promise中的错误
+
+如果希望在异步代码中也能捕获错误，可以将 `try...catch` 与 `async/await` 结合使用：
+
+```javascript
+(async function() {
+    try {
+        await Promise.resolve().then(() => {
+            throw new Error('Error in then');
+        });
+    } catch (err) {
+        console.log('Caught by async/await try...catch:', err); // 输出：Caught by async/await try...catch: Error in then
+    }
+})();
+```
+
+在上面的代码中，异步函数内的 `try...catch` 可以捕获 `await` 表达式中的任何错误，包括Promise链中的错误。
+
+### 总结
+
+- **`try...catch`** 只能同步地捕获错误，不能捕获异步代码（如Promise）的错误。
+- **`.catch`** 方法用于捕获Promise链中任何地方抛出的错误。
+- 可以使用 `async/await` 结合 `try...catch` 来捕获异步代码中的错误。
