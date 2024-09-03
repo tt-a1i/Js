@@ -3144,3 +3144,91 @@ katex.renderToString(mathExpression, { output: "svg" });
      ```javascript
      marked.setOptions({ langPrefix: 'language-' });
      ```
+
+# 关于正则匹配问题导致的换行
+
+const displayMathRegex = /\[([\s\S]+?)]/g;
+    const inlineMathRegex = /\\((.*?)\\)/g;这是我的正则,renderer.paragraph = (text) => {
+      text = text
+        .replace(displayMathRegex, (match, math) => {
+          try {
+            return katex.renderToString(math.trim(), {
+              throwOnError: false,
+              displayMode: true,
+              output: "svg",
+            });
+          } catch (e) {
+            console.error("KaTeX rendering error:", e);
+            return match;
+          }
+        })
+        .replace(inlineMathRegex, (match, math) => {
+          try {
+            return katex.renderToString(math.trim(), {
+              throwOnError: false,
+              output: "svg",
+            });
+          } catch (e) {
+            console.error("KaTeX rendering error:", e);
+            return match;
+          }
+        });
+
+return `<p>${text}</p>`;
+};这段代码在渲染这段内容的时候:\[ S_n = \frac{n}{2} \cdot [2a_1 + (n - 1) \cdot d] \],最后1个d后面的右括号换行了,也就是说后面的内容跟前面的不是一个整体,为什么会出现这样的情况
+
+## 答
+
+katex在渲染出错误报红代码块也是匹配的问题,正则分割导致错误的公式块开头或结尾,导致转义字符出现问题
+
+问题出现在你的 `displayMathRegex` 正则表达式上，特别是 `+?` 部分。`+?` 是一个“懒惰”匹配符，意味着它会尽可能少地匹配字符。
+
+包括有些后端返回的字符,公式内的\n,也要做替换处理,否则会导致换行无法正确渲染
+
+在你的例子中，`\[([\s\S]+?)]` 会匹配到 `\[ S_n = \frac{n}{2} \cdot [2a_1 + (n - 1) \cdot d` 就停止了，因为它遇到了一个 `]`，满足了正则表达式的条件。由于 `+?` 的懒惰性质，它不会尝试匹配更多的字符，即使后面还有匹配的 `]`。
+
+**解决方法：**
+
+将 `+?` 改为 `+`，这样就会使用“贪婪”匹配，尽可能多地匹配字符，直到遇到最后一个 `]`：
+
+```javascript
+const displayMathRegex = /\[([\s\S]+)]/g;
+```
+
+这个修改会让正则表达式匹配到整个公式，包括最后一个 `]`，从而避免了换行的问题。
+
+**修改后的代码：**
+
+```javascript
+const displayMathRegex = /\[([\s\S]+)]/g; 
+const inlineMathRegex = /\\((.*?)\\)/g; 
+
+renderer.paragraph = (text) => {
+  text = text
+    .replace(displayMathRegex, (match, math) => {
+      try {
+        return katex.renderToString(math.trim(), {
+          throwOnError: false,
+          displayMode: true,
+          output: "svg",
+        });
+      } catch (e) {
+        console.error("KaTeX rendering error:", e);
+        return match;
+      }
+    })
+    .replace(inlineMathRegex, (match, math) => {
+      try {
+        return katex.renderToString(math.trim(), {
+          throwOnError: false,
+          output: "svg",
+        });
+      } catch (e) {
+        console.error("KaTeX rendering error:", e);
+        return match;
+      }
+    });
+
+  return `<p>${text}</p>`;
+};
+```
