@@ -28,6 +28,8 @@
 
 ### input-vue
 
+![payload](assets/payload.png)
+
 ![image-20240809214448409](assets/image-20240809214448409.png)
 
 输入框左边的图片预览使用el-image做的，src的数据为base64
