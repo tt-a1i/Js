@@ -4353,3 +4353,145 @@ Storage包括LocalStorage和SessionStorage，它们同样受到同源策略限�
 ### 结论
 
 Cookie和Storage虽然受同源策略限制，但可以通过配置和间接方法实现跨域访问。Cookie可以通过设置`Domain`属性和配置CORS等方式实现跨域共享，而Storage通常需要使用`postMessage`和iframe通信等技术来间接实现跨域数据共享。
+
+## storage能跨域通信吗？
+
+### Storage的跨域通信
+
+如前面所述，Web Storage（例如LocalStorage和SessionStorage）是以同源策略为基础的，这意味着每个源（Origin：包括协议、主机名和端口）的Storage是独立的，不能直接跨域访问。但是，Storage可能需要在不同源的窗口之间共享数据，虽然Storage本身无法跨域，但可以利用其他技术实现跨域通信。
+
+以下是一些常用的方法来实现Storage的跨域通信：
+
+#### 1. 使用 `postMessage`
+
+`postMessage` 是一个安全的通信方法，可以用来在不同源的窗口（如iframe或新窗口）之间传递消息。
+
+##### 示例：
+
+在主页面上创建一个Iframe：
+```html
+<iframe id="crossDomainIframe" src="http://another-domain.com"></iframe>
+```
+
+在iframe或新窗口中使用`postMessage`发送数据：
+```javascript
+// 在 http://another-domain.com 中
+window.parent.postMessage({ key: 'username', value: 'john_doe' }, 'http://main-domain.com');
+```
+
+在主页面接收数据并存储在LocalStorage中：
+```javascript
+window.addEventListener('message', function(event) {
+  if (event.origin === 'http://another-domain.com') {
+    // 检查事件的来源和内容
+    localStorage.setItem(event.data.key, event.data.value);
+  }
+});
+```
+
+#### 2. 使用同源的 iframe 轮询方法
+
+这种方法需要在同源的 iframe 内部设置定时轮询 (polling)，从Storage读取数据并通过`postMessage`传递给主页面。
+
+主页面添加同源 iframe：
+```html
+<iframe id="sameOriginIframe" src="/same-origin-helper.html"></iframe>
+```
+
+iframe中的轮询脚本：
+```javascript
+// /same-origin-helper.html
+function sendDataToLocal() {
+  const storedData = localStorage.getItem('sharedData');
+  if (storedData) {
+    window.parent.postMessage({ key: 'sharedData', value: storedData }, '*');
+  }
+}
+
+// 定时轮询
+setInterval(sendDataToLocal, 1000);
+```
+
+主页面接收并处理数据：
+```javascript
+window.addEventListener('message', function(event) {
+  // 假设来自可信的同源页
+  localStorage.setItem(event.data.key, event.data.value);
+});
+```
+
+#### 3. 通过服务器中转
+
+你可以使用服务器端来中转数据，从而绕过浏览器的同源限制。客户端与服务器通信，再由服务器转发数据给目标域。
+
+客户端从Storage获取数据并发送到服务器：
+```javascript
+// 发送数据到服务器中转
+fetch('https://your-server.com/storeData', {
+  method: 'POST',
+  body: JSON.stringify({ key: 'username', value: 'john_doe' }),
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+在另一个域名中，客户端从服务器获取数据：
+```javascript
+// 从服务器获取数据
+fetch('https://your-server.com/getData')
+  .then(response => response.json())
+  .then(data => {
+    localStorage.setItem(data.key, data.value);
+  });
+```
+
+### 总结
+
+虽然Storage (LocalStorage 和 SessionStorage) 本身受到同源策略的限制，无法直接进行跨域访问，但通过使用`postMessage`、轮询和服务器中转等技术，可以实现跨域数据通信。这些方法利用了浏览器提供的安全通信手段和服务器端逻辑，实现了在跨域环境下的数据共享。
+
+## 实现一个函数对对象的get和set进行代理
+
+在JavaScript中，我们可以使用`Proxy`对象来代理对其他对象的`get`和`set`操作。`Proxy`允许你定义自定义行为，以在对目标对象属性进行基本操作时拦截并重新定义这些操作，如获取属性值、设置属性值等。
+
+以下是一个示例，实现一个函数来代理对象的`get`和`set`操作：
+
+```javascript
+function createProxy(target) {
+    return new Proxy(target, {
+        get(target, property, receiver) {
+            // 在这里自定义获取属性时的行为
+            console.log(`Getting property ${property.toString()}`);
+            return Reflect.get(target, property, receiver);
+        },
+        set(target, property, value, receiver) {
+            // 在这里自定义设置属性时的行为
+            console.log(`Setting property ${property.toString()} to ${value}`);
+            return Reflect.set(target, property, value, receiver);
+        }
+    });
+}
+
+// 使用例子
+const obj = { a: 1, b: 2 };
+const proxyObj = createProxy(obj);
+
+console.log(proxyObj.a);    // 获取属性 'a'，然后输出：Getting property a, 1
+proxyObj.b = 10;            // 设置属性 'b' 为 10，输出：Setting property b to 10
+console.log(proxyObj.b);    // 获取属性 'b'，然后输出：Getting property b, 10
+console.log(obj.b);         // 直接输出原对象的属性，值也更新为了10
+```
+
+### 说明
+
+1. **`Proxy`定义**：`new Proxy(target, handler)`创建一个代理对象：
+   - `target`：要代理的目标对象。
+   - `handler`：定义被代理对象的行为的对象，包含若干方法用于自定义捕获。
+
+2. **`get`捕获器**：拦截属性读取操作，允许在读取属性之前执行附加的逻辑。在示例中，我们简单地打印出正在访问的属性。
+
+3. **`set`捕获器**：拦截属性设置操作，允许在写入属性之前执行附加的逻辑。在此示例中，我们也打印出正在设置的属性和它的新值。
+
+4. **`Reflect`对象**：`Reflect`提供一些传统的JavaScript操作的反映性方法。在`get`和`set`的实现中使用`Reflect`是为了保证操作的正常完成, 并返回其真实的结果。
+
+通过这种方式，你可以在代理对象中监听和修改访问和修改对象属性的行为。在开发中这通常用于调试、验证数据或实现特定的业务逻辑。
