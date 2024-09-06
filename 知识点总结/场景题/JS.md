@@ -4206,3 +4206,56 @@ console.log('obj2.myArray:', obj2.myArray);  // 输出: []
 ### 结论
 
 简而言之，`null`这个值本身不会占据堆或栈上的实际内存位置。在不同的编程语言中，`null`作为一个特殊的标记或值，用来指示变量或引用没有指向任何有效的内存地址。因此，我们不能简单地说`null`存在于堆或者栈中，它更多的是一种在程序运行时由编译器或解释器处理的特殊情况。
+
+## js如果对象循环引用该如何去清除他们
+
+在 JavaScript 中，循环引用是指对象之间相互引用，使得直接引用链形成一个“循环”。这种结构可能影响垃圾回收机制，因为垃圾回收器通常无法确定这些对象是否可以安全删除。如果未能手动断开这些引用，可能会导致内存泄漏。
+
+要手动清除循环引用，你需要设置其中至少一个引用为 `null` 或其他不再指向对方的对象。这可以允许垃圾回收器回收不再使用的对象。以下是几种处理循环引用的通用方法：
+
+### 1. 手动解除引用
+
+```javascript
+function createCircularReference() {
+    const objA = {};
+    const objB = {};
+    
+    objA.anotherObject = objB;
+    objB.anotherObject = objA; // 循环引用
+    
+    // 清除循环引用
+    objA.anotherObject = null;
+    objB.anotherObject = null;
+    // 现在两个对象都没有互相引用
+}
+```
+
+### 2. 使用弱引用
+
+JavaScript 中的 `WeakMap` 和 `WeakSet` 可以用于处理对象引用而不妨碍垃圾回收。使用 `WeakMap` 或 `WeakSet`，对象可以被垃圾回收器自动回收，即使在存在引用的情况下：
+
+```javascript
+const weakMap = new WeakMap();
+let objA = {};
+let objB = {};
+
+objA.anotherObject = objB;
+objB.anotherObject = objA;
+
+weakMap.set(objA, objB);
+weakMap.set(objB, objA);
+
+// objA 和 objB 离开作用域或被设置为 null 后可以被回收
+objA = null;
+objB = null;
+```
+
+### 3. 使用库工具
+
+如果你在大型项目中出现复杂的循环引用，可以考虑使用专门用于检测和清理循环引用的工具或库。这些工具能自动化检测和解除循环的工作。
+
+### 4. 垃圾回收的自动优化
+
+现代的 JavaScript 引擎在垃圾回收方面已经有了很多优化，对于简单的循环引用通常能被自动回收。但在某些老旧的环境（例如很旧版本的浏览器）中，这可能不是那么可靠。
+
+总之，为了确保好内存管理，如果你创建了循环引用，应该尽量在不再需要这些对象时手动清除引用。尤其是在执行复杂的长时间运行任务或者服务器端代码时，合理管理内存可以避免不必要的内存泄漏。
