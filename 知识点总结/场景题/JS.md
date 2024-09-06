@@ -4007,3 +4007,109 @@ JavaScript采用的是词法作用域（Lexical Scoping），也就是说函数�
    - 由于箭头函数缺失以上这些核心特性，在JavaScript中，尝试使用`new`关键字调用箭头函数会导致抛出错误，例如 `TypeError: X is not a constructor`。
 
 这些特性使得箭头函数非常适合作为回调函数和简单的功能使用，但不适合用作构造函数。设计箭头函数的初衷是提供一种更加简洁的功能表达，不是为了替代传统的函数声明或函数表达式的所有用例。
+
+## 白屏性能优化
+
+白屏是指用户打开网页后长时间看到空白页面，这是一个非常不好的用户体验。优化白屏时间可以显著提升网页的加载速度和用户体验。这里提供一些常见的白屏性能优化方法：
+
+### 1. 服务器端优化
+#### a. 启用 Gzip 压缩
+Gzip 压缩可以显著减少静态资源的大小，使浏览器能够更快地下载页面内容。
+```plaintext
+# 在 nginx 配置文件中添加
+gzip on;
+gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+```
+
+#### b. 使用 CDN
+将静态资源（如 CSS, JS, 图片）托管到内容分发网络（CDN），提升资源加载速度。
+
+#### c. 服务端渲染（SSR）
+SSR 可以在服务器上渲染完整的 HTML 页面并返回给客户端，减少客户端的渲染时间。
+
+### 2. 前端优化
+#### a. 关键 CSS 和 JS 内联
+将关键的 CSS 和 JavaScript 直接内联放在 HTML 里面，减少外部资源请求。
+```html
+<style>
+  /* 关键CSS  */
+</style>
+<script>
+  // 关键JavaScript代码
+</script>
+```
+
+#### b. 代码拆分与懒加载
+使用代码拆分技术（如 Webpack 的代码拆分功能）和懒加载来优化资源加载。
+
+#### c. 使用异步和延迟加载
+将非关键的 JavaScript 代码使用 `async` 或 `defer` 特性加载，避免阻塞页面渲染。
+```html
+<script src="script.js" async></script>
+<script src="script.js" defer></script>
+```
+
+#### d. 优化图片和字体
+- 使用现代图片格式如 WebP，减少图片体积。
+- 只加载用户视口内需要的图片，即懒加载图片。
+- 使用字体加载优化技术（如 font-display: swap），避免字体阻塞渲染。
+
+### 3. 资源预加载和预连接
+#### a. 预加载
+使用 `<link rel="preload">` 提前加载需要的资源。
+```html
+<link rel="preload" href="style.css" as="style">
+<link rel="preload" href="main.js" as="script">
+```
+
+#### b. 预连接
+使用 `<link rel="dns-prefetch">` 和 `<link rel="preconnect">` 提前建立网络连接。
+```html
+<link rel="dns-prefetch" href="//example.com">
+<link rel="preconnect" href="//example.com">
+```
+
+### 4. 缓存优化
+#### a. 缓存静态资源
+设置合理的缓存头，提高资源的复用率。
+```plaintext
+# 在 nginx 配置文件中添加
+location ~* \.(js|css|png|jpg|jpeg|gif|ico|woff2)$ {
+    expires 1y;
+    add_header Cache-Control "public";
+}
+```
+
+#### b. HTTP/2
+开启 HTTP/2，支持多路复用，提高资源加载效率。
+
+#### c. 缓存 HTML
+对于不频繁更新的页面，可以考虑缓存 HTML。
+
+### 5. 渲染优化
+#### a. 首屏内容优先加载
+优先加载首屏展示内容，减少用户等待时间。
+
+#### b. 使用骨架屏
+在数据请求加载时显示一个简单的骨架屏，减少用户感受到的白屏时间。
+
+以下是一个简单骨架屏的示例：
+
+```html
+<div id="skeleton">
+  <div class="skeleton-item"></div>
+  <div class="skeleton-item"></div>
+  <div class="skeleton-item"></div>
+</div>
+
+<style>
+  #skeleton .skeleton-item {
+    width: 100%;
+    height: 20px;
+    background: #eee;
+    margin-top: 10px;
+  }
+</style>
+```
+
+总的来说，白屏性能优化需要从多个方面入手，从服务器到客户端，从资源加载到渲染流程，都是可以优化的方向。优化白屏需要持续关注、测试和改进，以确保用户获得最佳的体验。
