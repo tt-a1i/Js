@@ -4113,3 +4113,63 @@ location ~* \.(js|css|png|jpg|jpeg|gif|ico|woff2)$ {
 ```
 
 总的来说，白屏性能优化需要从多个方面入手，从服务器到客户端，从资源加载到渲染流程，都是可以优化的方向。优化白屏需要持续关注、测试和改进，以确保用户获得最佳的体验。
+
+## 构造函数中写数组，new两个对象，一个对象更改数组，另一个会改吗
+
+在 JavaScript 中，如果你在构造函数中定义一个数组作为实例属性，那么每个实例都会拥有自己的独立数组。也就是说，修改一个实例的数组不会影响另一个实例的数组。这是因为每次通过构造函数创建新对象时，数组都会作为该对象的一个独立实例属性被创建。
+
+下面我们通过一个示例来验证这个结论：
+
+### 示例代码
+
+```javascript
+// 定义构造函数
+function MyObject() {
+  // 在构造函数中定义数组属性
+  this.myArray = [];
+}
+
+// 创建两个实例
+let obj1 = new MyObject();
+let obj2 = new MyObject();
+
+// 修改第一个实例的数组
+obj1.myArray.push('item1');
+
+console.log('obj1.myArray:', obj1.myArray);  // 输出: ['item1']
+console.log('obj2.myArray:', obj2.myArray);  // 输出: []
+```
+
+### 分析
+
+1. **定义构造函数**：
+   ```javascript
+   function MyObject() {
+     this.myArray = [];
+   }
+   ```
+   在构造函数中，我们定义了`this.myArray = []`，也就是说每个通过这个构造函数创建的新对象都会有一个独立的 `myArray` 数组属性。
+
+2. **创建实例**：
+   ```javascript
+   let obj1 = new MyObject();
+   let obj2 = new MyObject();
+   ```
+   调用 `new MyObject()` 创建了两个实例。此时 `obj1` 和 `obj2` 各自拥有自己的 `myArray` 属性。
+
+3. **修改实例的数组**：
+   ```javascript
+   obj1.myArray.push('item1');
+   ```
+   我们向 `obj1` 的 `myArray` 中添加了一个值 `'item1'`。由于 `obj1` 和 `obj2` 的 `myArray` 是独立的，所以修改 `obj1` 的 `myArray` 不会影响 `obj2` 的 `myArray`。
+
+4. **验证**：
+   ```javascript
+   console.log('obj1.myArray:', obj1.myArray);  // 输出: ['item1']
+   console.log('obj2.myArray:', obj2.myArray);  // 输出: []
+   ```
+   输出结果显示 `obj1` 的 `myArray` 为 `['item1']`，而 `obj2` 的 `myArray` 仍然是空数组 `[]`。这验证了修改一个实例的数组不会影响另一个实例的数组。
+
+### 结论
+
+在 JavaScript 中，当你在构造函数中定义一个数组作为实例属性时，每个通过该构造函数创建的对象实例都会拥有一个独立的数组。因此，修改一个实例的数组不会影响到其他实例的数组。这是因为每次使用构造函数创建新对象时，这个数组都会被重新创建，成为该对象的局部属性。
