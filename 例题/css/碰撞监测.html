@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Random Div Generation with Collision Detection</title>
+		<style>
+			body {
+				position: relative;
+				width: 100vw;
+				height: 100vh;
+				overflow: hidden;
+			}
+			.random-div {
+				position: absolute;
+				width: 50px; /* Width of the div */
+				height: 50px; /* Height of the div */
+				background-color: rgba(0, 150, 136, 0.8);
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			// Function to generate random position
+			function getRandomPosition(max) {
+				return Math.floor(Math.random() * max);
+			}
+
+			// Function to check collision between two divs
+			function isColliding(div1, div2) {
+				const rect1 = div1.getBoundingClientRect();
+				const rect2 = div2.getBoundingClientRect();
+
+				return !(
+					rect1.right < rect2.left ||
+					rect1.left > rect2.right ||
+					rect1.bottom < rect2.top ||
+					rect1.top > rect2.bottom
+				);
+			}
+
+			const numDivs = 50;
+			const divSize = 50;
+			const createdDivs = [];
+
+			// Create 50 random divs
+			for (let i = 0; i < numDivs; i++) {
+				let div = document.createElement("div");
+				div.classList.add("random-div");
+
+				let overlapping;
+				do {
+					// Generate random x and y positions
+					const x = getRandomPosition(window.innerWidth - divSize);
+					const y = getRandomPosition(window.innerHeight - divSize);
+
+					div.style.left = x + "px";
+					div.style.top = y + "px";
+
+					// Check for collisions
+					overlapping = createdDivs.some((existingDiv) =>
+						isColliding(div, existingDiv)
+					);
+				} while (overlapping); // If overlapping, reposition div
+
+				// Append the div to the body
+				document.body.appendChild(div);
+				createdDivs.push(div);
+			}
+		</script>
+	</body>
+</html>
