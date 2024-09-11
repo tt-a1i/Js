@@ -5428,3 +5428,111 @@ vue官方文档中没有说的私有api
 - 大多数情况下，实际逻辑会放在 `created` 钩子内，因为这时组件实例已经被完全创建，数据已经被初始化。
 
 总的来说，`beforeCreate` 钩子主要用于执行一些非常早期的初始化工作，或者需要在组件实例数据和 DOM 渲染之前执行的操作。
+
+## vue的内部是如何收集依赖的
+
+在Vue.js中，依赖收集是响应式系统的核心部分，它允许Vue自动追踪组件状态的变化，并在依赖的数据发生变化时自动更新视图。依赖收集的实现主要围绕以下几个关键概念和组件：`Observer`，`Dep`，和 `Watcher`。
+
+以下是Vue内部收集依赖的基本流程：
+
+1. **Observer：**
+   - 每一个响应式对象（如Vue实例的数据对象）在初始化时都会被包装成一个`Observer`对象。`Observer`会遍历数据对象上的每一个属性，并使用`Object.defineProperty`为每一个属性添加getter和setter。
+   - 当getter被调用时（比如访问某个属性值）就会进行依赖收集。
+   - 当setter被调用时（比如设置某个属性值）就会通知依赖这些数据的所有`Watcher`进行更新。
+
+2. **Dep：**
+   - `Dep`是一个依赖管理器，它维护着一组`Watcher`实例。每一个响应式属性都有一个`Dep`实例，当属性被访问（getter）时，`Dep`会负责收集依赖（在当前上下文中注册的`Watcher`）。
+   - 而当属性被修改（setter）时，`Dep`会负责触发依赖通知，调用所有相关的`Watcher`的更新方法。
+
+3. **Watcher：**
+   - `Watcher`实例化时，通常会计算一次监听的表达式或函数，以触发一次getter，从而在`Dep`中注册自己。
+   - `Watcher`会被添加到作用域内正在使用的全局对象上，这样getter在执行时就能访问到它。
+   - 每次属性的值改变时，`Dep`会通知所有的`Watcher`，调用它们的更新方法，从而触发相应的回调（通常是重新渲染）。
+
+### 依赖收集的具体过程
+
+1. **创建响应式数据：**
+   - Vue在初始化数据对象时使用`Observer`对它进行数据劫持。通过`Object.defineProperty`为对象每一个属性（包括嵌套对象）添加getter和setter。
+
+2. **访问数据属性 (getter)：**
+   - 当组件渲染过程中访问某个数据属性时，会触发该属性的getter。
+   - 在getter内部，有一个全局的`Dep.target`指向当前正在执行的`Watcher`，如果存在，就将这个`Watcher`添加到属性对应的`Dep`中以进行依赖收集。
+
+3. **数据属性改变 (setter)：**
+   - 当修改某个数据属性时，会触发该属性的setter。
+   - setter会在修改属性值后，调用`Dep`的`notify`方法，通知所有依赖了该属性的`Watcher`进行更新。
+
+4. **Watcher的更新：**
+   - 已注册的`Watcher`会在被通知后调用自身的更新方法。这个方法会重新计算表达式或函数的值，并触发相关的回调（通常是重新渲染组件）。
+
+### 简单示例代码流程
+
+```js
+class Dep {
+  constructor() {
+    this.subscribers = new Set();
+  }
+
+  depend() {
+    if (Dep.target) {
+      this.subscribers.add(Dep.target);
+    }
+  }
+
+  notify() {
+    this.subscribers.forEach(sub => sub.update());
+  }
+}
+
+Dep.target = null;
+
+class Watcher {
+  constructor(updateFunc) {
+    this.updateFunc = updateFunc;
+    this.get();
+  }
+
+  get() {
+    Dep.target = this;
+    this.updateFunc();
+    Dep.target = null;
+  }
+
+  update() {
+    this.updateFunc();
+  }
+}
+
+function defineReactive(obj, key, val) {
+  const dep = new Dep();
+
+  Object.defineProperty(obj, key, {
+    get() {
+      dep.depend();
+      return val;
+    },
+    set(newVal) {
+      val = newVal;
+      dep.notify();
+    }
+  });
+}
+
+// 使用示例
+const data = { price: 5, quantity: 2 };
+defineReactive(data, 'price', data.price);
+defineReactive(data, 'quantity', data.quantity);
+
+function updateTotal() {
+  data.total = data.price * data.quantity;
+  console.log('Total:', data.total);
+}
+
+new Watcher(updateTotal);
+
+data.price = 10;  // 触发依赖，调用updateTotal，输出新total: 20
+data.quantity = 3;  // 触发依赖，输出新total: 30
+```
+
+这个简单的例子展示了Vue依赖收集的基本原理
+
