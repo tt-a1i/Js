@@ -28,7 +28,6 @@ function strLongestLen(s){
       maxSubstring = s.substring(start, i + 1);
     }
   }
-
   return maxSubstring;
 } */
 console.log(strLongestLen("abcabcbb")); // 应该输出 3
