@@ -3,13 +3,13 @@ function throttle(fn, delay){
     return function(...args){
         if(!timer) {
             fn.apply(this, args)
-            setTimeout(() => {
+            timer = setTimeout(() => {
                 timer = null
             }, delay)
         }
     }
 }
-test = () => console.log(1);
+let test = () => console.log(1);
 let fn = throttle(test, 3000)
 fn(); // 应该会立即输出 1
 setTimeout(fn, 1000); // 不会输出，因为在 3000ms 内
