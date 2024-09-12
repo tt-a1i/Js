@@ -1818,6 +1818,10 @@ loadCSS("styles.css");
 
 #### 4.使用 `Intersection Observer` 实现懒加载
 
+intersection observer观察目标元素与其祖先元素或视口的交叉情况
+
+mutation observer观察DOM树的变化,包括元素的添加、删除、属性的修改、文本内容的改变等。
+
 可以使用 `Intersection Observer` 来检测元素是否出现在视口中，然后懒加载对应的样式。
 
 ```javascript
@@ -1860,7 +1864,7 @@ HTML5 引入了许多新的语义化标签，以提供更清晰的文档结构�
 
 ### 1. 什么是语义化？
 
-**语义化** 指的是使用有意义的标签来描述内容的结构和意图。语义化标签明确表达了内容的含义，使代码更具可读性和可维护性，并能帮助搜索引擎和辅助技术更好地理解网页内容。
+**语义化** 指的是**使用有意义的标签来描述内容的结构和意图**。语义化标签明确表达了内容的含义，使代码更具可读性和可维护性，并能**帮助搜索引擎和辅助技术更好地理解网页内容**。
 
 ### 2. 常用的 HTML5 语义化标签
 
@@ -2081,6 +2085,10 @@ document.addEventListener("DOMContentLoaded", function() {
 ```
 
 在 HTML 文件中，你可以按如下方式标记图片：
+
+data-src是自定义属性
+
+在 JavaScript 中，可以通过 `dataset` 属性来访问这些自定义数据属性
 
 ```html
 <img data-src="image.jpg" alt="Lazy Loaded Image">
