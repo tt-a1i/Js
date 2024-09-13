@@ -1,11 +1,8 @@
-function debounce(fn, delay){
-  let timer = null;
-  return function(...args){
-    if(timer){
-      clearTimeout(timer)
-    }
-    timer = setTimeout(() => {
-      fn.apply(this, args)
-    }, delay)
-  }
-}
+var a = 1;
+(
+  function(){
+    var a = 3;
+    a = 2;
+  }()
+)
+console.log(a);
