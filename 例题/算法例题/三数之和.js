@@ -1,5 +1,6 @@
 //排序后相加, 复杂度NlogN
 //遍历 On
+console.time()
 function threeNumsSum(arr){
     let n1 = -Infinity, n2 = -Infinity, n3 = -Infinity;
     arr.forEach(n => {
@@ -18,3 +19,4 @@ function threeNumsSum(arr){
 }
 let arr = [10, 20, 30, 5, 40, 50, 40, 30];
 console.log(threeNumsSum(arr));
+console.timeEnd()
