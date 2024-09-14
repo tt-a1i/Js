@@ -4,4 +4,5 @@ function A(){
 let b = new A()
 let c = new A()
 console.log(b.a);
-console.log(b instanceof Function);
+b.a.push(1)
+console.log(c.a);
