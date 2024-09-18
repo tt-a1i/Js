@@ -1,69 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
 		<style>
 			.container {
-				display: flex;
-				justify-content: space-around;
-				align-items: center;
-				border: 1px solid black;
+				display: table;
+				width: 100%;
 			}
-
-			.item1 {
-				background-color: rgb(59, 205, 254);
-				flex-basis: 100px;
+			.left,
+			.right {
+				display: table-cell;
 			}
-
-			.item2 {
-				background-color: lightgreen;
-				flex-basis: 150px;
-			}
-
-			.item3 {
-				background-color: lightpink;
-				flex-basis: 200px;
+			.left {
+				width: 1fr 2fr
 			}
 		</style>
 	</head>
-
 	<body>
 		<div class="container">
-			<div class="item1" draggable="true">Item 1</div>
-			<div class="item2" draggable="true">Item 2</div>
-			<div class="item3" draggable="true">Item 3</div>
+			<div class="left">Left</div>
+			<div class="right">Right</div>
 		</div>
-
-		<script>
-			const items = document.querySelectorAll(".container div");
-			let draggedItem;
-
-			items.forEach((item) => {
-				item.addEventListener("dragstart", (e) => {
-					draggedItem = item;
-					e.dataTransfer.effectAllowed = "move";
-				});
-
-				item.addEventListener("dragover", (e) => {
-					e.preventDefault();
-				});
-
-				item.addEventListener("drop", (e) => {
-					e.preventDefault();
-					if (draggedItem !== item) {
-						const parent = item.parentNode;
-						const draggedIndex = Array.from(parent.children).indexOf(
-							draggedItem
-						);
-						const droppedIndex = Array.from(parent.children).indexOf(item);
-						parent.insertBefore(draggedItem, item);
-						if (draggedIndex < droppedIndex) {
-							// 如果拖动的元素在放置元素的前面，交换后需要调整 flex 顺序
-							const temp = parent.children[droppedIndex - 1];
-							parent.insertBefore(item, temp.nextSibling);
-						}
-					}
-				});
-			});
-		</script>
 	</body>
 </html>

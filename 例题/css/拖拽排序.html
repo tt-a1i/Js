@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<style>
+			.container {
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				border: 1px solid black;
+			}
+
+			.item1 {
+				background-color: rgb(59, 205, 254);
+				flex-basis: 100px;
+			}
+
+			.item2 {
+				background-color: lightgreen;
+				flex-basis: 150px;
+			}
+
+			.item3 {
+				background-color: lightpink;
+				flex-basis: 200px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="item1" draggable="true">Item 1</div>
+			<div class="item2" draggable="true">Item 2</div>
+			<div class="item3" draggable="true">Item 3</div>
+		</div>
+
+		<script>
+			const items = document.querySelectorAll(".container div");
+			let draggedItem;
+
+			items.forEach((item) => {
+				item.addEventListener("dragstart", (e) => {
+					draggedItem = item;
+					e.dataTransfer.effectAllowed = "move";
+				});
+
+				item.addEventListener("dragover", (e) => {
+					e.preventDefault();
+				});
+
+				item.addEventListener("drop", (e) => {
+					e.preventDefault();
+					if (draggedItem !== item) {
+						const parent = item.parentNode;
+						const draggedIndex = Array.from(parent.children).indexOf(
+							draggedItem
+						);
+						const droppedIndex = Array.from(parent.children).indexOf(item);
+						parent.insertBefore(draggedItem, item);
+						if (draggedIndex < droppedIndex) {
+							// 如果拖动的元素在放置元素的前面，交换后需要调整 flex 顺序
+							const temp = parent.children[droppedIndex - 1];
+							parent.insertBefore(item, temp.nextSibling);
+						}
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
