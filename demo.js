@@ -1,21 +1,34 @@
-function sumPairs(ints, s) {
-	const map = new Map();
-	let m = null,
-		n = null;
-	for (let i = 0; i < ints.length; i++) {
-		if (map.has(s - ints[i])) {
-			if (!m && !n) {
-				m = s - ints[i];
-				n = ints[i];
-			}
-			else if (i < map.get(n)) {
-				m = s - ints[i];
-				n = ints[i];
-			}
+function strLongestLen(s){
+	const map = new Map()
+	let start = 0, maxLen = 0;
+	for(let end = 0; end < s.length; end++){
+		if(map.has(s[end])){
+			start = Math.max(start, map.get(s[end]) + 1)
 		}
-		map.set(ints[i], i);
+		map.set(s[end], end)
+		maxLen = Math.max(maxLen, end - start + 1)
 	}
-	return !m ? undefined : [m, n];
+	return maxLen
 }
-let ints = [1, -2, 3, 0, -6, 1];
-console.log(sumPairs(ints, -6));
+//返回字符串
+/* function strLongestSubstring(s) {
+  const map = new Map();
+  let start = 0, maxLen = 0;
+  let maxSubstring = '';
+
+  for (let i = 0; i < s.length; i++) {
+    if (map.has(s[i])) {
+      start = Math.max(start, map.get(s[i]) + 1);
+    }
+    map.set(s[i], i);
+
+    if (i - start + 1 > maxLen) {
+      maxLen = i - start + 1;
+      maxSubstring = s.substring(start, i + 1);
+    }
+  }
+  return maxSubstring;
+} */
+console.log(strLongestLen("abcabcbb")); // 应该输出 3
+console.log(strLongestLen("bbbbb")); // 应该输出 1
+console.log(strLongestLen("pwwkew")); // 应该输出 3
