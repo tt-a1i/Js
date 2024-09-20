@@ -1,3 +1,3 @@
-const a = [0, 1]
-console.log(a.splice(1,0,2))
-console.log(a)
+const map = new Set()
+map.add({'a': 1})
+console.log(map)

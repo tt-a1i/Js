@@ -7,6 +7,9 @@
    
    #### `var`
    - **函数作用域**：`var` 声明的变量在函数内是局部的，在其他所有情况下是全局的。
+       
+   - 全局作用域下for循环条件内用var声名的变量在外部也可以进行访问
+       
        ```javascript
        function example() {
            var x = 10;
@@ -221,6 +224,10 @@ foo() // TypeError: Cannot read property 'x' of undefined
 ## Set和Map
 
 `Set`是一种叫做`集合`的数据结构，`Map`是一种叫做`字典`的数据结构
+
+map和set的键值可以是任意类型
+
+weakmap和weakset的键只能是对象
 
 ##### Map
 
