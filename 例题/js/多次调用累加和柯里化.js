@@ -5,5 +5,5 @@ function sum(a){
     }
     return helper;
 }
-let s = sum(1)(2)()
+let s = sum(1)(2)(3)()
 console.log(s);

@@ -1,9 +1,4 @@
 function addLargeNumbers(num1, num2) {
-    // 确保 num1 是较长的数
-    if (num1.length < num2.length) {
-        [num1, num2] = [num2, num1];
-    }
-
     let carry = 0;
     let result = '';
     let i = num1.length - 1;

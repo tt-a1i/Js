@@ -1,34 +1,24 @@
-function strLongestLen(s){
-	const map = new Map()
-	let start = 0, maxLen = 0;
-	for(let end = 0; end < s.length; end++){
-		if(map.has(s[end])){
-			start = Math.max(start, map.get(s[end]) + 1)
+function longestPalindrome(s) {
+	if (s.length < 2) return s;
+	let maxLen = 1,
+		start = 0;
+	function expandAroundCeter(left, right) {
+		while (left >= 0 && right < s.length && s[left] === s[right]) {
+			if (right - left + 1 > maxLen) {
+				maxLen = right - left + 1;
+				start = left;
+			}
+			left--;
+			right++;
 		}
-		map.set(s[end], end)
-		maxLen = Math.max(maxLen, end - start + 1)
 	}
-	return maxLen
+	for (let i = 0; i < s.length; i++) {
+		expandAroundCeter(i, i);
+		expandAroundCeter(i, i + 1);
+	}
+	return s.substring(start, start + maxLen)
 }
-//返回字符串
-/* function strLongestSubstring(s) {
-  const map = new Map();
-  let start = 0, maxLen = 0;
-  let maxSubstring = '';
-
-  for (let i = 0; i < s.length; i++) {
-    if (map.has(s[i])) {
-      start = Math.max(start, map.get(s[i]) + 1);
-    }
-    map.set(s[i], i);
-
-    if (i - start + 1 > maxLen) {
-      maxLen = i - start + 1;
-      maxSubstring = s.substring(start, i + 1);
-    }
-  }
-  return maxSubstring;
-} */
-console.log(strLongestLen("abcabcbb")); // 应该输出 3
-console.log(strLongestLen("bbbbb")); // 应该输出 1
-console.log(strLongestLen("pwwkew")); // 应该输出 3
+console.log(longestPalindrome("babad")); // 输出 "bab" 或 "aba"
+console.log(longestPalindrome("cbbd")); // 输出 "bb"
+console.log(longestPalindrome("a")); // 输出 "a"
+console.log(longestPalindrome("ac")); // 输出 "a"

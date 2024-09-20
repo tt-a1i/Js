@@ -34,7 +34,6 @@ function lengthOfLIS2(nums) {
 			lis[left] = num;
 		}
 	}
-
 	return lis.length;
 }
 // 测试用例

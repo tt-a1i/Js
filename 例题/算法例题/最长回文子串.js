@@ -23,7 +23,6 @@ function longestPalindrome(s) {
 
 	return s.substring(start, start + maxLength);
 }
-F;
 console.log(longestPalindrome("babad")); // 输出 "bab" 或 "aba"
 console.log(longestPalindrome("cbbd")); // 输出 "bb"
 console.log(longestPalindrome("a")); // 输出 "a"
