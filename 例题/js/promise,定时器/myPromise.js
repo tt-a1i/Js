@@ -46,7 +46,7 @@ class MyPromise {
 			if (this.status === "fulfilled") {
 				setTimeout(() => {
 					try {
-						let x = onFulfilled(this.value);
+						let x = onFulfilled(this.value);//如果这行出现错误,下一行代码不会执行
 						resolve(x); // 将 then 中的返回值传递给下一个 promise
 					} catch (error) {
 						reject(error); // 捕获执行 then 中函数的错误
