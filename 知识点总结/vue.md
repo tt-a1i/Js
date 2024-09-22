@@ -3697,6 +3697,8 @@ export default {
 
 ## Vue3和Vue2区别
 
+[vue3 到底哪里好？看这一篇就够了 - 前端人 - 博客园 (cnblogs.com)](https://www.cnblogs.com/web-learn/p/15691087.html)
+
 ### 主要区别：
 
 1. 性能提升：
