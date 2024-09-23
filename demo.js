@@ -1,11 +1,9 @@
-function myNew(constructor, ...args) {
-	const obj = {};
-	Object.setPrototypeOf(obj, constructor.prototype);
-	const result = constructor.apply(obj, args);
-	return result instanceof Object ? result : obj;
-}
-function Animal(name) {
-	this.name = name;
-}
-let tiger = myNew(Animal, "tiger");
-console.log(tiger.name);
+console.log(Object.__proto__ === Object.prototype)
+console.log(Object.__proto__)
+console.log(Function.__proto__ === Function.prototype)
+
+console.log(Object.prototype.__proto__)
+
+console.log(Function.__proto__ === Function.prototype); // true
+console.log(Object.__proto__ === Function.prototype);   // true
+console.log(Function.prototype.__proto__ === Object.prototype); // true

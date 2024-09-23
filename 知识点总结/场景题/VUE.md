@@ -1093,3 +1093,165 @@ Vue.js的渲染机制是其高效响应式系统的核心所在，它能够智�
 - 在`v-if`中使用`key`可以控制组件的重建和状态隔离，从而确保不同条件下组件实例不共享状态。
 
 虽然`key`在这两种场合下都有独特的作用，但它们的核心目标一致：帮助Vue更智能地进行DOM更新，从而提高性能并保证状态的一致性与正确性。无论是在循环还是条件渲染中，`key`的有效运用都是构建高效和可靠应用的最佳实践之一。
+
+## 比如一个父子组件，他两生命周期的顺序是啥样的
+
+在 Vue.js 中，父子组件的生命周期钩子函数有类似的组成，但它们触发的顺序是有所区别的。理解这些顺序有助于我们更加准确地控制组件的初始化和销毁过程。
+
+### 创建阶段
+
+先看看在组件创建过程中的生命周期钩子函数触发顺序：
+
+1. **父组件 beforeCreate**
+2. **父组件 created**
+3. **父组件 beforeMount**
+4. **子组件 beforeCreate**
+5. **子组件 created**
+6. **子组件 beforeMount**
+7. **子组件 mounted**
+8. **父组件 mounted**
+
+### 更新阶段
+
+当父组件中的数据变化导致视图更新时，生命周期钩子函数的触发顺序如下：
+
+1. **父组件 beforeUpdate**
+2. **子组件 beforeUpdate**
+3. **子组件 updated**
+4. **父组件 updated**
+
+### 销毁阶段
+
+在销毁组件时，生命周期钩子函数的触发顺序是：
+
+1. **父组件 beforeDestroy**
+2. **子组件 beforeDestroy**
+3. **子组件 destroyed**
+4. **父组件 destroyed**
+
+### 示例代码
+
+以下通过一个例子来展示父子组件在不同阶段的生命周期钩子函数触发顺序：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Lifecycle Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+    <div id="app">
+        <parent-component></parent-component>
+    </div>
+
+    <script>
+        Vue.component('parent-component', {
+            template: `<div>
+                          <h1>Parent Component</h1>
+                          <child-component></child-component>
+                       </div>`,
+            beforeCreate() {
+                console.log('Parent beforeCreate');
+            },
+            created() {
+                console.log('Parent created');
+            },
+            beforeMount() {
+                console.log('Parent beforeMount');
+            },
+            mounted() {
+                console.log('Parent mounted');
+            },
+            beforeUpdate() {
+                console.log('Parent beforeUpdate');
+            },
+            updated() {
+                console.log('Parent updated');
+            },
+            beforeDestroy() {
+                console.log('Parent beforeDestroy');
+            },
+            destroyed() {
+                console.log('Parent destroyed');
+            }
+        });
+
+        Vue.component('child-component', {
+            template: `<div>
+                          <p>Child Component</p>
+                       </div>`,
+            beforeCreate() {
+                console.log('Child beforeCreate');
+            },
+            created() {
+                console.log('Child created');
+            },
+            beforeMount() {
+                console.log('Child beforeMount');
+            },
+            mounted() {
+                console.log('Child mounted');
+            },
+            beforeUpdate() {
+                console.log('Child beforeUpdate');
+            },
+            updated() {
+                console.log('Child updated');
+            },
+            beforeDestroy() {
+                console.log('Child beforeDestroy');
+            },
+            destroyed() {
+                console.log('Child destroyed');
+            }
+        });
+
+        new Vue({
+            el: '#app'
+        });
+    </script>
+</body>
+</html>
+```
+
+当运行上面的代码时，在控制台你会看到以下输出：
+
+```plaintext
+Parent beforeCreate
+Parent created
+Parent beforeMount
+Child beforeCreate
+Child created
+Child beforeMount
+Child mounted
+Parent mounted
+```
+
+如果我们更新组件的数据，会看到类似如下的输出（这里假设有数据导致更新）：
+
+```plaintext
+Parent beforeUpdate
+Child beforeUpdate
+Child updated
+Parent updated
+```
+
+而当销毁组件时，控制台会显示：
+
+```plaintext
+Parent beforeDestroy
+Child beforeDestroy
+Child destroyed
+Parent destroyed
+```
+
+### 总结
+
+- **创建阶段**：从外向里，父组件先于子组件执行 `beforeCreate` 和 `created`，但子组件在父组件之前完成 `mounted`。
+- **更新阶段**：父组件和子组件会按照组件树顺序分别执行其 `beforeUpdate` 和 `updated` 钩子。
+- **销毁阶段**：从外向里，父组件先于子组件执行 `beforeDestroy`，但子组件在父组件之前完成 `destroyed`。
+
+理解这些顺序可以使你在开发复杂的组件关系时，根据生命周期钩子做适当的初始化和清理工作，更好地控制组件的行为。
