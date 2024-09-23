@@ -1,3 +1,68 @@
+## for in 会遍历到原型链上的方法吗
+
+是的，`for...in`循环会遍历对象自身的可枚举属性以及其原型链上的可枚举属性。这意味着在使用`for...in`循环的时候，不仅会遍历对象自身的属性，还会遍历所有继承自其原型链的可枚举属性。
+
+### 示例：
+
+```javascript
+function Parent() {
+  this.parentProp = 'parent';
+}
+
+Parent.prototype.parentMethod = function() {};
+
+function Child() {
+  this.childProp = 'child';
+}
+
+Child.prototype = new Parent();
+
+const childInstance = new Child();
+
+for (let key in childInstance) {
+  console.log(key);
+}
+```
+
+在这个示例中，`for...in`循环将输出：
+
+```
+childProp
+parentProp
+parentMethod
+```
+
+### 注意事项：
+
+1. **可枚举性**：
+
+   - 默认情况下，使用对象字面量创建的对象上的属性是可枚举的。
+   - 使用`Object.defineProperty()`方法添加的属性默认是不可枚举的，除非显式将可枚举性设置为`true`。
+
+2. **过滤原型属性**：
+
+   - 如果只想遍历对象自身的属性，可以使用`Object.hasOwnProperty()`方法来过滤掉原型链上的属性。
+
+     ```javascript
+     for (let key in childInstance) {
+       if (childInstance.hasOwnProperty(key)) {
+         console.log(key);
+       }
+     }
+     ```
+
+   在这个修改后的循环中，只会输出：
+
+   ```
+   childProp
+   ```
+
+3. **性能与准确性**：
+
+   - 遍历原型链上的属性，有时可能会引入不必要的属性，特别是在大型应用中，因此建议谨慎使用`for...in`循环。对于只需遍历对象自身属性的情境，`Object.keys()`或`Object.entries()`加上`forEach`循环可能是更好的选择。
+
+因此，理解`for...in`如何工作，以及如何控制其行为非常重要，特别是在需要严格处理仅对象自身属性的情况下。
+
 ## JSX和JS的区别
 
 JSX 和 JavaScript (JS) 是在 React 开发中常常被提及的两个概念，它们在用途和特性上有一些明显的区别。
@@ -4495,3 +4560,174 @@ console.log(obj.b);         // 直接输出原对象的属性，值也更新为�
 4. **`Reflect`对象**：`Reflect`提供一些传统的JavaScript操作的反映性方法。在`get`和`set`的实现中使用`Reflect`是为了保证操作的正常完成, 并返回其真实的结果。
 
 通过这种方式，你可以在代理对象中监听和修改访问和修改对象属性的行为。在开发中这通常用于调试、验证数据或实现特定的业务逻辑。
+
+## 闭包通常用在什么场景？
+
+闭包是指在函数内部定义并返回的一个函数，该函数可以访问其所在环境中的变量，即使在该环境已经销毁时。闭包强大的特性使其在许多编程场景中都非常有用。以下是一些常见的闭包使用场景：
+
+1. **数据封装**：
+
+   - 闭包可以用于创建私有变量和方法，从而实现数据封装。在JavaScript中，没有传统语言中的访问控制符（如public, private），闭包提供了一种实现私有数据的方式。
+
+   ```javascript
+   function createCounter() {
+       let count = 0;
+       return {
+           increment: function() {
+               count++;
+               return count;
+           },
+           decrement: function() {
+               count--;
+               return count;
+           }
+       };
+   }
+   const counter = createCounter();
+   console.log(counter.increment()); // 1
+   console.log(counter.decrement()); // 0
+   ```
+
+2. **函数工厂**：
+
+   - 闭包可以用于创建函数工厂，生成特定行为的函数。通过闭包，可以为返回的函数预设特定的参数或环境。
+
+   ```javascript
+   function createMultiplier(factor) {
+       return function(number) {
+           return number * factor;
+       };
+   }
+   const double = createMultiplier(2);
+   console.log(double(5)); // 10
+   ```
+
+3. **循环处理与事件绑定**：
+
+   - 在封闭的循环中创建带有事件处理程序的元素时使用闭包，以确保每个元素的事件处理程序访问正确的索引。
+
+   ```javascript
+   for (var i = 0; i < 5; i++) {
+       (function(i) {  // 使用闭包来捕获当前的i值
+           setTimeout(() => {
+               console.log(i);  // 输出0 1 2 3 4
+           }, i * 1000);
+       })(i);
+   }
+   ```
+
+4. **保持局部状态**：
+
+   - 在异步编程中，保持异步操作的上下文或局部状态。
+
+   ```javascript
+   function fetchData(url) {
+       fetch(url).then((response) => {
+           // 在这里，闭包保持了url的上下文
+           console.log(`Fetched data from ${url}`);
+       });
+   }
+   ```
+
+5. **记忆化**：
+
+   - 将函数的计算结果缓存起来，提高性能。通过闭包保存先前的计算结果，避免重复计算。
+
+   ```javascript
+   function memoize(fn) {
+       const cache = {};
+       return function(...args) {
+           const key = JSON.stringify(args);
+           if (cache[key]) {
+               return cache[key];
+           }
+           const result = fn(...args);
+           cache[key] = result;
+           return result;
+       };
+   }
+   const factorial = memoize(function(n) {
+       return n <= 1 ? 1 : n * factorial(n - 1);
+   });
+   ```
+
+闭包能够捕获并存储函数创建时的词法环境，使得函数即使在创建环境之外也能访问这些变量。这种强大的功能在提高代码封装性、保持状态以及优化性能等方面特别有用。
+
+## 箭头函数可以作为构造函数吗
+
+箭头函数不能被用作构造函数。在JavaScript中，构造函数是用来创建对象的函数，通过关键字`new`来调用。常规的函数声明和函数表达式可以用作构造函数，但箭头函数不行。
+
+以下是一些关键点和示例：
+
+1. **语法特点**：
+
+   - 箭头函数没有`prototype`属性，而构造函数会为创建的对象设置原型链。因此，无法通过`new`调用箭头函数来创建对象。
+
+2. **箭头函数没有`this`绑定**：
+
+   - 箭头函数不绑定`this`，它的`this`取决于他所在的词法作用域（即定义它时所在的上下文）。这与构造函数的行为不同，后者会在实例化时绑定`this`到新创建的对象。
+
+3. **错误示例**：
+
+   - 使用`new`调用箭头函数会抛出错误：
+
+   ```javascript
+   const ArrowFunction = () => {};
+   const instance = new ArrowFunction(); // TypeError: ArrowFunction is not a constructor
+   ```
+
+由于这些特性，如果需要使用一个函数作为构造函数，你应该使用传统的函数声明或函数表达式，例如：
+
+```javascript
+function TraditionalFunction() {
+    this.someProperty = 'value';
+}
+
+const instance = new TraditionalFunction();
+console.log(instance.someProperty); // 输出: 'value'
+```
+
+总的来说，箭头函数的设计不是为了用作构造函数，而是为了提供简洁的、语法糖式的函数表达方式，特别适合于非构造用途的场合，如回调和高阶函数。
+
+## 了解requestAnimationFrame吗？它的使用场景是什么
+
+`requestAnimationFrame` 是浏览器提供的一种用于优化动画效果的方法。它是一种更高效的方式来执行网页动画，相比于传统的 `setTimeout` 或 `setInterval` 方法，`requestAnimationFrame` 提供了更流畅和性能更佳的动画更新。
+
+### 使用场景
+
+1. **动画实现**：
+   - 主要用于执行平滑的动画，例如在网页上移动元素、变换图形等场景。因为`requestAnimationFrame`与屏幕刷新率同步，可以使动画更加流畅。
+
+2. **游戏开发**：
+   - 在浏览器中开发游戏时，通常需要频繁地更新画面。`requestAnimationFrame`可以帮助确保帧更新与屏幕刷新周期一致，提供更流畅的游戏体验。
+
+3. **视觉效果**：
+   - 实现滚动视差效果、CSS 过渡和变换等视觉效果时，可以使用`requestAnimationFrame`来提高效率和流畅度。
+
+4. **节省资源**：
+   - 当标签页处于后台或者浏览器窗口被最小化时，`requestAnimationFrame`会暂停调用，以便节省CPU资源。这与传统的`setTimeout`和`setInterval`不同，后者会继续执行，即使页面不可见。
+
+### 使用方法
+
+基本的使用方法如下：
+
+```javascript
+function animate() {
+  // 更新动画状态，如移动元素
+  // ...
+
+  // 请求下一帧动画
+  requestAnimationFrame(animate);
+}
+
+// 开始动画
+requestAnimationFrame(animate);
+```
+
+### 优势
+
+- **性能优化**：`requestAnimationFrame`由浏览器优化，而不是用户手动画帧时间，因此提供了更好的性能。
+- **与刷新率同步**：它与浏览器的刷新率自动同步，通常是每秒60帧，从而减少卡顿。
+- **节能**：在页面不活跃时自动暂停调用，以节省系统资源。
+
+总结来说，`requestAnimationFrame`非常适合于需要频繁更新的动画和游戏开发场景，因为它能充分利用浏览器的优化策略来提供高效而顺畅的动画效果。
