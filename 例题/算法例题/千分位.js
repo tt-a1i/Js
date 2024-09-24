@@ -5,7 +5,7 @@ function formatNumber(num) {//不能处理小数版本
 	  return num;
 	}
   }
-console.log(formatNumber(123456.7));
+console.log(formatNumber(1234567));
 
 function customToLocaleString(num) {
     let parts = num.toString().split('.'); // 将整数部分和小数部分分开

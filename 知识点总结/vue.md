@@ -3697,6 +3697,13 @@ export default {
 
 ## Vue3和Vue2区别
 
+表面上看，最大的区别是添加了一种叫composition API的代码编写模式，究其根本，其实是vue3把响应式功能和组件完全解耦了。
+
+在vue2中，响应式的功能是vue帮我们做的，我们需要在组件内部写data()函数，响应式随后由vue帮我们绑定，这就造成了数据和组件的耦合。而在3中，vue将响应式功能单独分离出来，由开发者决定响应式的绑定，那么我们在编写数据和数据操作相关的逻辑的时候，可以单独抽离出来，[composition](https://www.zhihu.com/search?q=composition&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A3225786727})
+链接：https://www.zhihu.com/question/592062484/answer/3225786727
+
+
+
 [vue3 到底哪里好？看这一篇就够了 - 前端人 - 博客园 (cnblogs.com)](https://www.cnblogs.com/web-learn/p/15691087.html)
 
 ### 主要区别：

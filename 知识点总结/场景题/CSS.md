@@ -1,3 +1,98 @@
+## 如何做元素的垂直居中
+
+垂直居中对齐网页元素是一个常见的布局需求，根据具体情况，可以采用不同的方法来实现。以下是几种常用的方法：
+
+### 1. 使用 Flexbox
+
+Flexbox 是一种强大的布局模块，可以很容易实现垂直居中。
+
+```html
+<div class="container">
+  <div class="content">
+    这是要居中的内容
+  </div>
+</div>
+```
+
+```css
+.container {
+  display: flex;
+  justify-content: center;  /* 水平居中 */
+  align-items: center;      /* 垂直居中 */
+  height: 300px;            /* 确保容器有高度 */
+}
+```
+
+### 2. 使用 Grid 布局
+
+Grid 布局也非常灵活，可以用于居中对齐。
+
+```css
+.container {
+  display: grid;
+  place-items: center;      /* 水平和垂直居中 */
+  height: 300px;            /* 确保容器有高度 */
+}
+```
+
+### 3. 使用 `margin` 和 `position` 属性
+
+对于已知高度的元素，可以使用 `absolute` 和负 `margin` 实现垂直居中。
+
+```html
+<div class="container">
+  <div class="content">
+    这是要居中的内容
+  </div>
+</div>
+```
+
+```css
+.container {
+  position: relative;
+  height: 300px;            /* 确保容器有高度 */
+}
+
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+### 4. 使用内联元素或单行文本
+
+对于单行文本，或者内联元素（如图标等），可以使用 `line-height` 方法：
+
+```html
+<div class="container">
+  <span class="content">居中文本</span>
+</div>
+```
+
+```css
+.container {
+  height: 300px;               /* 确保容器有高度 */
+  line-height: 300px;          /* 行高设置为与高度一样 */
+  text-align: center;          /* 水平居中 */
+}
+
+.content {
+  display: inline-block;       /* 当内容是 inline 或 inline-block 时才有效 */
+  vertical-align: middle;      /* 垂直对齐于容器中心 */
+  line-height: normal;         /* 重置内容的行高 */
+}
+```
+
+### 选择方法依据
+
+- **Flexbox 和 Grid** 适用于更多场合，适合动态内容或者不确定高度的容器。
+- **`margin` 和 `transform`** 适合高度比较固定的情况。
+- **`line-height`** 适用于简单文本或固定高度的行级元素。
+
+选择合适的方法取决于具体的布局结构和需求。在现代开发中，Flexbox 是最常用且易于维护的方法。
+
 ## link和@import的区别
 
 在网页开发中，`<link>` 标签和 `@import` 语句都是用于在 HTML 中引入 CSS 样式表的方法。然而，它们之间存在一些显著的区别：
@@ -1034,3 +1129,197 @@ display: inline-block;
   - 当你需要元素像 `inline` 元素一样排成一行，但又需要设置宽高，或需要在行间上下居中时，这是一个好选择。它常用于创建导航栏、按钮等UI元素。
 
 这两者各自提供了不同的布局特性，选择它们要根据具体的设计需求和布局方式。
+
+## CSS 会阻塞页面解析吗
+
+在网页加载过程中，CSS 文件的解析会影响页面的渲染，但它不会阻塞 HTML 的解析。具体行为可以通过以下几点进行阐述：
+
+1. **HTML 解析与 CSS 下载**：
+   - 浏览器在解析 HTML 的过程中会遇到 `<link>` 标签或 `<style>` 标签时，启动一个并行的请求来获取这些外部样式表。
+   - HTML 解析和 CSS 下载是并行进行的，这意味着 CSS 的下载并不会直接阻塞 HTML 的解析。
+
+2. **渲染阻塞**：
+   - 虽然 CSS 下载不会阻塞 HTML 的解析，但它会阻塞浏览器的渲染。浏览器在 CSS 完全加载并解析完成之前不会渲染任何节点，这样确保元素在初次渲染时具有正确的样式。
+   - 因此，缓慢加载的 CSS 可能会导致白屏现象，用户可能看到页面加载延迟，因为浏览器正在等待 CSS 完全加载。
+
+3. **JavaScript 和 CSS**：
+   - 如果 JavaScript 代码依赖于 CSS 完全加载后才能执行（例如，涉及到 DOM 操作或计算元素的几何属性如 `offsetWidth` 或 `offsetHeight`），此时 CSS 的加载会间接影响 JavaScript 的执行。
+   - 如果 JavaScript 在 CSS 之前加载并执行，而该 JavaScript 依赖某些计算后的样式，可能造成布局抖动或不正确的样式计算。
+
+### 最佳实践
+
+为了优化页面加载性能和用户体验，可以采用以下实践：
+
+- **CSS 放头部**：将 CSS 链接放在 `<head>` 标签内，以确保 CSS 尽早开始下载。
+- **最小化和压缩 CSS**：减少 CSS 文件大小，以加快下载速度。
+- **CSS 内联**：对于关键渲染路径，将关键 CSS 内联到 HTML 中，这可以减少首次渲染时间。
+- **异步 JavaScript**：将不依赖 CSS 的 JavaScript 文件放在页面底部，或使用如 `async` 或 `defer` 属性，这样可以避免阻塞页面的初步渲染。
+
+通过理解和优化这些方面，可以确保页面更快地加载和显示，提高用户的整体体验。
+
+## 了解requestAnimationFrame吗？它的使用场景是什么
+
+`requestAnimationFrame` 是浏览器提供的一种用于优化动画效果的方法。它是一种更高效的方式来执行网页动画，相比于传统的 `setTimeout` 或 `setInterval` 方法，`requestAnimationFrame` 提供了更流畅和性能更佳的动画更新。
+
+### 使用场景
+
+1. **动画实现**：
+   - 主要用于执行平滑的动画，例如在网页上移动元素、变换图形等场景。因为`requestAnimationFrame`与屏幕刷新率同步，可以使动画更加流畅。
+
+2. **游戏开发**：
+   - 在浏览器中开发游戏时，通常需要频繁地更新画面。`requestAnimationFrame`可以帮助确保帧更新与屏幕刷新周期一致，提供更流畅的游戏体验。
+
+3. **视觉效果**：
+   - 实现滚动视差效果、CSS 过渡和变换等视觉效果时，可以使用`requestAnimationFrame`来提高效率和流畅度。
+
+4. **节省资源**：
+   - 当标签页处于后台或者浏览器窗口被最小化时，`requestAnimationFrame`会暂停调用，以便节省CPU资源。这与传统的`setTimeout`和`setInterval`不同，后者会继续执行，即使页面不可见。
+
+### 使用方法
+
+基本的使用方法如下：
+
+```javascript
+function animate() {
+  // 更新动画状态，如移动元素
+  // ...
+
+  // 请求下一帧动画
+  requestAnimationFrame(animate);
+}
+
+// 开始动画
+requestAnimationFrame(animate);
+```
+
+### 优势
+
+- **性能优化**：`requestAnimationFrame`由浏览器优化，而不是用户手动画帧时间，因此提供了更好的性能。
+- **与刷新率同步**：它与浏览器的刷新率自动同步，通常是每秒60帧，从而减少卡顿。
+- **节能**：在页面不活跃时自动暂停调用，以节省系统资源。
+
+总结来说，`requestAnimationFrame`非常适合于需要频繁更新的动画和游戏开发场景，因为它能充分利用浏览器的优化策略来提供高效而顺畅的动画效果。
+
+## display有什么属性值，flex简写属性的具体含义
+
+### `display` 属性的属性值
+
+`display` 属性用于定义元素的显示行为，它可以接受多种属性值，每个值会影响元素在页面中的布局方式。以下是一些常见的 `display` 属性值：
+
+1. **`none`**：隐藏元素，不占据任何空间。
+2. **`block`**：元素在页面中以块级元素的方式展现，独占一行。
+3. **`inline`**：元素以行内元素的方式展现，仅占据它包含的内容所需的宽度。
+4. **`inline-block`**：类似于 `inline`，但可以设置宽高。
+5. **`flex`**：将元素作为弹性容器（Flexbox），允许子元素自动排列。
+6. **`inline-flex`**：类似于 `flex`，但元素本身以行内方式显示。
+7. **`grid`**：将元素作为网格容器（CSS Grid），允许子元素在网格中排列。
+8. **`inline-grid`**：类似于 `grid`，但元素本身以行内方式显示。
+9. **`table`**：将元素显示为一个块级表格。
+10. **`inline-table`**：将元素显示为一个行内表格。
+11. **`table-row`、`table-cell`** 等：用于定义表格行、单元格等内部分特定的显示样式。
+
+### `flex` 简写属性的具体含义
+
+`flex` 属性是一个简写属性，用于设置或检索弹性容器内灵活长度的三个属性值：`flex-grow`、`flex-shrink` 和 `flex-basis`。
+
+#### 语法
+
+```css
+flex: [flex-grow] [flex-shrink] [flex-basis];
+```
+
+#### 具体含义：
+
+1. **`flex-grow`**：定义项目的放大比例，默认为 `0`（即如果存在剩余空间，也不放大）。
+
+2. **`flex-shrink`**：定义项目的缩小比例，默认为 `1`（即如果空间不足，则缩小项目）。
+
+3. **`flex-basis`**：定义在分配多余空间之前，项目占据的主轴空间。默认为 `auto`（即项目的本身大小）。
+
+## 浏览器重排和重绘什么时候会发生
+
+在浏览器的渲染过程中，“重排”（Reflow 或 Layout）和“重绘”（Repaint）是两种关键的操作，它们会影响页面的性能和用户体验。理解它们的触发条件和影响，对于开发高效的 Web 应用非常重要。
+
+### 重绘（Repaint）
+
+重绘是指元素外观的改变（例如颜色变化）且不影响布局的情况下，浏览器对元素进行重新绘制。
+
+#### 触发条件：
+
+1. **颜色变化**：如背景色、文字颜色等 CSS 属性的变化。
+2. **边框样式的变化**：改变元素的边框样式。
+3. **可见性变化**：例如通过 `visibility` 属性设置元素的可见性。
+
+##### 重绘不会改变元素的几何属性（位置、大小等），只是改变元素的外观样式，因此开销相对较小。
+
+### 重排（Reflow 或 Layout）
+
+重排是指元素的几何属性（如位置、大小）的变化，浏览器需要重新计算元素的位置和尺寸，并重新渲染。
+
+#### 触发条件：
+
+1. **元素几何属性的变化**：
+   - 添加或移除元素。
+   - 改变元素的高度、宽度、边距、边框、填充等。
+   - 使用 `position` 属性改变元素的定位方式。
+
+2. **内容变化**：
+   - 内部文本内容的改变。
+   - 浏览器窗口大小的变化。
+
+3. **CSS 属性的改变**：
+   - 影响布局的 CSS 属性变化，例如 `display`、`width`、`height`、`padding`、`margin` 等。
+   - 改变字体大小、行高等文字属性也会触发重排。
+
+4. **DOM 操作**：
+   - 通过 JavaScript 动态修改 DOM 结构，例如增删节点、改变节点属性等。
+   - 通过 `style` 属性直接对样式的修改（影响几何属性）。
+
+##### 重排开销较大，因为它不仅需要重新计算元素的几何属性，还可能会导致整个页面或部分页面的重绘。
+
+### 优化策略
+
+为了避免频繁的重排和重绘，提升页面性能，可以采取以下优化策略：
+
+1. **合并操作**：
+   - 将多次 DOM 及样式修改合并为一次操作。例如，通过使用 DocumentFragment 来批量操作 DOM 元素。
+   - 使用 `class` 而不是逐个改变样式属性，利用 CSS 类来切换样式。
+
+2. **离线操作**：
+   - 对 DOM 进行多次操作时，可以把这些操作集中在一个不可见的节点或者一个文档片段（DocumentFragment）中，操作完成后再一次性插入 DOM。
+   - 使用 `display: none` 隐藏元素后再进行多次操作，操作完成以后再显示出来。注意 `display: none` 本身会触发一次重排，但接下来的操作不会再触发重排，直到重新显示。
+
+3. **减少不必要的 DOM 读取**：
+   - 多次读取会造成页面的多次重排。可以先保存需要读取的值，然后进行操作。
+
+4. **优化动画和过渡**：
+   - 使用 CSS 动画和过渡（Transitions）替代 JavaScript 动画。
+   - 尽量使用动画和过渡对 `transform`、`opacity` 这些只会触发重绘而不会触发重排的属性。
+
+### 示例
+
+以下是一个会引起频繁重排的例子：
+
+```javascript
+for (let i = 0; i < 100; i++) {
+    let div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '100px';
+    document.body.appendChild(div);
+}
+```
+
+可以通过 DocumentFragment 优化：
+
+```javascript
+let fragment = document.createDocumentFragment();
+for (let i = 0; i < 100; i++) {
+    let div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '100px';
+    fragment.appendChild(div);
+}
+document.body.appendChild(fragment);
+```
+
+通过理解和优化重排与重绘，可以显著提升页面的性能和用户体验。
