@@ -1255,3 +1255,252 @@ Parent destroyed
 - **销毁阶段**：从外向里，父组件先于子组件执行 `beforeDestroy`，但子组件在父组件之前完成 `destroyed`。
 
 理解这些顺序可以使你在开发复杂的组件关系时，根据生命周期钩子做适当的初始化和清理工作，更好地控制组件的行为。
+
+## vue3中的生命周期函数有没有一些变化
+
+是的，相较于 Vue 2，Vue 3 的生命周期函数确实有一些变化和改进。主要的变化体现在以下几个方面：
+
+### 1. 生命周期钩子名称变化
+
+Vue 3 的生命周期钩子名称与 Vue 2 略有不同，某些钩子现在以更加合乎语义的名称表示。
+
+#### Vue 2 vs Vue 3 生命周期钩子名称对比
+
+| Vue 2           | Vue 3             |
+| --------------- | ----------------- |
+| beforeCreate    | `setup()`         |
+| created         | `setup()`         |
+| beforeMount     | onBeforeMount     |
+| mounted         | onMounted         |
+| beforeUpdate    | onBeforeUpdate    |
+| updated         | onUpdated         |
+| beforeDestroy   | onBeforeUnmount   |
+| destroyed       | onUnmounted       |
+| errorCaptured   | onErrorCaptured   |
+| renderTracked   | onRenderTracked   |
+| renderTriggered | onRenderTriggered |
+
+### 2. 使用组合式 API （Composition API）
+
+在 Vue 3 中，推荐使用组合式 API（Composition API）来替代选项式 API（Options API）。组合式 API 通过 `setup` 函数来组织应用逻辑，并使用一组新的生命周期钩子函数。
+
+#### 示例：组合式 API 中的生命周期钩子
+
+```javascript
+import { onMounted, onBeforeUnmount, ref } from 'vue';
+
+export default {
+  setup() {
+    const count = ref(0);
+    
+    onMounted(() => {
+      console.log('Component is mounted!');
+      // 可以在这里执行组件挂载时的操作
+    });
+
+    onBeforeUnmount(() => {
+      console.log('Component is about to unmount!');
+      // 可以在这里执行组件卸载之前的清理操作
+    });
+
+    return {
+      count,
+    };
+  },
+};
+```
+
+#### 组合式 API 钩子函数列表
+
+* `onBeforeMount`
+* `onMounted`
+* `onBeforeUpdate`
+* `onUpdated`
+* `onBeforeUnmount`
+* `onUnmounted`
+* `onErrorCaptured`
+* `onRenderTracked`
+* `onRenderTriggered`
+
+### 3. setup 函数
+
+`setup` 函数是组合式 API 中的一个重要概念，它会在 `beforeCreate` 和 `created` 之前执行。故此，组件的逻辑可以集中在 `setup` 函数中进行处理。
+
+#### 示例：setup 函数
+
+```javascript
+import { ref } from 'vue';
+
+export default {
+  setup() {
+    const count = ref(0);
+
+    function increment() {
+      count.value++;
+    }
+
+    return {
+      count,
+      increment,
+    };
+  },
+};
+```
+
+### 4. Scripts Setup 语法糖
+
+Vue 3.2 引入了一种新的组件编写格式，称为 `<script setup>`，简化了书写格式，使得代码更加简洁。
+
+#### 示例：使用 `<script setup>`
+
+```vue
+<template>
+  <div>{{ count }}</div>
+  <button @click="increment">Increment</button>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const count = ref(0);
+
+function increment() {
+  count.value++;
+}
+</script>
+```
+
+### 总结
+
+Vue 3 通过引入组合式 API 和 `<script setup>` 语法糖，提供了新的方式来组织和管理组件的生命周期和状态。尽管生命周期钩子名称发生了一些变化，但整体的使用方式更加直观和灵活。新的 API 不仅增强了组件逻辑的复用性，还提升了代码的可读性和易维护性。
+
+## vue的组件化整体实现原理是什么样的
+
+Vue.js 是一个渐进式框架，它允许你通过构建和组合组件来开发用户界面。组件化是 Vue 框架的核心特性之一。理解 Vue 的组件化实现原理，有助于我们构建更高效和可维护的应用。下面是对 Vue 组件化整体实现原理的一些详细说明：
+
+### 基本概念
+
+1. **组件**：Vue 组件本质上是一个拥有自己逻辑（如数据、方法、模板、样式等）的独立实例。每个组件都是一个 Vue 实例，拥有与根实例基本相同的选项。
+
+2. **模板（Template）**：定义组件的结构。可以用 HTML 语法书写，Vue 将其转换为 DOM 元素。
+
+3. **数据（Data）**：组件的状态。每个组件拥有独立的数据作用域。
+
+4. **属性（Props）**：父组件可以通过向子组件传递属性来与子组件通信。
+
+5. **事件（Events）**：子组件可以通过事件向父组件传递数据或通知父组件某个动作已经完成。
+
+6. **生命周期钩子（Lifecycle Hooks）**：用来在组件创建、挂载、更新和销毁过程中执行特定操作。
+
+### 组件化实现原理
+
+组件化的实现涉及以下几个核心步骤：
+
+#### 1. 注册组件
+
+在 Vue 中，可以全局或局部注册组件。全局注册的组件可以在任何 Vue 实例的模板中使用。局部注册的组件只能在某个 Vue 实例或父组件的模板中使用。
+
+```javascript
+// 全局注册
+Vue.component('my-component', {
+  template: '<div>A custom component!</div>'
+});
+
+// 局部注册
+new Vue({
+  el: '#app',
+  components: {
+    'my-component': {
+      template: '<div>A custom component!</div>'
+    }
+  }
+});
+```
+
+#### 2. 组件实例化
+
+Vue 会为每一个组件创建一个 Vue 实例。实例化的过程会将组件的选项合并到一起（如数据、方法、computed、watchers等），并生成一个新的 Vue 实例。
+
+```javascript
+new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  },
+  components: {
+    'my-component': {
+      template: '<div>{{ message }}</div>',
+      data() {
+        return {
+          message: 'Hello from component!'
+        };
+      }
+    }
+  }
+});
+```
+
+#### 3. 模板编译
+
+Vue 使用模板编译器将模板字符串编译为渲染函数。渲染函数是虚拟 DOM 的表示，它描述了组件在渲染时应该生成的实际 DOM 结构。
+
+```javascript
+// Template
+<template>
+  <div>{{ message }}</div>
+</template>
+
+// Compiled Render Function
+render() {
+  return createElement('div', this.message);
+}
+```
+
+#### 4. 虚拟 DOM 与 Diff 算法
+
+Vue 使用虚拟 DOM 来追踪和更新实际 DOM。每当组件的数据发生变化时，Vue 会重新计算虚拟 DOM 树，并使用 Diff 算法来比较新旧两棵树的差异。然后，Vue 只会对实际 DOM 应用必要的更新。
+
+```javascript
+// 生成虚拟 DOM
+const vnode = h('div', { id: 'app' }, 'Hello, Vue!');
+
+// 应用变化到实际 DOM
+patch(oldVNode, vnode);
+```
+
+#### 5. 生命周期钩子
+
+生命周期钩子是 Vue 提供的一系列钩子函数，允许开发者在组件的不同阶段（如创建、挂载、更新、销毁等）执行特定的逻辑。
+
+```javascript
+export default {
+  data() {
+    return {
+      message: 'Hello, Vue!'
+    };
+  },
+  created() {
+    console.log('Component is created!');
+  },
+  mounted() {
+    console.log('Component is mounted!');
+  },
+  beforeDestroy() {
+    console.log('Component is about to be destroyed!');
+  },
+  destroyed() {
+    console.log('Component is destroyed!');
+  }
+};
+```
+
+### 总结
+
+Vue组件化的整体实现原理包括以下几个方面：
+
+1. **组件注册与实例化**：通过全局或局部注册组件，将组件的选项（如模板、数据、方法等）合并到一个新的 Vue 实例中。
+2. **模板编译**：将模板字符串编译为渲染函数，生成虚拟 DOM。
+3. **虚拟 DOM 与 Diff 算法**：使用虚拟 DOM 和 Diff 算法高效地更新实际 DOM。
+4. **生命周期钩子**：在组件的不同阶段执行特定逻辑。
+
+通过理解这些原理，您可以更好地利用 Vue 的组件化模型，构建高效、可维护的应用。
