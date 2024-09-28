@@ -5,19 +5,32 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
 		<style>
-			.box {
-				width: 0;
-				height: 0;
-				
-				border-left: 10px solid transparent;
-				border-right: 10px solid transparent;
-				border-bottom: 20px solid red;
+			#wrapper1{
+				width: 100px;
+				height: 100px;
+			}
+			#wrapper2{
+				width: 50px;
+			}
+			#two{
+				float: right;
+			}
+			#three{
+				position: relative;
 			}
 		</style>
 	</head>
 	<body>
-		<div class="box">
+		<div id="wrapper1">
+			<div id="one">
 
+			</div>
+			<div id="two">
+
+			</div>
+			<div id="wrapper1">
+				<div id="three"></div>
+			</div>
 		</div>
 	</body>
 </html>

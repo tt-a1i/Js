@@ -1,8 +1,9 @@
-function formatNumber(num){
-    if(num > 1000){
-        return formatNumber(Math.floor(num / 1000)) + ',' + num % 1000;
-    }else{
-        return num
+let thenable = {
+    then: function(resolve, reject){
+        reject(1)
     }
 }
-console.log(formatNumber(1234567));
+let p = new Promise((resolve, reject) => {
+    resolve(thenable)
+})
+p.then(val => {console.log(val)}, err => {console.log(err + 1)})
