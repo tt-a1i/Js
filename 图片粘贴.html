@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style></style>
+	</head>
+	<body>
+		<div id="dropTarget"></div>
+		<script>
+			document.addEventListener("paste", function (event) {
+				const items = event.clipboardData.items;
+				console.log(items);
+				for (let i = 0; i < items.length; i++) {
+					if (items[i].type.startsWith("image/")) {
+						const file = items[i].getAsFile();
+						console.log(file);
+						
+						const reader = new FileReader();
+						reader.onload = function (event) {
+							const img = new Image();
+							img.src = event.target.result;
+							document.getElementById("dropTarget").appendChild(img);
+						};
+						reader.readAsDataURL(file);
+						break;
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
