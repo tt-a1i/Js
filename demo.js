@@ -1,16 +1,29 @@
-let person = {
-    name: 'alice',
-    age: 27,
-    sayHello: function(){
-        console.log('hello, my name is ' + this.name);
-        
-    }
+let activeEffect = null
+export function effect(fn){
+    activeEffect = fn
+    fn()
+    activeEffect = null
 }
-let anotherPerson = Object.create(person)
 
-console.log(anotherPerson.__proto__ === person);
-console.log(anotherPerson.prototype === person.prototype);
-
-anotherPerson.name = 'bob'
-anotherPerson.age = 11
-anotherPerson.sayHello()
+export function reactive(obj){
+    const map = {}
+    return new Proxy(obj, {
+        get(target, key){
+            if(activeEffect){
+                if(!map[key]){
+                    map[key] = []
+                }
+                map[key].push(activeEffect)
+            }
+            return target[key]
+        },
+        set(target, key, value){
+            target[key] = value
+            map[key] ?.forEach(fn => fn())
+            return true
+        }
+    })
+}
+export function ref(value){
+    return reactive({value})
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <h1 id="h1"></h1>
+</head>
+<body>
+    <div id="app"></div>
+    <button id="btn">add</button>
+
+    <script type="module">
+        import {effect, reactive} from './demo.js'
+
+        let elem = document.getElementById('app')
+        let btn = document.getElementById('btn')
+
+        let state = reactive({count: 0})
+        effect(() => {
+            elem.textContent = state.count
+        })
+        
+        btn.addEventListener('click', ()=>{
+            state.count++
+            console.log(state.count)
+        })
+    </script>
+</body>
+</html>

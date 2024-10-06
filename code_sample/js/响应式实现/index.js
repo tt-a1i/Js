@@ -1,5 +1,6 @@
 let activeEffect = null
 export function effect(fn){
+    //在执行fn更新页面数据时,会触发proxy的get,进而对依赖进行收集
     activeEffect = fn
     fn()
     activeEffect = null
