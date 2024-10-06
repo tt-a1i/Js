@@ -1,29 +1,35 @@
-let activeEffect = null
-export function effect(fn){
-    activeEffect = fn
-    fn()
-    activeEffect = null
-}
-
-export function reactive(obj){
-    const map = {}
-    return new Proxy(obj, {
-        get(target, key){
-            if(activeEffect){
-                if(!map[key]){
-                    map[key] = []
-                }
-                map[key].push(activeEffect)
-            }
-            return target[key]
-        },
-        set(target, key, value){
-            target[key] = value
-            map[key] ?.forEach(fn => fn())
-            return true
+class EventEmitter{
+    constructor(){
+        this.events = {}
+    }
+    on(event, listener){
+        (this.events[event] ??= new Set()).add(listener)
+    }
+    emit(event, ...args){
+        this.events[event] ?. forEach(cb => cb(...args))
+    }
+    off(event, listener){
+        this.events[event] ?. delete(listener)
+    }
+    once(event, listener){
+        const onceListener = (...args) => {
+            listener(...args)
+            this.off(event, onceListener)
         }
-    })
+        this.on(event, onceListener)
+    }
 }
-export function ref(value){
-    return reactive({value})
-}
+// 示例使用
+const say = (name) => console.log("hello " + name);
+const test = (n) => console.log(n + n)
+
+const emitter = new EventEmitter();
+
+emitter.once('test', test)
+emitter.emit('test', 2)
+emitter.emit('test', 2)
+
+emitter.on("welcome", say)
+emitter.emit('welcome', 'tom')
+emitter.off('welcome', say)
+emitter.emit('welcome', 'tom')
