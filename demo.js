@@ -1,6 +1,19 @@
 class EventEmitter{
+    static #instance = null
+    static #instantiation = false
     constructor(){
+        if(!EventEmitter.#instantiation){
+            throw Error('error')
+        }
         this.events = {}
+    }
+    static getInstance(){
+        if(!EventEmitter.#instance){
+            EventEmitter.#instantiation = true
+            EventEmitter.#instance = new EventEmitter()
+            EventEmitter.#instantiation = false
+        }
+        return EventEmitter.#instance
     }
     on(event, listener){
         (this.events[event] ??= new Set()).add(listener)
@@ -23,7 +36,7 @@ class EventEmitter{
 const say = (name) => console.log("hello " + name);
 const test = (n) => console.log(n + n)
 
-const emitter = new EventEmitter();
+const emitter = EventEmitter.getInstance();
 
 emitter.once('test', test)
 emitter.emit('test', 2)

@@ -9,7 +9,7 @@ class EventEmitter {
         this.events = {}; // 初始化 events 对象
     }
 
-    static getInstance() {
+    static getInstance() {//单例模式,特点: 1个构造函数只能有1个实例
         if (!EventEmitter.#instance) {
             EventEmitter.#allowInstantiation = true; // 允许实例化
             EventEmitter.#instance = new EventEmitter(); // 创建实例
