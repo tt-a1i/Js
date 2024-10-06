@@ -9384,3 +9384,112 @@ console.log(sum.toNumber());  // 输出 0.3
 ### 综合来看
 
 在需要高精度运算的情况下，使用整数计算法和专门处理高精度数学运算的库是较为推荐的选择。对于日常的基本运算，可以结合 `toFixed` 和 `Number.EPSILON` 进行比较和格式化，以减少误差带来的影响。
+
+## 类的static属性
+
+在 JavaScript 中，类的 `static` 属性具有以下特点：
+
+### 1. **属于类本身，而不是实例**
+   - `static` 属性是**直接定义在类上的属性**，而不是定义在类的实例上的属性。这意味着它只能通过类名来访问，而不能通过实例访问。
+
+   ```javascript
+   class MyClass {
+       static staticProperty = 'I am static';
+   }
+
+   console.log(MyClass.staticProperty); // 输出: 'I am static'
+   
+   const instance = new MyClass();
+   console.log(instance.staticProperty); // 输出: undefined
+   ```
+
+   这里，`staticProperty` 是一个静态属性，它可以通过类 `MyClass` 来访问，但不能通过 `MyClass` 的实例访问。
+
+### 2. **不与实例共享**
+   - 静态属性和方法仅与类相关，实例无法直接访问。每个实例有自己的独立属性和方法，而静态属性是所有实例共享的，因为它属于类。
+
+   ```javascript
+   class MyClass {
+       static count = 0;
+       constructor() {
+           this.instanceProperty = 'I am an instance property';
+       }
+   }
+
+   const obj1 = new MyClass();
+   const obj2 = new MyClass();
+
+   console.log(MyClass.count); // 输出: 0 (静态属性可以通过类名访问)
+   console.log(obj1.count);    // 输出: undefined (实例无法访问静态属性)
+   ```
+
+### 3. **可用于实用工具或常量**
+   - `static` 属性和方法通常用于实用工具方法或常量。它们与具体的实例无关，可以作为全局或者类级别的共享资源。
+
+   ```javascript
+   class MathUtils {
+       static PI = 3.14159;
+       static square(x) {
+           return x * x;
+       }
+   }
+
+   console.log(MathUtils.PI);        // 输出: 3.14159
+   console.log(MathUtils.square(5)); // 输出: 25
+   ```
+
+   这种用法类似于在模块或命名空间中定义的实用工具函数和常量。
+
+### 4. **静态方法**
+   - 除了静态属性外，类中还可以定义**静态方法**。静态方法与静态属性类似，只能通过类本身调用，不能通过实例调用。
+
+   ```javascript
+   class MyClass {
+       static staticMethod() {
+           return 'This is a static method';
+       }
+   }
+
+   console.log(MyClass.staticMethod()); // 输出: 'This is a static method'
+
+   const instance = new MyClass();
+   console.log(instance.staticMethod()); // 输出: TypeError (实例无法调用静态方法)
+   ```
+
+### 5. **不能通过 `this` 访问静态属性**
+   - 静态属性只能通过类名来访问，不能在非静态方法中通过 `this` 来访问静态属性（因为 `this` 指向的是实例，而不是类本身）。
+
+   ```javascript
+   class MyClass {
+       static staticProperty = 'static value';
+
+       showStatic() {
+           console.log(this.staticProperty); // undefined (this 不能访问静态属性)
+           console.log(MyClass.staticProperty); // 正确：通过类名访问
+       }
+   }
+
+   const instance = new MyClass();
+   instance.showStatic();
+   ```
+
+### 6. **可以继承静态属性**
+   - 静态属性和方法可以被子类继承，子类可以直接访问父类的静态属性和方法。子类也可以覆盖父类的静态属性和方法。
+
+   ```javascript
+   class Parent {
+       static parentStatic = 'Parent static property';
+   }
+
+   class Child extends Parent {}
+
+   console.log(Child.parentStatic); // 输出: 'Parent static property'
+   ```
+
+### 总结
+- **类本身访问**：静态属性属于类本身，而不是实例，必须通过类名来访问。
+- **与实例无关**：静态属性和方法是与类的实例无关的工具，通常用于定义常量或实用工具方法。
+- **继承性**：静态属性和方法可以被继承，子类可以访问父类的静态属性和方法。
+- **实例无法访问**：静态属性和方法不能通过类的实例访问。
+
+这种特性使 `static` 属性和方法非常适合用于全局共享的数据或功能。

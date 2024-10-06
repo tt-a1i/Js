@@ -1,7 +1,22 @@
 class EventEmitter {
-	constructor() {
-		this.events = {};
-	}
+	static #instance = null; // 存储单例实例
+    static #allowInstantiation = false; // 私有标志，控制实例化
+
+    constructor() {
+        if (!EventEmitter.#allowInstantiation) {
+            throw new Error('Use EventEmitter.getInstance() to create an instance.');
+        }
+        this.events = {}; // 初始化 events 对象
+    }
+
+    static getInstance() {
+        if (!EventEmitter.#instance) {
+            EventEmitter.#allowInstantiation = true; // 允许实例化
+            EventEmitter.#instance = new EventEmitter(); // 创建实例
+            EventEmitter.#allowInstantiation = false; // 立即禁止实例化
+        }
+        return EventEmitter.#instance;
+    }
 	// 订阅事件
 	on(event, listener) {
 		(this.events[event] ??= new Set()).add(listener)
@@ -27,7 +42,7 @@ class EventEmitter {
 const say = (name) => console.log("hello " + name);
 const test = (n) => console.log(n + n)
 
-const emitter = new EventEmitter();
+const emitter = EventEmitter.getInstance();
 
 emitter.once('test', test)
 emitter.emit('test', 2)
