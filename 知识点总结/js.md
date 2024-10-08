@@ -1965,6 +1965,12 @@ console.log('After foo');
 
 ## 说说JavaScript中的事件模型
 
+css属性 pointer-events: none,加了这个属性的元素不会成为event.target,保证非目标元素不会为冒泡的target
+
+比如在列表中有标题这种元素时可以使用这个减少代码逻辑
+
+
+
 JavaScript 事件模型是实现网页交互和动态行为的关键部分。理解事件模型能够帮助开发者更好地处理用户输入、浏览器事件和各种异步操作。JavaScript 的事件模型主要包括事件的捕获、冒泡和事件处理（即事件监听和处理函数）等概念。本文将深入探讨 JavaScript 中的事件模型。
 
 ### 1. 事件（Event）
