@@ -269,6 +269,43 @@ weakmap和weakset的键只能是对象
   - 当键对象不再被引用时，相关的键值对会被自动清除，有助于防止内存泄漏。
 - 不能被 JSON 序列化
 
+## map和weakmap
+
+```javascript
+const map = new Map()
+const weakmap = new WeakMap()
+(function(){
+    const foo = {foo: 1}
+    const bar = {bar: 1}
+    map.set(foo, 1)
+    weakmap.set(bar, 1)
+})()
+console.log(map)
+console.log(weakmap)
+//Map(1) { { foo: 1 } => 1 }
+//WeakMap { <items unknown> }
+```
+
+bar在释放后, weakmap没有键的引用就自动被回收了
+
+### 为什么 `WeakMap` 的输出是 `<items unknown>`？
+
+`WeakMap` 的设计是为了避免内存泄漏，因此它不会暴露其内部的键值对。你不能直接遍历 `WeakMap` 的键或值，也不能检查其大小。`WeakMap` 的键值对只有在键对象没有其他引用时才会被垃圾回收。
+
+
+
+这段代码没有错误，但它展示了 `Map` 和 `WeakMap` 在处理对象键时的不同行为。`Map` 会保留键值对，而 `WeakMap` 的键值对可能会被垃圾回收。
+
+
+
+vue3源码里的响应式对象通过weakmap来对对象做代理
+
+
+
+**WeakMap 的键是弱引用，当键对象不再有强引用时，键值对会被垃圾回收。**
+
+**Node.js 和浏览器环境的垃圾回收机制存在差异，导致 WeakMap 的行为在不同环境下可能会有所不同。**
+
 ## Promise
 
 异步编程的一种解决方案，主要用于`解决回调地狱`（callback hell）和提供`更优雅的异步编程`解决方案。比传统的解决方案（回调函数）更加合理和更加强大

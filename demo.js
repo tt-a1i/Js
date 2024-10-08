@@ -1,48 +1,13 @@
-class EventEmitter{
-    static #instance = null
-    static #instantiation = false
-    constructor(){
-        if(!EventEmitter.#instantiation){
-            throw Error('error')
-        }
-        this.events = {}
-    }
-    static getInstance(){
-        if(!EventEmitter.#instance){
-            EventEmitter.#instantiation = true
-            EventEmitter.#instance = new EventEmitter()
-            EventEmitter.#instantiation = false
-        }
-        return EventEmitter.#instance
-    }
-    on(event, listener){
-        (this.events[event] ??= new Set()).add(listener)
-    }
-    emit(event, ...args){
-        this.events[event] ?. forEach(cb => cb(...args))
-    }
-    off(event, listener){
-        this.events[event] ?. delete(listener)
-    }
-    once(event, listener){
-        const onceListener = (...args) => {
-            listener(...args)
-            this.off(event, onceListener)
-        }
-        this.on(event, onceListener)
-    }
-}
-// 示例使用
-const say = (name) => console.log("hello " + name);
-const test = (n) => console.log(n + n)
+const map = new Map();
+const weakmap = new WeakMap();
 
-const emitter = EventEmitter.getInstance();
+(function(){
 
-emitter.once('test', test)
-emitter.emit('test', 2)
-emitter.emit('test', 2)
+    const foo = {foo: 1};
+    const bar = {bar: 1};
+    map.set(foo, 1);
+    weakmap.set(bar, 1);
+})();
 
-emitter.on("welcome", say)
-emitter.emit('welcome', 'tom')
-emitter.off('welcome', say)
-emitter.emit('welcome', 'tom')
+console.log(map);
+console.log(weakmap);
