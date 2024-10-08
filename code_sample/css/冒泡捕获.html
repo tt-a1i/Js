@@ -16,14 +16,14 @@
 		</div>
 
 		<script>
+			//target是触发事件的目标元素，也就是用户实际点击、触摸等操作直接作用的那个具体元素
+			//currentTarget是当前正在处理这个事件的元素，通常是事件监听器所绑定的那个元素
 			document.getElementById("parent").addEventListener(
 				"click",
 				function (e) {
 					console.log("parent");
 					console.log(e.target);
 					console.log(e.currentTarget);
-					
-					
 					e.target.style.color = "red";
 				},
 				true
@@ -33,7 +33,8 @@
 			document.getElementById("ul").addEventListener(
 				"click",
 				function (e) {
-					console.log(e.target);
+					console.log('target', e.target);
+					console.log('currentTarget', e.currentTarget)
 					e.stopPropagation();
 				},
 				true
