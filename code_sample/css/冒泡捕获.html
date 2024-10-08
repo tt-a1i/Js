@@ -18,6 +18,8 @@
 		<script>
 			//target是触发事件的目标元素，也就是用户实际点击、触摸等操作直接作用的那个具体元素
 			//currentTarget是当前正在处理这个事件的元素，通常是事件监听器所绑定的那个元素
+			//eventPhase,3个值    1.捕获阶段  2.目标阶段  3.冒泡阶段
+			//如果没有嵌套,只有1个元素,那么eventPhase为2个2, 即没有捕获和冒泡阶段,都为目标阶段		
 			document.getElementById("parent").addEventListener(
 				"click",
 				function (e) {
