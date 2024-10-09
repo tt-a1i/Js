@@ -1,30 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <h1 id="h1"></h1>
-</head>
-<body>
-    <div id="app"></div>
-    <button id="btn">add</button>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>三列布局</title>
+		<style>
+			/* 父容器样式 */
+			.container {
+				width: 1000px; /* 父元素宽度为1000px */
+				display: flex; /* 使用flexbox布局 */
+				flex-wrap: wrap; /* 允许子元素换行 */
+				gap: 10px; /* 子元素之间的间距 */
+				background-color: #f0f0f0; /* 背景颜色，可选 */
+				padding: 10px; /* 内边距，可选 */
+			}
 
-    <script type="module">
-        import {effect, reactive} from './demo.js'
-
-        let elem = document.getElementById('app')
-        let btn = document.getElementById('btn')
-
-        let state = reactive({count: 0})
-        effect(() => {
-            elem.textContent = state.count
-        })
-        
-        btn.addEventListener('click', ()=>{
-            state.count++
-            console.log(state.count)
-        })
-    </script>
-</body>
+			/* 子元素样式 */
+			.item {
+				width: calc(33.333% - 10px); /* 每个子元素的宽度为1/3减去间距 */
+				height: 100px; /* 子元素高度自定义 */
+				background-color: #4caf50; /* 背景颜色，可选 */
+				color: white; /* 文字颜色，可选 */
+				text-align: center;
+                line-height: 100px;
+				box-sizing: border-box; /* 确保padding和border包含在width内 */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="item">Item 1</div>
+			<div class="item">Item 2</div>
+			<div class="item">Item 3</div>
+			<div class="item">Item 4</div>
+			<div class="item">Item 5</div>
+			<div class="item">Item 6</div>
+			<div class="item">Item 7</div>
+			<div class="item">Item 8</div>
+			<div class="item">Item 9</div>
+			<div class="item">Item 10</div>
+		</div>
+	</body>
 </html>
