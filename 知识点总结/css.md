@@ -1198,6 +1198,14 @@ CSS Grid（网格布局）是 CSS3 中的一种布局模式，它提供了一种
 
 ## 回流跟重绘
 
+<img src="./assets/image-20241010145021622.png" alt="image-20241010145021622" style="zoom: 33%;" />
+
+他是从页面渲染 DOM style layout layer paint这5个阶段去讲的
+
+重绘只进行style和paint阶段,中间俩跳了,比较省时间
+
+【彻底搞懂浏览器的重排和重绘！轻松应对面试】https://www.bilibili.com/video/BV1WP411Z75i?vd_source=f0023585540bbe6ab9edf17e0ec3b5a8
+
 #### 重绘与重排区别
 
 ```javascript
