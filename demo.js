@@ -1,29 +1,21 @@
-const menu = [
-	{
-		name: "menu1",
-		hidden: false,
-		children: [
-			{ name: "menu1-1", hidden: true },
-			{
-				name: "menu1-2",
-				hidden: false,
-				children: [
-					{ name: "menu1-2-1", hidden: false },
-					{ name: "menu1-2-2", hidden: true },
-				],
-			},
-		],
-	},
-];
+// const name = 'hong'
+// const obj = {
+// 	name: 'ming',
+// 	a(){
+// 		return this.name
+// 	}
+// }
+// console.log(obj.a())
+// console.log((obj.a)())
 
-function filterMenu(menu) {
-	return menu.filter((item) => {
-		if (item.children) {
-			item.children = filterMenu(item.children);
-		}
-		return item.hidden === false;
-	});
+const name = 'hong'
+const obj = {
+	name: 'ming',
+	a: () => {
+		return this.name
+	}
 }
-
-const newMenu = filterMenu(menu);
-console.log(JSON.stringify(newMenu, null, 2));
+const c = obj.a
+console.log(obj.a())
+console.log(obj.a())
+console.log(c())

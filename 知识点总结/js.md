@@ -8154,8 +8154,6 @@ doSomething(42);      // Output: Handling number: 42
 
 在JavaScript中，实现函数重载的关键是根据传入的参数数量或类型，灵活地在一个函数内部执行不同的逻辑。
 
-## webassembly
-
 ## WebAssembly 深入解析
 
 WebAssembly (wasm) 是一种全新的编程语言和运行时环境，为 Web 带来了革命性的性能提升和新的可能性。它不仅可以极大地提高 Web 应用的运行速度，还能让开发者使用 C/C++、Rust 等语言编写高性能的 Web 应用。
@@ -9638,3 +9636,81 @@ console.log(sum.toNumber());  // 输出 0.3
 - **实例无法访问**：静态属性和方法不能通过类的实例访问。
 
 这种特性使 `static` 属性和方法非常适合用于全局共享的数据或功能。
+
+## 路由跳转有哪些方式?
+
+在Web开发中，路由跳转是页面导航的一种方式，它允许用户从一个页面跳转到另一个页面或页面状态，而不必重新加载整个页面。以下是一些常见的路由跳转方式：
+
+1. **HTML链接**：
+   - 使用`<a>`标签实现跳转。
+   ```html
+   <a href="/page2.html">Go to Page 2</a>
+   ```
+
+2. **表单提交**：
+   - 通过提交表单实现页面跳转。
+   ```html
+   <form action="/page2.html" method="get">
+     <button type="submit">Submit</button>
+   </form>
+   ```
+
+3. **JavaScript重定向**：
+   - 使用`window.location`对象进行跳转。
+   ```javascript
+   window.location.href = '/page2.html';
+   ```
+
+4. **使用锚点**：
+   - 通过设置锚点实现页面内跳转。
+   ```html
+   <a href="#section2">Go to Section 2</a>
+   <!-- 在页面中设置锚点 -->
+   <h2 id="section2">Section 2</h2>
+   ```
+
+5. **History API**：
+   - 使用`history.pushState`和`history.replaceState`进行跳转。
+   ```javascript
+   history.pushState({page: 1}, "title 1", "?page=1");
+   ```
+
+6. **Ajax请求**：
+   - 通过Ajax请求数据并更新页面内容，实现无刷新跳转。
+   ```javascript
+   $.ajax({
+     url: '/page2.html',
+     success: function(data) {
+       $('#content').html(data);
+     }
+   });
+   ```
+
+7. **前端路由库**：
+   - 使用前端路由库（如React Router、Vue Router、Angular Router）进行单页面应用(SPA)的路由管理。
+   ```javascript
+   // Vue Router 示例
+   <router-link to="/page2">Go to Page 2</router-link>
+   ```
+
+8. **哈希模式**：
+   - 使用URL的哈希部分（`#`）实现客户端路由跳转。
+   ```javascript
+   // 通过改变window.location.hash实现跳转
+   window.location.hash = '#/page2';
+   ```
+
+9. **服务器端重定向**：
+   - 在服务器端设置HTTP状态码为301或302，实现页面跳转。
+   ```http
+   HTTP/1.1 302 Found
+   Location: /page2.html
+   ```
+
+10. **按钮点击事件**：
+    - 通过按钮点击事件触发页面跳转。
+    ```html
+    <button onclick="window.location.href='/page2.html'">Go to Page 2</button>
+    ```
+
+每种方式都有其适用场景，例如，HTML链接和表单提交适用于传统的多页面应用（MPA），而前端路由库和History API适用于单页面应用（SPA）。Ajax请求和哈希模式则常用于实现无刷新更新页面内容。服务器端重定向则用于在服务器层面控制页面跳转。

@@ -57,7 +57,7 @@ try {
 
 //循环引用扁平化
 function myFlatten(arr, depth = Infinity, map = new WeakMap()) {
-	if (depth < 1) return arr.slice();
+	if (depth < 1) return arr.slice();//防止对原数组进行修改
 	if (map.has(arr)) return map.get(arr);
 	const result = [];
 	map.set(arr, result);
