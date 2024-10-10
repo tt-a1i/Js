@@ -9742,3 +9742,9 @@ record录制几秒
 然后点进去可以查看到对应的代码, 去进行分析解决
 
 ![image-20241010154829322](./assets/image-20241010154829322.png)
+
+## 首屏渲染
+
+打包后的首屏需要的关键资源 preload, 不关键的prefetch
+
+inportance='high', gzip
