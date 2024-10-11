@@ -9779,6 +9779,22 @@ inportance='high', gzip
 
 总的来说，前端 try catch 在特定情况下可以捕获异步错误，但并非所有异步错误都能被捕获，需要根据具体的异步编程模型选择合适的错误处理方式。
 
+### window.onerror
+
+捕获不到js加载或者图片加载的这种网络的错误
+
+### addEventlistener error
+
+无法捕获promise和async  await的错误
+
+```javascript
+window.addEventListener('error', args => {
+    console.log('error event:', args)
+}, true)//捕获阶段获取错误,默认为冒泡阶段
+```
+
+可以结合`unhandledrejection`中throw error在addEventlistener error中去捕获
+
 ### 对于 Promise 的错误捕获：
 
 当你使用 `Promise` 时，可以通过链式调用 `.catch()` 方法来捕获错误：
@@ -9808,6 +9824,19 @@ async function myFunction() {
 
 在 `async` 函数中，`await` 表达式后面的 Promise 如果被拒绝（即异步操作发生错误），则会被 `try...catch` 块中的 `catch` 捕获。
 
+还可以使用`unhandledrejection`
+
+```js
+window.addEventListener('unhandledrejection', e => {
+    console.log('unhandledrejection', e)
+    throw e
+}, true)//捕获阶段获取错误,默认为冒泡阶段
+```
+
+
+
+
+
 ### 对于 async/await 的错误捕获：
 
 使用 `async/await` 时，你可以将异步函数包裹在 `try...catch` 块中来捕获错误：
@@ -9824,6 +9853,10 @@ async function myAsyncFunction() {
 ```
 
 如果 `asyncOperation` 抛出错误，那么这个错误会被 `catch` 块捕获。
+
+### 对于setTImeout的错误捕获
+
+setTImeout里使用try catch
 
 ### 注意事项：
 
