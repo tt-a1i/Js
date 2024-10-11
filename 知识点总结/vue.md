@@ -322,72 +322,43 @@ export default defineConfig({
 
 ## `v-for`与`v-if`一同使用在vue2和vue3中的区别
 
-在 Vue 2 和 Vue 3 中，`v-for` 和 `v-if` 一同使用时确实存在一些重要的区别。让我们详细探讨这些差异：
+vue官方**不推荐**v-for和v-if**一块用, 推荐使用**计算属性**来预先过滤列表，或者将 `v-if` 移到外层元素。**
 
-Vue 2:
+### Vue 2:
 
-1. 优先级：
-   - 在 Vue 2 中，当 `v-for` 和 `v-if` 同时出现在一个元素上时，`v-for` 的优先级高于 `v-if`。
+![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/22ab59476167438494e15dd93fe14f6e~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=784&h=142&s=24104&e=png&b=151515)
 
-2. 执行顺序：
-   - Vue 2 会先执行 `v-for` 循环，然后对每个生成的元素执行 `v-if` 条件。
+可以看到在 Vue2 中，会**先循环**，然后在循环中去判断，判断为真则正常渲染，判断为假则执行 `_e` 函数，`_e`函数就是注释的意思，就是把判断为假的节点注释掉，也就是：
 
-3. 性能影响：
-   - 这种方式可能导致性能问题，因为即使最终不渲染，也会为每个元素执行 `v-if` 检查。
+- 1、先走 v-for 循环 3 次
+- 2、在循环体中走 v-if 判断
+- 3、判断 item !== 2 则正常渲染，item === 2 则把这个节点注释掉
 
-4. 示例代码：
-   ```html
-   <ul>
-     <li v-for="user in users" v-if="user.isActive">
-       {{ user.name }}
-     </li>
-   </ul>
-   ```
+所以最终选出出来 1、3 两个节点
 
-5. 推荐做法：
-   - Vue 2 官方文档建议避免在同一元素上同时使用 `v-for` 和 `v-if`。
-   - 推荐使用计算属性来预先过滤列表，或者将 `v-if` 移到外层元素。
+大家能理解为什么 Vue2 会警告你了吗？因为其实我们只需要渲染2个节点，但是最终还是循环了3次，造成了性能浪费，也就是 **v-for 优先级高于 v-if**，**共存时会造成性能浪费**
 
-Vue 3:
 
-1. 优先级：
-   - 在 Vue 3 中，`v-if` 的优先级高于 `v-for`。
 
-2. 执行顺序：
-   - Vue 3 会先执行 `v-if` 条件，只有当条件为真时才会执行 `v-for`。
+### Vue 3:
 
-3. 性能影响：
-   - 这种改变通常会带来性能提升，因为它避免了对不需要渲染的元素执行不必要的循环。
+![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7fb5ef41baf04489806a1430598c4232~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=1524&h=210&s=62905&e=png&b=fefcfc)
 
-4. 示例代码：
-   ```html
-   <ul>
-     <li v-for="user in users" v-if="user.isActive">
-       {{ user.name }}
-     </li>
-   </ul>
-   ```
-   在 Vue 3 中，这段代码的行为类似于：
-   ```html
-   <ul>
-     <template v-if="user.isActive">
-       <li v-for="user in users">
-         {{ user.name }}
-       </li>
-     </template>
-   </ul>
-   ```
+可以看到，跟 Vue2 不同的是，Vue3 中是先走判断，然后再走循环的，也就是：
 
-5. 使用建议：
-   - 尽管 Vue 3 改变了优先级，但仍然建议避免在同一元素上同时使用 `v-for` 和 `v-if`。
-   - 对于复杂的条件渲染和列表渲染，使用计算属性或方法来处理逻辑仍然是更清晰和可维护的做法。
+- 1、先走 v-if 判断
+- 2、如果 item !== 2，就去走循环也就是 v-for
+- 3、如果 item == 2，就执行 createCommandVNode，创建一个注释节点
 
-总结：
-- Vue 2 中 `v-for` 优先级高于 `v-if`，可能导致性能问题。
-- Vue 3 中 `v-if` 优先级高于 `v-for`，通常能提高性能。
-- 无论是 Vue 2 还是 Vue 3，最佳实践都是避免在同一元素上同时使用这两个指令，而是通过计算属性或将逻辑分离到不同层级来处理。
+也就是在 Vue3 中，v-if 优先级是高于 v-for 的，真正循环的只有1、3这两个节点，这提高了性能
 
-这种变化反映了 Vue 团队对性能优化的持续关注，以及他们如何在新版本中改进框架的行为以提供更好的默认性能。
+但是我们会看到，代码会报错：** item 找不到**？
+
+这是因为在 v-for 和 v-if 共存的时候，Vue3 会在底层帮我们转换成
+
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2a1a94df9ea743d3afc1bbee8e780b67~tplv-k3u1fbpfcp-jj-mark:3024:0:0:0:q75.awebp#?w=888&h=472&s=88588&e=png&b=1f1f1f" alt="img" style="zoom:33%;" />
+
+item是在外层的，所以报错说item 找不到
 
 ## 动态给vue的data添加一个新的属性时会发生什么？怎样解决？
 

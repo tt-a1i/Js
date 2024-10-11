@@ -6,7 +6,7 @@
    ### 1. 作用域（Scope）
    
    #### `var`
-   - **函数作用域**：`var` 声明的变量在函数内是局部的，在其他所有情况下是全局的。
+   - **函数作用域**：`var` 声明的变量在**函数内是局部**的，在其他所有情况下是全局的。
      
    - 全局作用域下for循环条件内用var声名的变量在外部也可以进行访问
      
@@ -23,23 +23,13 @@
        ```
    
    #### `let` 和 `const`
-   - **块作用域**：`let` 和 `const` 声明的变量在块级作用域（由一对花括号 `{}` 包围的区域）内有效。
-       ```javascript
-       function example() {
-           let x = 10;
-           if (true) {
-               let x = 20; // 不同于外部的 x
-               console.log(x); // 20
-           }
-           console.log(x); // 10
-       }
-       example();
-       ```
+   - **块作用域**：`let` 和 `const` 声明的变量在**块级作用域**（由一对花括号 `{}` 包围的区域）内有效。
    
    ### 2. 变量提升（Hoisting）
    
    #### `var`
-   - **变量提升**：`var` 声明的变量会被提升到其作用域的顶部，但初始化不会被提升。
+   - **变量提升**：`var` **声明的变量会被提升**到其作用域的顶部，但**初始化不会被提升**。
+       
        ```javascript
        console.log(x); // undefined
        var x = 10;
@@ -59,20 +49,9 @@
    
    #### `var` 和 `let`
    - **可重赋值**：`var` 和 `let` 声明的变量可以重新赋值。
-       ```javascript
-       var x = 10;
-       x = 20; // 可以重新赋值
-       
-       let y = 30;
-       y = 40; // 可以重新赋值
-       ```
    
    #### `const`
    - **不可重赋值**：`const` 声明的变量必须在声明时初始化，并且无法重新赋值。
-       ```javascript
-       const z = 50;
-       z = 60; // TypeError: Assignment to constant variable.
-       ```
    
    ### 4. 全局对象属性
    
@@ -85,12 +64,6 @@
    
    #### `let` 和 `const`
    - **不成为全局对象属性**：在全局作用域中，`let` 和 `const` 声明的变量不会成为全局对象的属性。
-       ```javascript
-       let b = 20;
-       const c = 30;
-       console.log(window.b); // undefined
-       console.log(window.c); // undefined
-       ```
    
    ### 总结
    
@@ -98,7 +71,6 @@
    - **`let`**：块作用域、暂时性死区、可重赋值、不会成为全局对象属性。
    - **`const`**：块作用域、暂时性死区、不可重赋值、不会成为全局对象属性。
    
-   理解这些区别可以帮助你更好地选择合适的关键字来声明变量，写出更健壮和更具可维护性的代码。
 
 ## ES6中数组新增了哪些扩展？
 
@@ -179,17 +151,13 @@ x.a.b // 2，影响到了结构出来x的值
 
 ##### Object.is()
 
-严格判断两个值是否相等，与严格比较运算符（===）的行为基本一致，不同之处只有两个：一是`+0`不等于`-0`，二是`NaN`等于自身
+**严格判断两个值是否相等**，与严格比较运算符**（===）的行为基本一致**，不同之处只有两个：一是`+0`不等于`-0`，二是`NaN`等于自身
 
 ## ES6中函数新增了哪些扩展
 
 `ES6`允许为函数的参数设置默认值
 
-```javascript
-function log(x, y = 'World') {
-  console.log(x, y);
-}
-```
+
 
 函数的形参是默认声明的，不能使用`let`或`const`再次声明
 
@@ -223,11 +191,9 @@ foo() // TypeError: Cannot read property 'x' of undefined
 
 ## Set和Map
 
-`Set`是一种叫做`集合`的数据结构，`Map`是一种叫做`字典`的数据结构
+`map`和`set`的**键值可以是任意类型**
 
-map和set的键值可以是任意类型
-
-weakmap和weakset的键只能是对象
+`weakmap`和`weakset`的**键**只能是**对象**
 
 ##### Map
 
@@ -260,14 +226,14 @@ weakmap和weakset的键只能是对象
 共同特点:
 
 - **只能使用对象作为键：** 的键必须是**对象**，不能是原始值。
-  - 虽然键必须是对象，但值可以是任意类型的数据。
+  - 虽然键必须是对象，但**值可以是任意类型的数据**。
 
 - **弱引用：** 键是弱引用的，当键对象被垃圾回收时，相应的键值对会自动从 中删除。
 - **不可迭代：**不支持迭代方法（如 `forEach`），因此不能遍历其中的键值对。
 - **无法知道大小：** 没有 `size` 属性，也没有类似 `size` 的方法，因此无法知道其中包含的键值对数量。
 - 垃圾回收友好：
   - 当键对象不再被引用时，相关的键值对会被自动清除，有助于防止内存泄漏。
-- 不能被 JSON 序列化
+- **不能被 JSON 序列化**
 
 ## map和weakmap
 
@@ -325,103 +291,84 @@ vue3源码里的响应式对象通过weakmap来对对象做代理
 
 ### Promise的主要方法
 
-1. 实例方法：
+a. then(onFulfilled, onRejected)
+- 用于处理 Promise 成功或失败的情况
+- 返回一个新的 Promise
 
-   a. then(onFulfilled, onRejected)
-   - 用于处理 Promise 成功或失败的情况
-   - 返回一个新的 Promise
+```javascript
+promise.then(
+  result => console.log(result),
+  error => console.error(error)
+);
+```
 
-   ```javascript
-   promise.then(
-     result => console.log(result),
-     error => console.error(error)
-   );
-   ```
+b. catch(onRejected)
+- 用于处理 Promise 失败的情况
+- 相当于 then(null, onRejected)
 
-   b. catch(onRejected)
-   - 用于处理 Promise 失败的情况
-   - 相当于 then(null, onRejected)
+```javascript
+promise.catch(error => console.error(error));
+```
 
-   ```javascript
-   promise.catch(error => console.error(error));
-   ```
+c. finally(onFinally)
+- 无论 Promise 成功还是失败都会执行
+- 不接收任何参数
 
-   c. finally(onFinally)
-   - 无论 Promise 成功还是失败都会执行
-   - 不接收任何参数
+```javascript
+promise.finally(() => console.log('Finished'));
+```
 
-   ```javascript
-   promise.finally(() => console.log('Finished'));
-   ```
+静态方法：
 
-2. 静态方法：
+a. Promise.resolve(value)
+- 返回一个以给定值解决的 Promise
 
-   a. Promise.resolve(value)
-   - 返回一个以给定值解决的 Promise
+```javascript
+const resolvedPromise = Promise.resolve(42);
+```
 
-   ```javascript
-   const resolvedPromise = Promise.resolve(42);
-   ```
+b. Promise.reject(reason)
+- 返回一个以给定原因拒绝的 Promise
 
-   b. Promise.reject(reason)
-   - 返回一个以给定原因拒绝的 Promise
+```javascript
+const rejectedPromise = Promise.reject(new Error('Failed'));
+```
 
-   ```javascript
-   const rejectedPromise = Promise.reject(new Error('Failed'));
-   ```
+c. Promise.all(iterable)
+- 等待所有 Promise 都成功，或任一 Promise 失败
+- 返回一个新的 Promise
 
-   c. Promise.all(iterable)
-   - 等待所有 Promise 都成功，或任一 Promise 失败
-   - 返回一个新的 Promise
+```javascript
+Promise.all([promise1, promise2, promise3])
+  .then(results => console.log(results));
+```
 
-   ```javascript
-   Promise.all([promise1, promise2, promise3])
-     .then(results => console.log(results));
-   ```
+d. Promise.race(iterable)
+- 返回一个 Promise，一旦迭代器中的某个 promise 解决或拒绝，就采用**第一个** promise 的值作为它的值
 
-   d. Promise.race(iterable)
-   - 返回一个 Promise，一旦迭代器中的某个 promise 解决或拒绝，就采用第一个 promise 的值作为它的值
+```javascript
+Promise.race([promise1, promise2, promise3])
+  .then(result => console.log(result));
+```
 
-   ```javascript
-   Promise.race([promise1, promise2, promise3])
-     .then(result => console.log(result));
-   ```
+e. Promise.allSettled(iterable)
+- 等待所有 Promise **都完成（无论成功或失败）**
+- 返回一个**包含所有结果的数组**
 
-   e. Promise.allSettled(iterable)
-   - 等待所有 Promise 都完成（无论成功或失败）
-   - 返回一个包含所有结果的数组
+```javascript
+Promise.allSettled([promise1, promise2, promise3])
+  .then(results => console.log(results));
+```
 
-   ```javascript
-   Promise.allSettled([promise1, promise2, promise3])
-     .then(results => console.log(results));
-   ```
+f. Promise.any(iterable)
+- 只要给定的迭代中的一个 promise 成功，就返回那个已经成功的 promise
+- 如果所有 promise 都失败，则返回一个失败的 promise
 
-   f. Promise.any(iterable)
-   - 只要给定的迭代中的一个 promise 成功，就返回那个已经成功的 promise
-   - 如果所有 promise 都失败，则返回一个失败的 promise
-
-   ```javascript
-   Promise.any([promise1, promise2, promise3])
-     .then(result => console.log(result))
-     .catch(error => console.error(error));
-   ```
-
-3. 创建 Promise：
-
-   使用 Promise 构造函数创建新的 Promise
-
-   ```javascript
-   const promise = new Promise((resolve, reject) => {
-     // 异步操作
-     if (/* 操作成功 */) {
-       resolve(value);
-     } else {
-       reject(error);
-     }
-   });
-   ```
-
-这些方法让 Promise 能够灵活地处理各种异步场景，从简单的单一异步操作到复杂的多个异步操作的组合。理解和熟练使用这些方法可以大大提高处理异步代码的能力。
+```javascript
+Promise.any([promise1, promise2, promise3])
+  .then(result => console.log(result))
+  .catch(error => console.error(error));
+```
 
 ## js不是单线程的吗，Promise.all为什么是并行
 
@@ -632,7 +579,7 @@ function example() {
 
 1. **独立性：** `每个模块都是独立的作用域`，模块内部的变量、函数和类默认不会暴露到全局作用域，需要通过 `export` 导出才能被其他模块使用。
 2. **导入导出：** 模块可以通过 `export` 关键字导出变量、函数、类等，使得这些成员可以被其他模块使用；同时，可以使用 `import` 关键字导入其他模块导出的成员，使得模块之间可以相互调用和引用。
-3. **静态解析：** 模块系统是静态的，即在代码执行之前就确定了模块之间的依赖关系和引用关系，使得代码的依赖关系更加清晰和可靠。
+3. **静态解析：** **模块系统是静态**的，即在**代码执行之前就确定了模块之间的依赖关系和引用关系**，使得代码的依赖关系更加清晰和可靠。
 4. **可重用性：** 模块化的编程风格使得代码可以`更容易地被重用和组合`，从而提高了代码的可维护性和可扩展性。
 
 #### 使用场景：
@@ -696,36 +643,40 @@ function example() {
 
 一、内存分配方式
 
-1. 栈的内存分配：
+##### 栈的内存分配：
 
-- 栈的内存分配是连续的，并且通常由系统自动管理。当一个函数被调用时，系统会为其在栈上分配一块连续的内存空间，用于存储函数的局部变量、参数和返回地址等。
-- 这种连续的内存分配方式使得访问栈上的变量非常快速，因为处理器可以通过简单的指针运算快速定位到变量的内存地址。
-2. 堆的内存分配：
+- **栈的内存分配是连续的**，并且通常由系统自动管理。当一个函数被调用时，系统会为其在栈上分配一块连续的内存空间，用于存储函数的局部变量、参数和返回地址等。
+- 这种连续的内存分配方式使得**访问栈上的变量非常快速**，因为**处理器可以通过简单的指针运算快速定位到变量的内存地址**。
 
-- 堆的内存分配是动态的，并且通常由程序员手动管理。当需要在堆上分配内存时，系统需要查找足够大的连续空闲内存块，并进行分配和管理。
-- 这种动态的内存分配方式使得堆上的内存可能不是连续的，访问堆上的变量需要通过指针间接寻址，这增加了访问的时间开销。
+##### 堆的内存分配：
+
+- 堆的内**存分配是动态的**，并且通常由程序员手动管理。当需要在堆上分配内存时，系统需要查找足够大的连续空闲内存块，并进行分配和管理。
+- 这种动态的内存分配方式使得**堆上的内存可能不是连续**的，访问堆上的变量**需要通过指针间接寻址**，这**增加了访问的时间开销**。
 
 二、内存管理方式
 
-1. 栈的内存管理：
+##### 栈的内存管理：
 
-- 栈的内存管理非常简单，当一个函数执行完毕时，系统会自动释放该函数在栈上占用的内存空间。
+- 栈的**内存管理非常简单**，当一个**函数执行完**毕时，系统会**自动释放该函数在栈上占用的内存空间**。
 - 这种自动的内存管理方式使得栈的内存使用非常高效，并且不会出现内存泄漏等问题。
-2. 堆的内存管理：
 
-- 堆的内存管理相对复杂，程序员需要手动分配和释放内存。如果程序员没有正确地管理堆上的内存，可能会导致内存泄漏、内存碎片等问题。
+##### 堆的内存管理：
+
+- 堆的内存管理相对复杂，程序员需要**手动分配和释放内存**。如果程序员没有正确地管理堆上的内存，可能会导致内存泄漏、内存碎片等问题。
 - 手动的内存管理方式增加了程序的复杂性，并且可能会导致性能问题。
 
 三、缓存局部性
 
-1. 栈的缓存局部性：
+##### 栈的缓存局部性：
 
 - 由于栈的内存分配是连续的，并且函数的调用通常是嵌套的，因此访问栈上的变量通常具有良好的缓存局部性。
 - 这意味着处理器可以更快地访问栈上的变量，因为它们很可能已经在处理器的缓存中。
-2. 堆的缓存局部性：
+
+##### 堆的缓存局部性：
 
 - 由于堆的内存分配是动态的，并且访问堆上的变量通常是随机的，因此访问堆上的变量通常具有较差的缓存局部性。
-- 这意味着处理器可能需要从内存中读取变量，而不是从缓存中读取，这增加了访问的时间开销。
+- 这意味着处理器可能需要从内存中读取变量，而不是从缓存中读取，这增加了访问的时间开销
+- 。
 
 综上所述，访问栈比访问堆快主要是因为栈的内存分配和管理方式更加简单高效，并且具有更好的缓存局部性。然而，在实际编程中，需要根据具体的需求选择使用栈还是堆来存储数据。如果需要快速访问局部变量或者需要自动管理内存，可以使用栈；如果需要动态分配内存或者需要存储大量数据，可以使用堆。
 
@@ -837,7 +788,7 @@ if (1) {  console.log("true"); }// 输出 "true"
 
 除了 `typeof` 操作符，JavaScript 还有其他几种获取数据类型的方法。以下是一些常用的方法：
 
-- Object.prototype.toString.call()
+### Object.prototype.toString.call()
 
 这是一种更可靠的类型检查方法，能够识别更多的类型：
 
@@ -852,7 +803,7 @@ Object.prototype.toString.call([]);           // "[object Array]"
 Object.prototype.toString.call(function(){}); // "[object Function]"
 ```
 
-- instanceof 操作符
+### instanceof 操作符
 
 用于检查对象是否是某个构造函数的实例：
 
@@ -870,7 +821,7 @@ Array.isArray([]);  // true
 Array.isArray({});  // false
 ```
 
-- constructor 属性
+### constructor 属性
 
 可以用来查看对象的构造函数：
 
@@ -891,12 +842,6 @@ class MyClass {
 }
 Object.prototype.toString.call(new MyClass()); // "[object MyClass]"
 ```
-
-- 使用库
-
-一些流行的 JavaScript 库如 Lodash 提供了更复杂的类型检查方法。
-
-每种方法都有其适用场景和限制。在实际开发中，通常需要根据具体需求选择合适的类型检查方法，有时甚至需要组合使用多种方法来准确判断数据类型。
 
 ## 深拷贝浅拷贝的区别？如何实现一个深拷贝
 
@@ -988,7 +933,7 @@ JavaScript 中的深拷贝和浅拷贝是两种不同的复制对象的方法，
    - 浅拷贝相对简单，可以使用 Object.assign() 或展开运算符。
    - 深拷贝相对复杂，通常需要递归或使用专门的库。
 
-注意：简单的 JSON.parse(JSON.stringify()) 方法虽然可以实现深拷贝，但它有一些局限性：
+注意：简单的 JSON.parse(JSON.stringify()) 方法虽然可以实现深拷贝，但它有一些``局限性``：
 
 - 无法复制函数、undefined、symbol。
 - 不能处理循环引用。
@@ -1006,7 +951,7 @@ JavaScript 中的深拷贝和浅拷贝是两种不同的复制对象的方法，
 
 闭包是指一个函数可以记住所处的词法作用域，即使这个函数是在当前词法作用域之外执行的。这意味着闭包可以访问它创建时捕获的变量。
 
-简单地说，闭包使得函数在外部函数执行完毕后，依然能够继续访问该外部函数的变量。
+简单地说，**闭包使得函数在外部函数执行完毕后，依然能够继续访问该外部函数的变量**。
 
 ### 变量何时会被释放？
 
@@ -1102,7 +1047,7 @@ console.log(person.getName()); // 输出: Bob
 
 ### 闭包的常见应用
 
-1. **回调函数**:
+#### **回调函数**:
 
 闭包广泛应用于事件处理、异步编程等回调函数中。
 
@@ -1119,9 +1064,9 @@ function setupClickHandler(buttonId) {
 setupClickHandler('myButton');
 ```
 
-2. **创建模块化代码**：
+#### **创建模块化代码**：
 
-闭包可以用来创建模块化代码，将相关的函数和变量封装在一个闭包内，避免污染全局命名空间。
+闭包可以用来创建模块化代码，将相关的函数和变量封装在一个闭包内，**避免污染全局命名空间**。
 
 ```javascript
 const myModule = (function() {
@@ -1141,9 +1086,9 @@ const myModule = (function() {
 myModule.publicMethod(); // 输出: Hello World
 ```
 
-3. **保持状态**：
+#### **保持状态**：
 
-闭包可以用来保持函数内部状态，使得状态在函数调用之间得以维持。
+闭包可以用来**保持函数内部状态**，使得**状态在函数调用之间得以维持**。
 
 ```javascript
 function createIncrementer(start) {
@@ -1162,23 +1107,19 @@ console.log(incrementer()); // 输出: 7
 
 ### 注意事项
 
-1. **内存泄漏**：
+**内存泄漏**：
 
 由于闭包可以延长变量的生命周期，如果使用不当可能会导致内存泄漏。例如，过多的事件监听器没有被正确移除。
 
-2. **性能考虑**：
+**性能考虑**：
 
-闭包占用内存，因为它保留了创建时的作用域上下文。大量使用闭包可能会导致内存占用过多，因此在性能敏感的应用中应谨慎使用。
+闭包占用内存，因为它保留了创建时的作用域上下文。大量使用闭包可能会**导致内存占用过多**，因此在性能敏感的应用中应谨慎使用。
 
 ### 闭包及其作用域链
 
-为了理解闭包的工作原理，有必要了解 JavaScript 的作用域链。作用域链是指在函数执行时，搜索变量的顺序。每个函数都拥有自己的作用域链，随着函数嵌套，形成一条作用域链。
+为了理解闭包的工作原理，有必要了解 JavaScript 的作用域链。**作用域链是指在函数执行时，搜索变量的顺序。每个函数都拥有自己的作用域链，随着函数嵌套，形成一条作用域链**。
 
-在闭包中，内部函数会保存对外部函数作用域的引用，当内部函数需要访问外部函数的变量时，它将沿着作用域链找到这些变量。
-
-### 总结
-
-闭包是 JavaScript 中一个非常强大且常用的特性，通过允许函数记住其词法作用域，可以实现许多复杂而有用的编程模式。这些模式包括创建私有变量、保持状态和回调函数等。理解并正确使用闭包将使您能够编写更加强大和灵活的代码。
+在**闭包中，内部函数会保存对外部函数作用域的引用**，当**内部函数需要访问外部函数的变量时**，它将**沿着作用域链找到这些变量**。
 
 ## JavaScript原型，原型链
 
@@ -1186,169 +1127,203 @@ console.log(incrementer()); // 输出: 7
 
 [一文搞懂JS原型与原型链（超详细，建议收藏）前言 作为一个前端开发工程师，熟练掌握JS这门语言是必须要的。无论是日常的工 - 掘金 (juejin.cn)](https://juejin.cn/post/6984678359275929637)
 
-1. JavaScript 原型和原型链是理解 JavaScript 中继承和对象创建机制的关键概念。掌握这些概念有助于开发者更深入地理解 JavaScript 的面向对象编程模型。以下是详细深入的介绍。
+### prototype(原型对象)的引出
 
-   ### 什么是原型
+在`构造函数`中通过`this`赋值的属性或者方法，是每个实例的`实例属性`以及`实例方法`，无法共享公共属性。所以又设计出了一个`原型对象`，来存储这个`构造函数`的公共属性以及方法。
 
-   在 JavaScript 中，每个对象都有一个内部链接 (internal link) 指向另一个对象，这个对象被称为原型 (prototype)。当我们访问一个对象的属性或方法时，如果这个对象本身没有这个属性或方法，JavaScript 引擎会在其原型对象中继续查找，直到找到属性或达到原型链的顶端（即 `null`）。
+### 构造函数创建实例的过程
 
-   #### 示例
+1.创建1个新对象
 
-   ```javascript
-   let obj = { name: "Alice" };
-   
-   console.log(obj.toString()); // 调用了 obj 的原型对象上的 toString() 方法
-   ```
+2.将构造函数的作用域赋值给新对象（这样this就指向了新对象）
 
-   在这个例子中，`obj` 没有定义 `toString` 方法。JavaScript 引擎会在 `obj` 的原型上查找 `toString` 方法，而这个原型通常是 `Object.prototype`，`Object.prototype` 本身也有一个 `toString` 方法。
+3.执行构造函数中的代码（为新对象添加实例属性和实例方法）
 
-   ### 原型链
+4.返回新对象
 
-   原型链是由对象及其原型对象链接在一起形成的链式结构，它定义了对象的继承机制。当我们访问一个对象的属性或方法时，JavaScript 引擎会沿着这条链逐级向上查找。
+### 原型对象
 
-   #### 示例
+JS的每个函数在创建的时候，都会生成一个属性`prototype`，这个属性指向一个对象，这个对象就是此函数的`原型对象`。该`原型对象`中有个属性为`constructor`，指向该函数。这样`原型对象`和`它的函数`之间就产生了联系。
 
-   ```javascript
-   function Person(name) {
-       this.name = name;
-   }
-   
-   Person.prototype.sayHello = function() {
-       console.log("Hello, my name is " + this.name);
-   };
-   
-   let alice = new Person("Alice");
-   
-   alice.sayHello(); // 输出: Hello, my name is Alice
-   ```
+![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f5aaae37b7094aaaad14daa910c61775~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 
-   在这个例子中：
+### 原型链
 
-   1. `Person` 是一个构造函数。
-   2. `Person.prototype` 定义了一个方法 `sayHello`。
-   3. `alice` 是使用 `Person` 构造函数创建的新对象。
-   4. 当 `alice.sayHello()` 被调用时，JavaScript 引擎会首先查看 `alice` 对象自身是否有 `sayHello` 方法。如果没有，则会查找 `alice` 的原型对象，即 `Person.prototype`，并找到 `sayHello` 方法。
+原型链是由对象及其原型对象链接在一起形成的链式结构，它定义了对象的继承机制。当我们访问一个对象的属性或方法时，JavaScript 引擎会沿着这条链逐级向上查找。
 
-   ### 使用 `__proto__` 和 `prototype`
 
-   在 JavaScript 中，`__proto__` 和 `prototype` 是两个常见的属性，但它们有不同的用途和含义。
 
-   #### `__proto__`
+讲清楚了JS的`原型对象`，来就是介绍JS的`原型链`了。既然有了`构造函数`，那么就可以通过该`构造函数`，来创建一个实例对象了。此时，完善一下我们的`Preson`构造函数
 
-   `__proto__` 是每个 JavaScript 对象都拥有的一个隐式属性，它指向对象的原型。我们通常通过 `Object.getPrototypeOf` 获取或者设置一个对象的原型。
+```javascript
+   // 构造函数
+    function Preson(name, age) {
+      this.name = name;
+      this.age = age;
+    }
+    // 所有实例共享的公共方法
+    Preson.prototype.say = function (word) {
+      console.log(`${this.name}说：${word}`);
+    }
 
-   ```javascript
-   let obj = {};
-   let proto = Object.getPrototypeOf(obj);
-   
-   console.log(proto === Object.prototype); // 输出: true
-   
-   let customProto = { custom: "custom prototype" };
-   Object.setPrototypeOf(obj, customProto);
-   
-   console.log(obj.__proto__ === customProto); // 输出: true
-   console.log(obj.custom); // 输出: custom prototype
-   ```
+    const p1 = new Preson('张三', 18); // 创建一个Person实例对象
+    p1.hasOwnProperty('say') // false 说明不是定义在其本身上的
+    p1.say('hello world'); // 调用公共方法 打印：张三说：hello world
+```
 
-   #### `prototype`
+这里就要思考了，为什么我们构造的`p1`这个`实例对象`，它可以调用到`Person`这个`构造函数`的`原型对象`上的方法呢？明明只有在`构造函数`内部通过`this`来赋值的属性或者方法才会被实例所继承，为什么在`构造函数`的`原型对象`上定义的`say`方法也能通过实例来调用到呢？这里就引出了`原型链`这个概念。
 
-   `prototype` 是函数对象特有的属性，用于实现基于原型的继承。当我们使用构造函数创建对象时，新创建的对象的 `__proto__` 属性会指向构造函数的 `prototype` 属性。
+#### ``__proto__``
 
-   ```javascript
-   function Person(name) {
-       this.name = name;
-   }
-   
-   console.log(Person.prototype.constructor === Person); // 输出: true
-   
-   let alice = new Person("Alice");
-   console.log(alice.__proto__ === Person.prototype); // 输出: true
-   ```
+当访问一个`对象`的某个属性时，会先在这个对象本身属性上查找，如果没有找到，则会通过它的`__proto__`隐式属性，找到它的`构造函数`的`原型对象`，如果还没有找到就会再在其`构造函数`的`prototype`的`__proto__`中查找，这样一层一层向上查找就会形成一个链式结构，我们称为`原型链`。
 
-   ### 继承与原型链
+**注意点**：如果通过`p1实例对象`的`__proto__`属性赋值，则会改变其`构造函数`的`原型对象`，从而被所有实例所共享。
 
-   JavaScript 的继承机制是基于原型链的。我们可以使用原型链创建任意层次的继承关系。
+```javascript
+// 构造函数
+function Preson(name, age) {
+	this.name = name;
+	this.age = age;
+}
+// 所有实例共享的公共方法
+Preson.prototype.say = function (word) {
+	console.log(`${this.name}说：${word}`);
+};
 
-   #### 示例：继承
+const p1 = new Preson("张三", 18); // 创建一个Person实例对象
+const p2 = new Preson("李四", 20); // 新创建一个Proson实例对象
+p1.say("hello world"); // 调用公共方法
+p1.hasOwnProperty("say"); // false 说明不是定义在其本身上的
+p1.__proto__.do = function () {
+	console.log("往原型对象中添加方法");
+};
+p2.do(); // 打印出了-往原型对象中添加方法
 
-   ```javascript
-   function Animal(name) {
-       this.name = name;
-   }
-   
-   Animal.prototype.speak = function() {
-       console.log(`${this.name} makes a noise.`);
-   };
-   
-   function Dog(name) {
-       Animal.call(this, name); // 调用父构造函数
-   }
-   
-   Dog.prototype = Object.create(Animal.prototype); // 设置原型链
-   Dog.prototype.constructor = Dog;
-   
-   Dog.prototype.speak = function() {
-       console.log(`${this.name} barks.`);
-   };
-   
-   let dog = new Dog("Rex");
-   dog.speak(); // 输出: Rex barks
-   ```
+console.log(p1.__proto__ === Preson.prototype)//true
+```
 
-   在这个例子中：
 
-   1. `Animal` 构造函数和 `Animal.prototype.speak` 方法定义了一个基类。
-   2. `Dog` 构造函数继承了 `Animal` 构造函数，并通过 `Dog.prototype = Object.create(Animal.prototype)` 设置了原型链。
-   3. `Dog` 的实例 `dog` 继承了 `Animal` 的属性和方法，并重写了 `speak` 方法。
 
-   ### 原型链查找规则
+### 使用 `__proto__` 和 `prototype`
 
-   当我们访问一个属性或方法时，JavaScript 引擎会按照以下顺序进行查找：
+在 JavaScript 中，`__proto__` 和 `prototype` 是两个常见的属性，但它们有不同的用途和含义。
 
-   1. 查找对象自身的属性和方法。
-   2. 如果不存在，则查找对象的原型（`__proto__`）。
-   3. 继续沿着原型链向上查找，直到找到该属性或方法为止。
-   4. 如果最终在原型链顶端也没有找到，则返回 `undefined`。
 
-   ### 原型链的顶端
 
-   原型链的顶端是 `null`。所有对象最终的原型都可以追溯到 `Object.prototype`，而 `Object.prototype.__proto__` 则为 `null`。
+`__proto__` 是每个 JavaScript 对象都拥有的一个隐式属性，它指向对象的原型。我们通常通过 `Object.getPrototypeOf` 获取或者设置一个对象的原型。
 
-   ```javascript
-   let obj = {};
-   console.log(Object.getPrototypeOf(obj) === Object.prototype); // 输出: true
-   console.log(Object.prototype.__proto__ === null); // 输出: true
-   ```
+```javascript
+let obj = {};
+let proto = Object.getPrototypeOf(obj);
 
-   ### 内置对象的原型链
+console.log(proto === Object.prototype); // 输出: true
 
-   JavaScript 中的内置对象如数组、函数等也都有各自的原型链。例如：
+let customProto = { custom: "custom prototype" };
+Object.setPrototypeOf(obj, customProto);
 
-   #### Array
+console.log(obj.__proto__ === customProto); // 输出: true
+console.log(obj.custom); // 输出: custom prototype
+```
 
-   ```javascript
-   let arr = [];
-   console.log(Object.getPrototypeOf(arr) === Array.prototype); // 输出: true
-   console.log(Object.getPrototypeOf(Array.prototype) === Object.prototype); // 输出: true
-   ```
+#### `prototype`
 
-   #### Function
+`prototype` 是函数对象特有的属性，用于实现基于原型的继承。当我们使用构造函数创建对象时，新创建的对象的 `__proto__` 属性会指向构造函数的 `prototype` 属性。
 
-   ```javascript
-   function foo() {}
-   console.log(Object.getPrototypeOf(foo) === Function.prototype); // 输出: true
-   console.log(Object.getPrototypeOf(Function.prototype) === Object.prototype); // 输出: true
-   ```
+```javascript
+function Person(name) {
+    this.name = name;
+}
 
-   ### 总结
+console.log(Person.prototype.constructor === Person); // 输出: true
 
-   - **原型** 是 JavaScript 中的对象，其它对象通过 `__proto__` 属性指向它。
-   - **原型链** 是由对象及其原型对象链接在一起形成的链式结构，用于实现继承。
-   - **`__proto__`** 是对象的隐式原型属性，指向对象的原型。
-   - **`prototype`** 是函数的显式原型属性，所有通过该函数创建的对象的 `__proto__` 均指向该原型。
-   - 原型链的顶端是 `null`，即 `Object.prototype.__proto__ === null`。
+let alice = new Person("Alice");
+console.log(alice.__proto__ === Person.prototype); // 输出: true
+```
 
-   理解原型和原型链是深入掌握 JavaScript 的关键，能帮助你编写更高效、更灵活的代码，并解决复杂的继承和复用问题。
+### 继承与原型链
+
+JavaScript 的继承机制是基于原型链的。我们可以使用原型链创建任意层次的继承关系。
+
+#### 示例：继承
+
+```javascript
+function Animal(name) {
+    this.name = name;
+}
+
+Animal.prototype.speak = function() {
+    console.log(`${this.name} makes a noise.`);
+};
+
+function Dog(name) {
+    Animal.call(this, name); // 调用父构造函数
+}
+
+Dog.prototype = Object.create(Animal.prototype); // 设置原型链
+Dog.prototype.constructor = Dog;
+
+Dog.prototype.speak = function() {
+    console.log(`${this.name} barks.`);
+};
+
+let dog = new Dog("Rex");
+dog.speak(); // 输出: Rex barks
+```
+
+在这个例子中：
+
+1. `Animal` 构造函数和 `Animal.prototype.speak` 方法定义了一个基类。
+2. `Dog` 构造函数继承了 `Animal` 构造函数，并通过 `Dog.prototype = Object.create(Animal.prototype)` 设置了原型链。
+3. `Dog` 的实例 `dog` 继承了 `Animal` 的属性和方法，并重写了 `speak` 方法。
+
+### 原型链查找规则
+
+当我们访问一个属性或方法时，JavaScript 引擎会按照以下顺序进行查找：
+
+1. 查找对象自身的属性和方法。
+2. 如果不存在，则查找对象的原型（`__proto__`）。
+3. 继续沿着原型链向上查找，直到找到该属性或方法为止。
+4. 如果最终在原型链顶端也没有找到，则返回 `undefined`。
+
+### 原型链的顶端
+
+原型链的顶端是 `null`。所有对象最终的原型都可以追溯到 `Object.prototype`，而 `Object.prototype.__proto__` 则为 `null`。
+
+```javascript
+let obj = {};
+console.log(Object.getPrototypeOf(obj) === Object.prototype); // 输出: true
+console.log(Object.prototype.__proto__ === null); // 输出: true
+```
+
+### 内置对象的原型链
+
+JavaScript 中的内置对象如数组、函数等也都有各自的原型链。例如：
+
+#### Array
+
+```javascript
+let arr = [];
+console.log(Object.getPrototypeOf(arr) === Array.prototype); // 输出: true
+console.log(Object.getPrototypeOf(Array.prototype) === Object.prototype); // 输出: true
+```
+
+#### Function
+
+```javascript
+function foo() {}
+console.log(Object.getPrototypeOf(foo) === Function.prototype); // 输出: true
+console.log(Object.getPrototypeOf(Function.prototype) === Object.prototype); // 输出: true
+```
+
+### 总结
+
+- **原型** 是 JavaScript 中的对象，其它对象通过 `__proto__` 属性指向它。
+- **原型链** 是由对象及其原型对象链接在一起形成的链式结构，用于实现继承。
+- **`__proto__`** 是对象的隐式原型属性，指向对象的原型。
+- **`prototype`** 是函数的显式原型属性，所有通过该函数创建的对象的 `__proto__` 均指向该原型。
+- 原型链的顶端是 `null`，即 `Object.prototype.__proto__ === null`。
+
+理解原型和原型链是深入掌握 JavaScript 的关键，能帮助你编写更高效、更灵活的代码，并解决复杂的继承和复用问题。
 
 ## Javascript如何实现继承
 
@@ -9719,6 +9694,12 @@ console.log(sum.toNumber());  // 输出 0.3
 
 ## 性能优化怎么做
 
+尽量减少dom操作，
+
+尽量减少dom数量，
+
+尽量减少并发请求
+
 浏览器performance选项卡
 
 record录制几秒
@@ -9761,11 +9742,13 @@ will-change属性
 
 ## 首屏渲染
 
-打包后的首屏需要的关键资源 preload, 不关键的prefetch
+- 打包后的首屏需要的关键资源 preload, 不关键的prefetch
 
-inportance='high', gzip
-
-浏览器coverage选项卡看css文件是否有没有用到的进行剔除
+- importance='high', 
+- gzip
+- 浏览器coverage选项卡看css文件是否有没有用到的进行剔除
+- 页面组件懒加载，就是你路由里面通过函数引入组件
+- ssr
 
 ## 前端try catch能捕获异步错误吗
 
