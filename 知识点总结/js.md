@@ -5239,6 +5239,8 @@ obj.foo2()()
 
 `async` 和 `defer` 是 HTML 中用于脚本加载的两个属性，它们用于优化 JavaScript 加载和执行方式，改善页面性能和用户体验。虽然这两个属性都通过异步加载脚本来加速页面加载速度，但它们在加载和执行时序上有一些重要区别。
 
+都优先于window.onload去执行
+
 ### 基本概念
 
 - **没有 `async` 和 `defer` 属性**
@@ -9743,8 +9745,94 @@ record录制几秒
 
 ![image-20241010154829322](./assets/image-20241010154829322.png)
 
+多使用translate, opacity这种利用Gpu加速的方法
+
+GPU加速会开一个新的layer,在新的layer上去操作元素,  性能就会好一些
+
+![image-20241011091753195](./assets/image-20241011091753195.png)
+
+will-change属性
+
+`will-change` 为 web 开发者提供了一种告知浏览器该元素会有哪些变化的方法，这样浏览器可以在元素属性真正发生变化之前提前做好对应的优化准备工作。这种优化可以将一部分复杂的计算工作提前准备好，使页面的反应更为快速灵敏。
+
+[will-change - CSS：层叠样式表 | MDN (mozilla.org)](https://developer.mozilla.org/zh-CN/docs/Web/CSS/will-change)
+
+<img src="./assets/image-20241011091941217.png" alt="image-20241011091941217" style="zoom:33%;" />
+
 ## 首屏渲染
 
 打包后的首屏需要的关键资源 preload, 不关键的prefetch
 
 inportance='high', gzip
+
+浏览器coverage选项卡看css文件是否有没有用到的进行剔除
+
+## 前端try catch能捕获异步错误吗
+
+在前端开发中，try catch 并不总是能捕获异步错误。例如，在异步的 Promise 中，如果错误是通过 reject 抛出的，且没有使用 Promise 的 catch 方法或 async/await 中的 try catch 进行处理，那么外层的 try catch 是捕获不到这个错误的。原因是 Promise 对应事件循环中的微任务，当执行异步任务里面的回调时，外层执行栈里面的任务早已执行完，它们的上下文已经完全不同了。
+
+
+
+对于异步的 **setTimeout 函数中的错误**，外层的 try catch 也捕获不到。例如：“try { setTimeout (function () { throw new Error ('error in setTimeout'); // 200ms 后会把异常抛出到全局 },200);} catch (err) { console.error ('catch error', err); // 不会执行 }”。
+
+但是，如果把 try catch 放到异步代码的里面，就有可能捕获到错误。比如在 Promise 中使用 catch 方法可以捕获到错误，从而阻止错误被抛到全局导致程序崩溃。在 async/await 中，能用 try catch 捕获异步错误，因为 async/await 本质上是一个语法糖，它可以将异步操作转换为同步的形式，使得在异步操作中发生的错误可以被 try catch 捕获。
+
+总的来说，前端 try catch 在特定情况下可以捕获异步错误，但并非所有异步错误都能被捕获，需要根据具体的异步编程模型选择合适的错误处理方式。
+
+### 对于 Promise 的错误捕获：
+
+当你使用 `Promise` 时，可以通过链式调用 `.catch()` 方法来捕获错误：
+
+```javascript
+someAsyncFunction()
+  .then(result => {
+    // 处理结果
+  })
+  .catch(error => {
+    // 捕获错误
+  });
+```
+
+或者使用 `async/await` 语法：
+
+```javascript
+async function myFunction() {
+  try {
+    const result = await someAsyncFunction();
+    // 处理结果
+  } catch (error) {
+    // 捕获错误
+  }
+}
+```
+
+在 `async` 函数中，`await` 表达式后面的 Promise 如果被拒绝（即异步操作发生错误），则会被 `try...catch` 块中的 `catch` 捕获。
+
+### 对于 async/await 的错误捕获：
+
+使用 `async/await` 时，你可以将异步函数包裹在 `try...catch` 块中来捕获错误：
+
+```javascript
+async function myAsyncFunction() {
+  try {
+    const data = await asyncOperation();
+    console.log(data);
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+```
+
+如果 `asyncOperation` 抛出错误，那么这个错误会被 `catch` 块捕获。
+
+### 注意事项：
+
+1. **Promise 链中的错误传播**：如果在 Promise 链中某个 `.then()` 后没有 `.catch()`，那么错误会沿着链传播，直到遇到一个 `.catch()`。
+
+2. **未被捕获的错误**：如果一个异步操作抛出错误，并且没有被任何 `.catch()` 或 `try...catch` 捕获，那么它会变成一个未处理的 Promise 拒绝（unhandled promise rejection），这可能会导致程序崩溃或者在某些环境中打印错误信息。
+
+3. **错误传播**：如果一个 `async` 函数内部抛出错误，并且没有被内部的 `try...catch` 捕获，那么这个错误会向外传播，直到被外部的 `try...catch` 捕获。
+
+4. **错误处理的重要性**：正确处理异步错误是非常重要的，因为它们可能会导致程序的行为不如预期，或者在用户界面上显示不友好的错误信息。
+
+通过这些方式，你可以有效地在前端代码中捕获和处理异步错误。
