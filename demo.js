@@ -1,14 +1,14 @@
-function Animal(name, type) {
-    this.name = name;
-    this.type = type
+function myNew(constructor, ...args) {
+	const obj = {};
+	Object.setPrototypeOf(obj, constructor.prototype);
+	const copy = constructor.apply(obj, args);
+	return copy instanceof Object ? copy : obj;
 }
-
-Animal.prototype.speak = function() {
-    console.log(`${this.name} makes a noise.`);
-};
-
-function Dog(name, type) {
-    Animal.call(this, name, type); // 调用父构造函数
+function Test(name) {
+	this.name = name;
 }
-let dog = new Dog('a', 'c')
-console.log(dog.type)
+const test = myNew(Test, "tom");
+console.log(test.name);
+console.log(test instanceof Test);
+
+console.dir(test);

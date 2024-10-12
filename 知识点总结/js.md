@@ -29,7 +29,7 @@
    
    #### `var`
    - **变量提升**：`var` **声明的变量会被提升**到其作用域的顶部，但**初始化不会被提升**。
-       
+     
        ```javascript
        console.log(x); // undefined
        var x = 10;
@@ -1936,11 +1936,9 @@ console.log('After foo');
    - 采用LIFO机制，存储和管理代码执行中的多个执行上下文。
    - 控制程序执行流程，每个执行上下文的进入与离开都会影响栈的状态。
 
-通过深入理解这两个概念，你可以更清晰地理解JavaScript代码执行过程中的变量解析、作用域治理和函数调用栈管理，有助于编写更高效、更具可读性和可维护性的代码。
+## 说说JavaScript中的事件模型(冒泡捕获)
 
-## 说说JavaScript中的事件模型
-
-css属性 pointer-events: none,加了这个属性的元素不会成为event.target,保证非目标元素不会为冒泡的target
+css属性 **pointer-events: none,**加了这个属性的元素不会成为event.target,保证非目标元素不会为冒泡的target
 
 比如在列表中有标题这种元素时可以使用这个减少代码逻辑
 
@@ -2096,7 +2094,72 @@ JavaScript 的事件模型是实现动态交互的重要机制，了解并灵活
 4. **事件委托**：有效管理较多元素的事件处理。
 5. **事件对象**：了解事件对象中的属性和方法，可以获取详细的事件信息。
 
-通过掌握这些知识，可以更加灵活地处理事件，提升网页的交互体验。
+## addEventListener的第三个参数
+
+`addEventListener` 方法的第三个参数是一个可选的参数，可以是一个布尔值或一个对象，用来指定事件监听器的各种选项。具体来说，这个参数决定了事件监听器在事件流中的行为方式，以及一些额外的特性。让我们详细看一下：
+
+### 布尔值（`useCapture`）
+
+在较早的版本中，第三个参数是一个布尔值，称为 `useCapture`。这个参数决定了事件监听器是否在捕获阶段触发。
+
+- `false` 或 **默认值**：事件监听器在冒泡阶段触发。
+- `true`：事件监听器在捕获阶段触发。
+
+### 对象（`options`）
+
+随着现代浏览器的发展，第三个参数也可以是一个对象，用于详细指定事件监听器的行为选项。这个对象可以包含以下属性：
+
+1. **capture**（布尔值，和 `useCapture` 一样）
+   - `true`：在捕获阶段触发。
+   - `false`：在冒泡阶段触发（默认值）。
+
+2. **once**（布尔值）
+   - `true`：事件监听器在触发一次后自动移除。
+   - `false`：事件监听器在每次相应事件发生时都会触发（默认值）。
+
+3. **passive**（布尔值）
+   - `true`：将永远不会调用 `preventDefault()`，即表明事件监听器不会阻止默认行为。这对于滚动事件等默认行为非常有帮助。
+   - `false`：事件监听器可以调用 `preventDefault()` 来阻止默认行为（默认值）。
+
+4. **signal**（`AbortSignal` 对象）
+   - 允许您通过 `AbortController` 中止事件监听。
+
+```javascript
+// 示例：使用 options 对象
+const options = {
+    capture: true,
+    once: true,
+    passive: true
+};
+
+element.addEventListener('click', function(event) {
+    console.log('Button clicked');
+}, options);
+
+// 示例：使用 AbortController
+const controller = new AbortController();
+
+element.addEventListener('click', function(event) {
+    console.log('Button clicked');
+}, { signal: controller.signal });
+
+// 之后如何中止事件监听器
+controller.abort();
+```
+
+### 总结
+
+- **布尔值 `useCapture`**：用于指定是否在捕获阶段触发事件监听器。
+- **对象 `options`**：允许详细指定事件监听器的各种行为，包括捕获阶段、自动移除、被动监听和中止监听。
+
+选择哪种方式取决于你需要精确控制事件监听器的哪方面行为。对于大部分现代浏览器，推荐使用 `options` 对象，因为它更具描述性且功能更强大。
+
+#### 应用场景：
+
+1. **动态添加元素：** 当页面中的元素是动态生成的，并且数量较多时，可以使用事件代理来简化事件处理逻辑。`只需将事件监听器绑定到父元素上`，而`不需要为每个子元素都添加事件监听器`。
+2. **性能优化：** 在大型列表或表格中，如果为每个元素都添加事件监听器，可能会导致页面性能下降。使用事件代理可以`减少事件处理程序的数量`，提高页面的性能。
+3. **元素重新渲染：** 在使用虚拟 DOM 技术或框架时，页面元素可能会经常重新渲染。如果直接在子元素上绑定事件监听器，每次重新渲染都需要重新绑定事件。而使用事件代理，`只需在父元素上绑定一次事件监听器，不受元素重新渲染的影响`。
+4. **节省内存：** 在特定情况下，使用事件代理可以节省内存。因为`事件处理程序只需绑定到一个父元素上，而不是多个子元素上，减少了内存消耗`。
 
 ## typeof 与 instanceof 区别
 
@@ -2161,7 +2224,7 @@ console.log(person instanceof Object); // true
 
 #### 注意点
 
-- **原型链检查**：`instanceof` 检查的是构造函数的 `prototype` 属性在不在对象的原型链上，所以结果依据实际的原型链结构。**如果修改了原型链**，结果会不同。
+- **原型链检查**：[`instanceof`] 操作符用于检查一个对象是否是某个构造函数的实例。它通过检查构造函数的 [`prototype`] 属性是否出现在对象的原型链上来判断。。**如果修改了原型链**，结果会不同。
 
   - ```javascript
     let a = new String('a');  // 创建一个字符串对象，而不是原始字符串
@@ -2224,206 +2287,7 @@ console.log(obj instanceof Object); // true
 console.log(str instanceof String); // false
 ```
 
-通过理解 `typeof` 和 `instanceof` 的不同使用场景和返回值，你可以选择合适的操作符来进行类型检测，提高代码的正确性和可维护性。
-
-
-
-## 事件冒泡和事件捕获
-
-- 事件冒泡（Event Bubbling）和事件捕获（Event Capturing）是 Web 开发中处理 DOM 事件的重要概念，它们定义了事件在 DOM 树中传播的方式。让我们深入了解这两个机制及其区别。
-
-  ### 事件流（Event Flow）
-
-  事件流是指当一个事件发生时，它如何通过 DOM 元素传播。事件流由三个阶段组成：
-
-  1. **捕获阶段（Capture Phase）**：事件从文档根节点向目标元素传播。
-  2. **目标阶段（Target Phase）**：事件到达目标元素。
-  3. **冒泡阶段（Bubble Phase）**：事件从目标元素向上传播回文档根节点。
-
-  我们可以通过下图来更好地理解事件流：
-
-  ```
-  Document (Document Root)
-     |
-     V
-  Element 1
-     |
-     V
-  Element 2
-     |
-     V
-  Element 3
-     |
-     V
-  (Target Element) Element 4
-  ```
-
-  在这个事件流中，当我们在 `Element 4` 触发一个事件时，事件首先经过捕获阶段依次经过 `Element 1`, `Element 2`, `Element 3` 到达 `Element 4`（目标元素），然后进入目标阶段。随后，在冒泡阶段，事件从 `Element 4` 依次向上传播回 `Element 3`, `Element 2`, `Element 1`，最终到达文档根节点。
-
-  ### 事件捕获
-
-  在事件传播的第一阶段，事件从文档根节点向目标元素传播，这称为事件捕获。默认情况下，事件监听器在捕获阶段不会触发，但你可以通过 `addEventListener` 的第三个参数（`options.capture` 或 `useCapture`）将其设置为 `true` 来监听捕获阶段的事件。
-
-  ```javascript
-  document.getElementById("parent").addEventListener("click", function(event) {
-      console.log("Parent (Capture)");
-  }, true);
-  
-  document.getElementById("child").addEventListener("click", function(event) {
-      console.log("Child (Capture)");
-  }, true);
-  ```
-
-  ### 事件冒泡
-
-  在事件传播的最后阶段，事件从目标元素向上传播，这称为事件冒泡。默认情况下，事件监听器在冒泡阶段触发。
-
-  ```javascript
-  document.getElementById("parent").addEventListener("click", function(event) {
-      console.log("Parent (Bubble)");
-  }, false);
-  
-  document.getElementById("child").addEventListener("click", function(event) {
-      console.log("Child (Bubble)");
-  }, false);
-  ```
-
-  ### `stopPropagation()` 和 `stopImmediatePropagation()`
-
-  - **`event.stopPropagation()`**：阻止事件进一步冒泡（但不阻止同一元素的其他事件处理器）。
-  - **`event.stopImmediatePropagation()`**：阻止事件进一步冒泡，同时阻止当前元素上剩余的事件处理器。
-  
-  ### 总结
-  
-  1. `event.target` 是实际被点击的元素
-  2. `event.currentTarget` 是绑定该事件处理器的元素
-  
-  - **事件捕获（Capture Phase）**：事件从文档根节点向目标元素传播。
-  - **事件冒泡（Bubble Phase）**：事件从目标元素向上传播回文档根节点。
-  
-  通过合理利用事件捕获和事件冒泡，你可以更灵活地控制事件在 DOM 树中的传播和处理。
-
-## addEventListener的第三个参数
-
-`addEventListener` 方法的第三个参数是一个可选的参数，可以是一个布尔值或一个对象，用来指定事件监听器的各种选项。具体来说，这个参数决定了事件监听器在事件流中的行为方式，以及一些额外的特性。让我们详细看一下：
-
-### 布尔值（`useCapture`）
-
-在较早的版本中，第三个参数是一个布尔值，称为 `useCapture`。这个参数决定了事件监听器是否在捕获阶段触发。
-
-- `false` 或 **默认值**：事件监听器在冒泡阶段触发。
-- `true`：事件监听器在捕获阶段触发。
-
-#### 事件流简介
-
-事件流分为三个阶段：
-
-1. **捕获阶段**（Capture Phase）：事件从根到目标元素依次经过祖先元素。
-2. **目标阶段**（Target Phase）：事件到达目标元素本身。
-3. **冒泡阶段**（Bubble Phase）：事件从目标元素向上依次经过祖先元素，直到根结束。
-
-```javascript
-// 示例：在冒泡阶段触发
-element.addEventListener('click', function(event) {
-    console.log('Button clicked');
-}, false);
-
-// 示例：在捕获阶段触发
-element.addEventListener('click', function(event) {
-    console.log('Button clicked');
-}, true);
-```
-
-### 对象（`options`）
-
-随着现代浏览器的发展，第三个参数也可以是一个对象，用于详细指定事件监听器的行为选项。这个对象可以包含以下属性：
-
-1. **capture**（布尔值，和 `useCapture` 一样）
-   - `true`：在捕获阶段触发。
-   - `false`：在冒泡阶段触发（默认值）。
-
-2. **once**（布尔值）
-   - `true`：事件监听器在触发一次后自动移除。
-   - `false`：事件监听器在每次相应事件发生时都会触发（默认值）。
-
-3. **passive**（布尔值）
-   - `true`：将永远不会调用 `preventDefault()`，即表明事件监听器不会阻止默认行为。这对于滚动事件等默认行为非常有帮助。
-   - `false`：事件监听器可以调用 `preventDefault()` 来阻止默认行为（默认值）。
-
-4. **signal**（`AbortSignal` 对象）
-   - 允许您通过 `AbortController` 中止事件监听。
-
-```javascript
-// 示例：使用 options 对象
-const options = {
-    capture: true,
-    once: true,
-    passive: true
-};
-
-element.addEventListener('click', function(event) {
-    console.log('Button clicked');
-}, options);
-
-// 示例：使用 AbortController
-const controller = new AbortController();
-
-element.addEventListener('click', function(event) {
-    console.log('Button clicked');
-}, { signal: controller.signal });
-
-// 之后如何中止事件监听器
-controller.abort();
-```
-
-### 综合示例
-
-下面是一个更加综合的示例，展示如何使用这几种方式来配置事件监听器：
-
-```javascript
-// 使用useCapture（旧版本）
-element.addEventListener('click', function(event) {
-    console.log('Clicked (useCapture)');
-}, true);
-
-// 使用 options（新版本，推荐）
-element.addEventListener('click', function(event) {
-    console.log('Clicked (options)');
-}, {
-    capture: false,
-    once: true,
-    passive: false
-});
-
-// 使用 AbortSignal 取消事件监听
-const abortController = new AbortController();
-element.addEventListener('click', function(event) {
-    console.log('Clicked (AbortSignal)');
-}, { signal: abortController.signal });
-
-// 中止事件监听
-abortController.abort();
-```
-
-### 总结
-
-- **布尔值 `useCapture`**：用于指定是否在捕获阶段触发事件监听器。
-- **对象 `options`**：允许详细指定事件监听器的各种行为，包括捕获阶段、自动移除、被动监听和中止监听。
-
-选择哪种方式取决于你需要精确控制事件监听器的哪方面行为。对于大部分现代浏览器，推荐使用 `options` 对象，因为它更具描述性且功能更强大。
-
-#### 应用场景：
-
-1. **动态添加元素：** 当页面中的元素是动态生成的，并且数量较多时，可以使用事件代理来简化事件处理逻辑。`只需将事件监听器绑定到父元素上`，而`不需要为每个子元素都添加事件监听器`。
-2. **性能优化：** 在大型列表或表格中，如果为每个元素都添加事件监听器，可能会导致页面性能下降。使用事件代理可以`减少事件处理程序的数量`，提高页面的性能。
-3. **元素重新渲染：** 在使用虚拟 DOM 技术或框架时，页面元素可能会经常重新渲染。如果直接在子元素上绑定事件监听器，每次重新渲染都需要重新绑定事件。而使用事件代理，`只需在父元素上绑定一次事件监听器，不受元素重新渲染的影响`。
-4. **节省内存：** 在特定情况下，使用事件代理可以节省内存。因为`事件处理程序只需绑定到一个父元素上，而不是多个子元素上，减少了内存消耗`。
-
-
-
 ## new操作符具体干了什么
-
-`new` 操作符在 JavaScript 中用于创建一个由构造函数定义的新实例。构造函数是一个普通的函数，但是当使用 `new` 操作符调用它时，会执行一些与直接调用函数不同的操作。深入理解 `new` 的内部机制可以帮助开发者更好地掌握 JavaScript 的面向对象编程。本节将详细介绍 `new` 操作符的步骤和其执行的具体操作。
 
 ### `new` 操作符的具体步骤
 
@@ -2524,52 +2388,6 @@ console.log(person instanceof Person); // true
 console.log(person instanceof Object); // true
 ```
 
-在这个例子中：
-
-1. 创建一个新对象 `{}`。
-2. 将新对象的 `__proto__` 设置为 `Person.prototype`。
-3. 绑定 `this` 到新对象并执行 `Person` 函数。
-4. 返回新对象，因此 `person` 的 `name` 和 `age` 属性被正确赋值，且 `person` 是 `Person` 类的实例。
-
-### 显式返回非对象的情况
-
-如果构造函数返回一个非对象类型的值，那么返回新创建的对象：
-
-```javascript
-function Car(make, model) {
-    this.make = make;
-    this.model = model;
-    return 42; // 显式返回一个基本类型（非对象）
-}
-
-let car = new Car('Toyota', 'Camry');
-
-console.log(car.make); // Toyota
-console.log(car.model); // Camry
-console.log(car instanceof Car); // true
-```
-
-尽管构造函数返回了一个基本类型 `42`，但是 `new` 操作符仍然返回新创建的对象。
-
-### 显式返回对象的情况
-
-如果构造函数显式返回一个对象，那么这个对象将作为整个 `new` 操作的返回值：
-
-```javascript
-function House(address) {
-    this.address = address;
-    return { custom: 'This is a custom object' };
-}
-
-let house = new House('123 Main St');
-
-console.log(house.custom); // This is a custom object
-console.log(house.address); // undefined
-console.log(house instanceof House); // false
-```
-
-在这个例子中，构造函数返回了一个显式对象 `{ custom: 'This is a custom object' }`，所以 `house` 变量的值是这个显式返回的对象，而不是新创建关联 `House.prototype` 的对象。
-
 ### 小结
 
 `new` 操作符在 JavaScript 中实现了面向对象编程，通过以下步骤创建一个新对象并执行构造函数：
@@ -2578,8 +2396,6 @@ console.log(house instanceof House); // false
 2. 设置新对象的原型链。
 3. 绑定 `this` 到新对象并执行构造函数。
 4. 返回新对象（如果构造函数未显式返回对象）。
-
-通过理解这些底层机制，开发者可以更好地利用 JavaScript 的对象系统，编写健壮和高效的代码。
 
 ## Ajax
 
