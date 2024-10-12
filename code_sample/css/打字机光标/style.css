@@ -1,0 +1,38 @@
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: #f0f0f0;
+	margin: 0;
+	font-family: "Courier New", monospace;
+}
+
+.typing-container {
+	display: flex;
+	align-items: center;
+	font-size: 2rem;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.cursor {
+	display: inline-block;
+	background-color: red; /* 确保光标颜色与背景颜色对比明显 */
+	width: 12px; /* 增加光标宽度 */
+	height: 2.5rem; /* 增加光标高度 */
+	margin-left: 5px;
+	border-radius: 2px; /* 添加圆角边框 */
+	animation: blink 0.7s steps(2, start) infinite; /* 调整闪烁频率 */
+}
+
+/* 使用 steps() 以确保光标突然闪烁而不是渐变 */
+@keyframes blink {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+}
