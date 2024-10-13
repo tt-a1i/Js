@@ -3,14 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Typing Effect</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>圣杯布局 - Flexbox实现</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+    }
+
+    .left, .right {
+      width: 200px;
+      background-color: #bde0fe;
+    }
+
+    .middle {
+      flex: 1;
+      background-color: #e8f5e9;
+      overflow: auto;  /* 确保内容超出时可滚动 */
+    }
+  </style>
 </head>
 <body>
-  <div class="typing-container">
-    <span id="typing-text"></span><span class="cursor">|</span>
-  </div>
-
-  <script src="script.js"></script>
+  <div class="left">左侧栏</div>
+  <div class="middle">主要内容区域</div>
+  <div class="right">右侧栏</div>
 </body>
 </html>

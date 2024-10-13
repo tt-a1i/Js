@@ -132,10 +132,6 @@ console.log(getDeviceType()); // 输出设备类型
 
 1. 使用 `navigator.userAgent` 是一种经典的方法，但字符串解析可能会因为设备字符串的多样性而变得复杂和不易维护。
 2. `navigator.userAgentData` 是较为现代和结构化的方式，但兼容性尚未覆盖所有浏览器，需要做好兼容性检查。
-3. 第三方库如 Mobile-Detect.js 提供了方便的接口，但需要引入额外的资源。
-4. 结合 CSS 媒体查询也可以判断设备类型，尤其在响应式布局的场景下非常有用。
-
-根据具体情况和需求，选择合适的方法来判断用户端设备类型。
 
 ## 单行和多行文字中设置省略号
 
@@ -430,10 +426,6 @@ console.log(getDeviceType()); // 输出设备类型
 </html>
 ```
 
-### 结论
-
-`<meta>` 标签在 HTML 页面中扮演了非常重要的角色，用于定义页面的元数据。这些数据不仅对浏览器的正确显示和页面性能优化至关重要，还对用户体验和搜索引擎优化（SEO）有很大的影响。因此，正确理解和使用 `<meta>` 标签是前端开发中必不可少的一部分。
-
 ## 盒子模型
 
 一个盒子由四个部分组成：`content`、`padding`、`border`、`margin`
@@ -447,7 +439,6 @@ console.log(getDeviceType()); // 输出设备类型
 1. **标准盒模型：**
    - 在标准盒模型中，元素的宽度和高度（width 和 height）属性值只包括内容区域的大小，不包括内边距（padding）、边框（border）和外边距（margin）。
    - `即元素的实际宽度和高度是由内容区域的大小加上内边距、边框和外边距的总和确定的。`
-   - 这种盒模型是 CSS 标准规定的默认行为，也是现代浏览器的默认行为。
 2. **怪异盒模型：**
    - 在怪异盒模型中，元素的宽度和高度（width 和 height）属性值包括内容区域、内边距和边框的大小，但不包括外边距。
    - `即元素的实际宽度和高度是由内容区域的大小加上内边距和边框的总和确定的。`
@@ -713,7 +704,7 @@ PPI 是用于测量屏幕分辨率的物理单位，表示每英寸长度中包�
 
 ### . `display: none;`
 
-- **效果**：完全隐藏元素，元素不占据任何空间。
+- **效果**：完全隐藏元素，元素**不占据任何空间**。
 - **使用场景**：需要完全隐藏元素，并且不希望它占据空间。
 
 ```
@@ -724,18 +715,18 @@ css复制代码.hidden {
 
 ### 2. `visibility: hidden;`
 
-- **效果**：隐藏元素，但元素仍然占据空间。
+- **效果**：隐藏元素，但元素**仍然占据空间**。
 - **使用场景**：需要隐藏元素，但保留其占据的空间，例如在动画或过渡中。
 
 ```
-css复制代码.hidden {
+.hidden {
   visibility: hidden;
 }
 ```
 
 ### 3. `opacity: 0;`
 
-- **效果**：元素变得完全透明，但仍然占据空间并且可以响应点击事件。
+- **效果**：元素变得完全透明，但**仍然占据空间并且可以响应点击事件**。
 - **使用场景**：需要元素不可见但仍然响应交互，例如悬停效果或动画。
 
 ```
@@ -746,11 +737,11 @@ css复制代码.hidden {
 
 ### 4. `position: absolute; left: -9999px;`
 
-- **效果**：将元素移出视口，使其不可见，但元素仍然在文档流中。
+- **效果**：将元素**移出视口，使其不可见**，但元素仍然在文档流中。
 - **使用场景**：用于隐藏元素但保留其在文档流中的位置，例如屏幕阅读器的无障碍支持。
 
-```
-css复制代码.hidden {
+```css
+.hidden {
   position: absolute;
   left: -9999px;
 }
@@ -762,7 +753,7 @@ css复制代码.hidden {
 - **使用场景**：隐藏元素但保留其在文档流中的位置和交互性。
 
 ```
-css复制代码.hidden {
+.hidden {
   clip: rect(0, 0, 0, 0);
   position: absolute;
 }
@@ -770,11 +761,11 @@ css复制代码.hidden {
 
 ### 6. `height: 0; overflow: hidden;`
 
-- **效果**：设置元素高度为 0 并隐藏溢出内容，使其不可见但仍然占据水平空间。
+- **效果**：设置元素高度为 0 并隐藏溢出内容，使其**不可见但仍然占据水平空间**。
 - **使用场景**：需要隐藏元素的内容但保留其水平空间，例如折叠内容区域。
 
 ```
-css复制代码.hidden {
+.hidden {
   height: 0;
   overflow: hidden;
 }
@@ -782,37 +773,26 @@ css复制代码.hidden {
 
 ### 7. `transform: scale(0);`
 
-- **效果**：缩放元素至不可见，但元素仍然占据空间。
+- **效果**：缩放元素至不可见，但元素**仍然占据空间**。
 - **使用场景**：需要通过缩放动画隐藏元素。
 
 ```
-css复制代码.hidden {
+.hidden {
   transform: scale(0);
 }
 ```
 
 ### 8. `z-index: -1;`
 
-- **效果**：将元素置于其他内容的下面，使其不可见，但仍然占据空间并且可以响应点击事件。
+- **效果**：将元素置于其他内容的下面，使其不可见，但**仍然占据空间并且可以响应点击事件**。
 - **使用场景**：需要通过调整层叠顺序隐藏元素。
 
 ```
-css复制代码.hidden {
+.hidden {
   position: relative;
   z-index: -1;
 }
 ```
-
-### 总结
-
-选择哪种方式取决于具体的需求：
-
-- **完全隐藏**且不占据空间：使用 `display: none;`。
-- **隐藏**但保留空间：使用 `visibility: hidden;`。
-- **隐藏**但保留交互性和空间：使用 `opacity: 0;`。
-- **隐藏**但保留文档流位置：使用 `position: absolute; left: -9999px;` 或 `clip-path: inset(100%);`。
-- **隐藏**内容但保留水平空间：使用 `height: 0; overflow: hidden;`。
-- **通过动画隐藏**：使用 `transform: scale(0);`。
 
 ## 谈谈你对BFC的理解？
 
@@ -825,7 +805,7 @@ BFC（块级格式化上下文）是 CSS 中的一种布局模式，用于定义
    - 属于同一个 BFC 的`两个相邻的块级盒子的外边距会发生折叠`。
    - BFC 内部的元素`不会影响外部元素`，反之亦然。
 3. **触发条件：**
-   - 根元素（html）
+   - 根元素（html）,根元素是一个bfc
    - 浮动元素（`float不为none`）
    - 绝对定位元素（`position`为`absolute`或`fixed`）
    - 行内块元素（`display`为`inline-block`）
@@ -835,34 +815,145 @@ BFC（块级格式化上下文）是 CSS 中的一种布局模式，用于定义
    - 阻止外边距折叠：可以避免外边距折叠的影响。
    - 自适应两栏布局：使用 BFC 可以实现左右两栏布局，使得两栏高度相等且不会影响其他元素。
 
-## 元素水平垂直居中的方法有哪些？如果元素不定宽高呢？
+## 两栏布局，右侧自适应
 
-实现元素水平垂直居中的方式：
+### 1. 使用 CSS 的 Flexbox
 
-1. 利用定位+margin:auto
-   - 设置父元素为相对定位， 子元素移动自身50%实现水平垂直居中		
+```css
+.container {
+  display: flex;
+}
 
-1. 利用定位+margin:负值
-2. 利用定位+transform
-3. table布局
-4. flex布局
-5. grid布局
+.left {
+  width: 200px; /* 左侧固定宽度 */
+  background-color: #f4f4f4;
+}
 
-## 如何实现两栏布局，右侧自适应？三栏布局中间自适应呢
+.right {
+  flex: 1; /* 右侧自适应剩余空间 */
+  background-color: #ddd;
+}
+```
 
-#### 两栏布局
+```html
+<div class="container">
+  <div class="left">
+    左侧固定宽度
+  </div>
+  <div class="right">
+    右侧自适应宽度
+  </div>
+</div>
+```
 
-- 使用 float 左浮左边栏
-- 右边模块使用 margin-left 撑出内容块做内容展示
-- 为父级元素添加BFC，防止下方元素飞到上方内容
+### 2. 使用 CSS 的 Grid
 
+```css
+.container {
+  display: grid;
+  grid-template-columns: 200px auto; /* 左侧固定宽度，右侧自适应宽度 */
+}
+```
 
+```html
+<div class="container">
+  <div>
+    左侧固定宽度
+  </div>
+  <div>
+    右侧自适应宽度
+  </div>
+</div>
+```
 
-`flex`可以说是最好的方案了，代码少，使用简单
+### 3. 使用浮动和边距
 
-注意的是，`flex`容器的一个默认属性值:`align-items: stretch;`
+使用浮动可以让左侧元素固定宽度，然后通过设置右边距为自动来让右侧元素填充剩余空间。
 
-这个属性导致了列等高的效果。 为了让两个盒子高度自动，需要设置: `align-items: flex-start`
+```css
+.left {
+  float: left;
+  width: 200px; /* 左侧固定宽度 */
+  background-color: #f4f4f4;
+}
+
+.right {
+  margin-left: 200px; /* 等于左侧宽度 */
+  background-color: #ddd;
+}
+```
+
+```html
+<div class="left">
+  左侧固定宽度
+</div>
+<div class="right">
+  右侧自适应宽度
+</div>
+```
+
+### 4. 使用绝对定位
+
+通过将父元素设置为相对定位，左侧元素绝对定位，右侧元素填充剩余空间。
+
+```css
+.container {
+  position: relative;
+  height: 100vh; /* 或一个确定的高度 */
+}
+
+.left {
+  position: absolute;
+  width: 200px; /* 左侧固定宽度 */
+  top: 0;
+  left: 0;
+  background-color: #f4f4f4;
+}
+
+.right {
+  margin-left: 200px; /* 等于左侧宽度 */
+  background-color: #ddd;
+}
+```
+
+```html
+<div class="container">
+  <div class="left">
+    左侧固定宽度
+  </div>
+  <div class="right">
+    右侧自适应宽度
+  </div>
+</div>
+```
+
+### 5. 使用视口单位 `vh` 和 `vw`
+
+如果左侧宽度是已知的，可以使用视口宽度单位 `vw` 来设置右侧元素的宽度。
+
+```css
+.left {
+  width: 200px; /* 左侧固定宽度 */
+  background-color: #f4f4f4;
+}
+
+.right {
+  width: 100vw; /* 右侧自适应整个视口宽度 */
+  margin-left: 200px; /* 等于左侧宽度 */
+  background-color: #ddd;
+}
+```
+
+```html
+<div class="left">
+  左侧固定宽度
+</div>
+<div class="right">
+  右侧自适应宽度
+</div>
+```
+
+## 三栏布局中间自适应
 
 #### 三栏布局
 
@@ -871,80 +962,222 @@ BFC（块级格式化上下文）是 CSS 中的一种布局模式，用于定义
 - 两边使用 float 和负 margin
 - display: table 实现
 - flex实现
-- grid网格布
+- grid网格
 
-## 圣杯布局
+### 1. 使用 Flexbox
+
+```css
+.container {
+  display: flex;
+}
+
+.left {
+  width: 200px; /* 左侧固定宽度 */
+  background-color: #f4f4f4;
+}
+
+.right {
+  width: 200px; /* 右侧固定宽度 */
+  background-color: #ddd;
+}
+
+.center {
+  flex: 1; /* 中间部分自适应剩余空间 */
+  background-color: #e9e9e9;
+}
+```
+
+```html
+<div class="container">
+  <div class="left">
+    左侧固定宽度
+  </div>
+  <div class="center">
+    中间自适应宽度
+  </div>
+  <div class="right">
+    右侧固定宽度
+  </div>
+</div>
+```
+
+### 2. 使用 Grid
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 200px auto 200px; /* 左侧和右侧固定宽度，中间自适应 */
+}
+```
+
+```html
+<div class="container">
+  <div>
+    左侧固定宽度
+  </div>
+  <div>
+    中间自适应宽度
+  </div>
+  <div>
+    右侧固定宽度
+  </div>
+</div>
+```
+
+### 3. 使用浮动和边距
+
+使用浮动可以让左侧和右侧元素固定宽度，然后通过设置中间元素的左边距和右边距为自动来让中间元素填充剩余空间。
+
+```css
+.left {
+  float: left;
+  width: 200px; /* 左侧固定宽度 */
+  background-color: #f4f4f4;
+}
+
+.right {
+  float: right;
+  width: 200px; /* 右侧固定宽度 */
+  background-color: #ddd;
+}
+
+.center {
+  margin-left: 200px; /* 等于左侧宽度 */
+  margin-right: 200px; /* 等于右侧宽度 */
+  background-color: #e9e9e9;
+}
+```
+
+```html
+<div class="left">
+  左侧固定宽度
+</div>
+<div class="center">
+  中间自适应宽度
+</div>
+<div class="right">
+  右侧固定宽度
+</div>
+```
+
+### 4. 使用视口单位 `vh` 和 `vw`
+
+如果左侧和右侧的宽度是已知的，可以使用视口宽度单位 `vw` 来设置中间元素的宽度。
+
+```css
+.left {
+  width: 200px; /* 左侧固定宽度 */
+  background-color: #f4f4f4;
+}
+
+.right {
+  width: 200px; /* 右侧固定宽度 */
+  background-color: #ddd;
+}
+
+.center {
+  width: calc(100vw - 400px); /* 减去左侧和右侧宽度 */
+  background-color: #e9e9e9;
+}
+```
+
+```html
+<div class="left">
+  左侧固定宽度
+</div>
+<div class="center">
+  中间自适应宽度
+</div>
+<div class="right">
+  右侧固定宽度
+</div>
+```
+
+## 圣杯布局(左右固定,中间自适应)
 
 圣杯布局是一个经典的网页布局模式，用于实现三栏布局，其中左右两侧是固定宽度的边栏，中间是自适应宽度的内容区。这种布局的需求往往出现在需要侧边栏和主内容区域的网页中，比如新闻网站、博客等。它的目标是使左右两边的侧栏在中间内容的顶部和底部保持固定，同时中间内容能自适应填充剩余空间。
 
 实现圣杯布局有多种方法，以下是其中一种常用的方法，使用现代的CSS技术，如Flexbox，在简化代码的同时提供了良好的兼容性。
 
-### 使用 Flexbox 实现圣杯布局
+### flex
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Holy Grail Layout</title>
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .header, .footer {
-            background-color: #f8f8f8;
-            padding: 10px;
-            text-align: center;
-        }
+```css
+body {
+      display: flex;
+      height: 100vh;
+}
+.left, .right {
+  width: 200px;
+  background-color: #bde0fe;
+}
 
-        .container {
-            flex: 1; /* Fills all the available space between header and footer */
-            display: flex; /* Flex container for central layout */
-        }
-
-        .sidebar {
-            background-color: #f0f0f0;
-            flex: 0 0 200px; /* Fixed width for sidebars */
-        }
-
-        .main {
-            background-color: #fff;
-            flex: 1; /* Take the remaining space */
-            padding: 10px;
-        }
-    </style>
-</head>
+.middle {
+  flex: 1;
+  background-color: #e8f5e9;
+  overflow: auto;  /* 确保内容超出时可滚动 */
+}
 <body>
-    <div class="header">Header</div>
-    <div class="container">
-        <div class="sidebar">Left Sidebar</div>
-        <div class="main">Main Content</div>
-        <div class="sidebar">Right Sidebar</div>
-    </div>
-    <div class="footer">Footer</div>
+  <div class="left">左侧栏</div>
+  <div class="middle">主要内容区域</div>
+  <div class="right">右侧栏</div>
 </body>
-</html>
 ```
 
-### 说明：
+### gird
 
-- **Flexbox布局**：我们使用了Flexbox，这使得布局的实现变得非常简单和直观。
-  
-  - `body`被设置为一个垂直方向的Flex容器，以便让`header`与`footer`固定在页面的顶部和底部。
-  
-  - `container`是一个水平的Flex容器，包含左侧栏、主内容区和右侧栏。
+```css
+ body {
+      display: grid;
+      grid-template-columns: 200px 1fr 200px;
+      height: 100vh;
+    }
 
-- **侧栏宽度**：通过`flex: 0 0 200px;`来指定侧栏的宽度。这里的`flex`属性的`0 0`部分表示侧栏的宽度是固定的。
+    .left {
+      background-color: #bde0fe;
+    }
 
-- **主内容区**：通过`flex: 1;`让主内容区自适应填满剩余空间。将其放在中间确保了主内容的自适应性。
+    .middle {
+      background-color: #e8f5e9;
+      overflow: auto;
+    }
 
-- **兼容性与现代性**：使用Flexbox是一种现代的方式，可以在大多数现代浏览器中有良好的支持。相比于传统的浮动或使用复杂的CSS技巧实现圣杯布局，Flexbox让布局代码更加易读和维护。
+    .right {
+      background-color: #ffcccb;
+    }
+```
 
-这种使用Flexbox的方法是实现圣杯布局的高效而简洁的方式，非常适用于大多数现代Web项目中。
+### float
+
+```css
+ .container {
+      padding-left: 200px;
+      padding-right: 200px;
+    }
+
+    .left {
+      float: left;
+      width: 200px;
+      margin-left: -100%;
+      background-color: #bde0fe;
+    }
+
+    .right {
+      float: left;
+      width: 200px;
+      margin-left: -200px;
+      background-color: #ffcccb;
+    }
+
+    .middle {
+      background-color: #e8f5e9;
+    }
+
+    .clearfix::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+```
 
 ## flex原理
 
@@ -1038,12 +1271,13 @@ Flexbox（Flexible Box Module，弹性盒模型）是一种一维布局模型，
    ```
 
 4. **`flex-basis`**：在分配剩余空间之前，定义子项的初始大小，可以是长度单位或关键字`auto`。
+   
    ```css
    .item {
        flex-basis: 100px;
    }
    ```
-
+   
 5. **`flex`**：`flex-grow`、`flex-shrink`和`flex-basis`的简写形式。
    ```css
    .item {
@@ -1058,34 +1292,7 @@ Flexbox（Flexible Box Module，弹性盒模型）是一种一维布局模型，
    }
    ```
 
-### 实际应用
-
-```html
-<div class="container">
-    <div class="item">Item 1</div>
-    <div class="item">Item 2</div>
-    <div class="item">Item 3</div>
-</div>
-
-<style>
-.container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.item {
-    flex: 1;
-    margin: 10px;
-}
-</style>
-```
-
-这种灵活的布局方式可以帮助更直观地控制页面元素，创建响应式和复杂的布局，同时提高代码的可读性和可维护性。
-
-## flexbox（弹性盒布局模型）,以及适用场景
+### 适用场景
 
 Flexbox（弹性盒布局模型）是 CSS3 中的一种布局模式，用于在容器中对子元素进行灵活的排列和对齐。它通过在父元素上设置一些灵活的属性来控制子元素的布局，适用于各种不同的布局需求。
 
@@ -1104,7 +1311,7 @@ Flexbox（弹性盒布局模型）是 CSS3 中的一种布局模式，用于在�
 3. **弹性布局：** Flexbox 可以实现弹性伸缩的布局效果，根据内容和空间的变化自动调整布局，适用于动态内容和可变尺寸的页面。
 4. **响应式布局：** Flexbox 可以实现简单且有效的响应式布局，适应不同尺寸的屏幕和设备，提高页面的适应性和可用性。
 
-## flex布局 basis的作用
+### flex布局 basis的作用
 
 在CSS的Flexbox布局中，`flex-basis`是一个属性，用于定义一个flex项在主轴方向上的初始大小（即在分配额外空间之前的大小）。它与`width`或`height`属性类似，但特定于flex布局。
 
@@ -1138,6 +1345,65 @@ Flexbox（弹性盒布局模型）是 CSS3 中的一种布局模式，用于在�
 
 总而言之，`flex-basis`是Flexbox布局中一个重要的属性，用于帮助定义flex项如何分配空间，使得开发者能够精确控制项的布局方式。
 
+## flex: 1
+
+`flex` 是下面三个属性的简写：
+
+```
+flex: <flex-grow> <flex-shrink> <flex-basis>;
+```
+
+- **`flex-grow`**：定义元素在父容器中按比例增长的权重。
+- **`flex-shrink`**：定义元素在父容器缩小时按比例收缩的权重。
+- **`flex-basis`**：定义元素的初始大小，默认为 `auto`（即根据内容大小决定）。
+
+**语法实例：**
+
+```
+flex: 1 1 0%;
+```
+
+- `1` → 元素可以按比例增长（`flex-grow: 1`）。
+- `1` → 元素可以按比例缩小（`flex-shrink: 1`）。
+- `0%` → 初始大小为 0，之后根据剩余空间进行分配。
+
+------
+
+### **`flex: 1` 具体含义**
+
+```
+flex: 1;
+```
+
+等同于：
+
+```
+flex: 1 1 0%;
+```
+
+- **`flex-grow: 1`**：允许元素按比例增长，占据父容器中的剩余空间。
+- **`flex-shrink: 1`**：当父容器空间不足时，元素允许按比例缩小。
+- **`flex-basis: 0%`**：元素的初始大小为 0，但会根据剩余空间进行分配。
+
+------
+
+### **如何理解 `flex: 1` 在布局中的行为？**
+
+#### 1. **均分父容器的剩余空间**
+
+当多个子元素都设置为 `flex: 1` 时，它们会**平等地分配父容器的剩余空间**。
+
+### **`flex-shrink` 的作用：当空间不足时收缩**
+
+`flex-shrink` 定义了当父容器空间不足时，子元素**如何按比例缩小**。如果所有元素的 `flex-shrink` 都是 `1`，它们会**等比例缩小**。
+如果其中一个元素的 `flex-shrink` 是 `0`，则该元素不会缩小，而其他元素会缩小。
+
+### **总结：`flex: 1` 的要点**
+
+1. **均分剩余空间**：当多个元素都设置为 `flex: 1` 时，它们会平等分配父容器的剩余空间。
+2. **允许收缩和增长**：`flex: 1` 表示元素可以根据父容器空间的变化按比例缩放。
+3. **`flex-basis: 0%`**：初始大小为 0，但会根据剩余空间调整。
+
 ## Grid（网格布局）
 
 CSS Grid（网格布局）是 CSS3 中的一种布局模式，它提供了一种强大且灵活的方式来创建二维布局，可以将页面划分为行和列，并在这些行和列中放置元素。以下是 CSS Grid 的主要特点和适用场景：
@@ -1159,16 +1425,16 @@ CSS Grid（网格布局）是 CSS3 中的一种布局模式，它提供了一种
 
 ## CSS3新增了哪些新特性
 
-1. **选择器的增强：** CSS3 引入了许多新的选择器，如属性选择器（Attribute Selectors）、伪类选择器（Pseudo-classes）、伪元素选择器（Pseudo-elements）等，使得样式的选择更加灵活和强大。
-2. **盒模型的增强：** CSS3 引入了新的盒模型属性，如 box-sizing 属性，可以控制盒模型的尺寸计算方式，使得开发者可以更方便地进行布局设计。
-3. **布局模块的增强：** CSS3 引入了弹性盒子布局（Flexbox）、网格布局（Grid Layout）等新的布局模块，可以更方便地实现复杂的页面布局效果。
-4. **字体样式的增强：** CSS3 引入了新的字体属性，如 @font-face 规则、字体阴影（text-shadow）等，使得文字样式的设置更加丰富和灵活。
-5. **渐变效果：** CSS3 引入了渐变效果（Gradient），包括线性渐变和径向渐变，可以在元素背景、边框等位置实现丰富多彩的渐变效果。
-6. **过渡和动画：** CSS3 引入了过渡效果（Transition）和动画效果（Animation），可以实现元素的平滑过渡和动画效果，使得页面更加生动和具有交互性。
+1. **选择器的增强：** CSS3 引入了许多新的选择器，如**属性选择器**（Attribute Selectors）、**伪类选择器**（Pseudo-classes）、伪元素选择器（Pseudo-elements）等，使得样式的选择更加灵活和强大。
+2. **盒模型的增强：** CSS3 引入了**新的盒模型属性**，如 box-sizing 属性，可以控制盒模型的尺寸计算方式，使得开发者可以更方便地进行布局设计。
+3. **布局模块的增强：** CSS3 引入了**弹性盒子布局（Flexbox）**、**网格布局（Grid Layout）**等新的布局模块，可以更方便地实现复杂的页面布局效果。
+4. **字体样式的增强：** CSS3 引入了新的字体属性，如 @font-face 规则、**字体阴影**（text-shadow）等，使得文字样式的设置更加丰富和灵活。
+5. **渐变效果：** CSS3 引入了**渐变**效果（Gradient），包括线性渐变和径向渐变，可以在元素背景、边框等位置实现丰富多彩的渐变效果。
+6. **过渡和动画：** CSS3 引入了**过渡效果（Transition）**和动画效果**（Animation）**，可以实现元素的平滑过渡和动画效果，使得页面更加生动和具有交互性。
 7. **多列布局：** CSS3 引入了多列布局（Multi-column Layout），可以实现多列文本布局，提高页面的可读性和排版效果。
-8. **响应式布局：** CSS3 提供了媒体查询（Media Queries）和弹性图片（Flexible Images）等技术，可以实现响应式布局，使得页面可以在不同设备上呈现出最佳的布局效果。
-9. **阴影和边框效果：** CSS3 引入了新的阴影效果（Box-shadow）和边框效果（Border-radius），可以实现丰富多彩的阴影和边框样式。
-10. **3D转换和变换：** CSS3 引入了 3D 转换（Transform）和变换（Transform）效果，可以实现元素的三维旋转、缩放、平移等效果，增强页面的视觉效果。
+8. **响应式布局：** CSS3 提供了**媒体查询**（Media Queries）和**弹性图片**（Flexible Images）等技术，可以实现响应式布局，使得页面可以在不同设备上呈现出最佳的布局效果。
+9. **阴影和边框效果：** CSS3 引入了新的阴影效果**（Box-shadow）**和**边框效果（Border-radius）**，可以实现丰富多彩的阴影和边框样式。
+10. **3D转换和变换：** CSS3 引入了 3**D 转换（Transform）和变换（Transform）效果**，可以实现元素的三维旋转、缩放、平移等效果，增强页面的视觉效果。
 
 ## css3动画有哪些
 
@@ -1176,7 +1442,7 @@ CSS Grid（网格布局）是 CSS3 中的一种布局模式，它提供了一种
 - transform 转变动画
 - animation 实现自定义动画
 
-## 回流跟重绘
+## 回流 - 重绘
 
 <img src="./assets/image-20241010145021622.png" alt="image-20241010145021622" style="zoom: 33%;" />
 
@@ -1186,46 +1452,74 @@ CSS Grid（网格布局）是 CSS3 中的一种布局模式，它提供了一种
 
 【彻底搞懂浏览器的重排和重绘！轻松应对面试】https://www.bilibili.com/video/BV1WP411Z75i?vd_source=f0023585540bbe6ab9edf17e0ec3b5a8
 
-#### 重绘与重排区别
+**回流必将引起重绘，重绘不一定会引起回流**
 
-```javascript
-    重排/回流（Reflow）：当DOM的变化影响了元素的几何信息，浏览器需要重新计算元素的几何属性，将其安放在界面中的正确位置，这个过程叫做重排。表现为重新生成布局，重新排列元素。
+### 回流 (Reflow)
 
-    重绘(Repaint): 当一个元素的外观发生改变，但没有改变布局,叫做重绘。表现为某些元素的外观被改变
+当`Render Tree`中**部分或全部元素的尺寸**、**结构**、**或某些属性发生改变**时，浏览器**重新渲染部分或全部文档的过程称为回流**。
 
-『重绘』不一定会出现『重排』，『重排』必然会出现『重绘』。
+会导致回流的操作：
 
-如何触发重排和重绘？
+- 页面首次渲染
+- 浏览器窗口大小发生改变
+- 元素尺寸或位置发生改变
+- 元素内容变化（文字数量或图片大小等等）
+- 元素字体大小变化
+- 添加或者删除**可见**的`DOM`元素
+- 激活`CSS`伪类（例如：`:hover`）
+- 查询某些属性或调用某些方法
 
-    添加、删除、更新DOM节点
+一些常用且会导致回流的属性和方法：
 
-    通过display: none隐藏一个DOM节点-触发重排和重绘
-display: none; 样式会立即隐藏元素，并触发回流和重绘，但是它不会占据页面布局空间，也无法接收用户交互事件。
-    通过visibility: hidden隐藏一个DOM节点-只触发重绘
+- `clientWidth`、`clientHeight`、`clientTop`、`clientLeft`
+- `offsetWidth`、`offsetHeight`、`offsetTop`、`offsetLeft`
+- `scrollWidth`、`scrollHeight`、`scrollTop`、`scrollLeft`
+- `scrollIntoView()`、`scrollIntoViewIfNeeded()`
+- `getComputedStyle()`
+- `getBoundingClientRect()`
+- `scrollTo()`
 
-    移动或者给页面中的DOM节点添加动画
+### 重绘 (Repaint)
 
-    添加一个样式表，调整样式属性
+当**页面中元素样式的改变**并**不影响它在文档流中的位置**时（例如：`color`、`background-color`、`visibility`等），**浏览器会将新样式赋予给元素并重新绘制它**，这个过程称为重绘。
 
-    用户行为，例如调整窗口大小，改变字号，或者滚动。
 
-如何避免重绘或者重排？
 
-    集中改变样式，不要一条一条地修改 DOM 的样式。
+**回流比重绘的代价要更高。**
 
-    不要把 DOM 结点的属性值放在循环里当成循环里的变量。
+有时即使仅仅回流一个单一的元素，它的父元素以及任何跟随它的元素也会产生回流。
 
-    尽量只修改position：absolute或fixed元素，对其他元素影响不大
+现代**浏览器会对频繁的回流或重绘操作进行优化**：
 
-    提升为合成层
+浏览器会**维护一个队列**，把**所有引起回流和重绘的操作放入队列中**，如果**队列中的任务数量或者时间间隔达到一个阈值的，浏览器就会将队列清空**，**进行一次批处理**，这样**可以把多次回流和重绘变成一次**。
 
-    优点：
-        合成层的位图，会交由 GPU 合成，比 CPU 处理要快
-        当需要 repaint 时，只需要 repaint 本身，不会影响到其他的层
-        对于 transform 和 opacity 效果，不会触发 layout 和 paint
+当你访问以下属性或方法时，浏览器会立刻清空队列：
 
-方式：是使用 CSS 的 will-change 属性
-```
+- `clientWidth`、`clientHeight`、`clientTop`、`clientLeft`
+- `offsetWidth`、`offsetHeight`、`offsetTop`、`offsetLeft`
+- `scrollWidth`、`scrollHeight`、`scrollTop`、`scrollLeft`
+- `width`、`height`
+- `getComputedStyle()`
+- `getBoundingClientRect()`
+
+### 如何避免
+
+#### CSS
+
+- 避免使用`table`布局。
+  - 由于浏览器使用流式布局，对`Render Tree`的计算通常只需要遍历一次就可以完成，但`table`及其内部元素除外，他们可能需要多次计算，通常要花3倍于同等元素的时间，这也是为什么要避免使用`table`布局的原因之一。
+- 尽可能在`DOM`树的最末端改变`class`。
+- 避免设置多层内联样式。
+- 将动画效果应用到`position`属性为`absolute`或`fixed`的元素上。
+- 避免使用`CSS`表达式（例如：`calc()`）。
+
+#### JavaScript
+
+- 避免频繁操作样式，最好一次性重写`style`属性，或者将样式列表定义为`class`并一次性更改`class`属性。
+- 避免频繁操作`DOM`，创建一个`documentFragment`，在它上面应用所有`DOM操作`，最后再把它添加到文档中。
+- 也可以先为元素设置`display: none`，操作结束后再把它显示出来。因为在`display`属性为`none`的元素上进行的`DOM`操作不会引发回流和重绘。
+- 避免频繁读取会引发回流/重绘的属性，如果确实需要多次使用，就用一个变量缓存起来。
+- 对具有复杂动画的元素使用绝对定位，使它脱离文档流，否则会引起父元素及后续元素频繁回流。
 
 ## 行内元素、块级元素、空元素
 
@@ -1237,20 +1531,51 @@ display: none; 样式会立即隐藏元素，并触发回流和重绘，但是�
 
 ### 块级元素（Block-level elements）
 
-- **布局特性**：通常会占据调用它的容器的整个宽度，并且其后的元素会在新的一行显示。
-- **常见用途**：用于创建文档或应用的结构布局。
+- 每个块级元素都是**独自占一行**；
+- **高度**，**行高**，**外边距**（margin）以**及内边距**（padding）**都可以控制**；
+- 元素的宽度如果不设置的话，**默认为父元素的宽度**（父元素宽度100%；
+- 多个块状元素标签写在一起，默认**排列方式为从上至下**；
 
 ### 行内元素（Inline elements）
 
-- **布局特性**：不会独占一行，其宽度仅包围其内容。
-- **常见用途**：用于标记文本，可以在段落内部或其他块级元素内部使用，而不会引起文本换行。
+- **不会独占一行**，**相邻的行内元素会排列在同一行**里，直到**一行排不下才会自动换行**，其**宽度随元素的内容而变化**；
+- 高宽无效，对**外边距**（margin）和**内边距**（padding）仅设置**左右方向有效**  **上下无效**；
+- 设置**行高有效**，等同于给父级元素设置行高；
+- **元素的宽度就是它包含的文字或图片的宽度，不可改变**；
+- **行内元素中不能放块级元素**，a 链接里面不能再放链接；
 
 ### 行内块级元素（Inline-block elements）
 
-- **布局特性**：类似于行内元素，不会导致换行；同时具有块级元素的某些特性，如设置宽度和高度。
-- **常见用途**：适合在需求同时需要行内布局和宽高控制的场景。
+- **高度、行高、外边距以及内边距都可以控制；**
+- **默认宽度就是它本身内容的宽度**，不独占一行，但是之间会有空白缝隙，设置它上一级的 font-size 为 0，才会消除间隙；
+- **行内块级元素**（`inline-block`）可以**设置宽度和高度**
 
 请注意，这个表格中的分类是基于元素的默认显示类型，但CSS可以修改这些元素的默认行为（例如，使用`display:block`，`display:inline`或`display:inline-block`等CSS属性）。
+
+## 伪类和伪元素
+
+- **伪类**：以冒号(:)开头，用于**选择处于特定状态的元素**。
+  - `:hover` 选择鼠标悬停的元素。
+  - `:active` 选择被激活的元素（例如，被点击）。
+  - `:nth-child(n)` 选择其父元素的特定类型的第 n 个子元素。
+  - `:not(.excluded)` 选择不匹配指定选择器的元素。
+- **伪元素**：以双冒号(::)开头，用于**在文档中插入虚构的元素**。
+  - `::before` 用于在选定元素的内容前面添加内容。
+  - `::after` 用于在选定元素的内容后面添加内容。
+  - `::first-line` 选择元素的第一行文本。
+  - `::first-letter` 选择元素的第一个字母。
+
+
+
+- 伪类用于**向某些已经存在的选择器添加特殊效果（当状态改变时）**
+
+- 伪元素用于**将特殊效果添加到不存在的虚拟元素中（浏览器自动创建）**
+
+  
+
+**伪元素不会出现在 DOM 结构中**，因此你无法通过 JavaScript 直接操作它们。**伪类则可以像类一样被添加和移除**。
+
+虽然不能直接操作伪元素，但你**可以通过修改伪元素所属的元素的样式来影响伪元素的显示**。例如，如果你想改变 `::before` 伪元素的背景颜色，你可以直接设置其所属的元素的背景颜色。
 
 ## Css预编语言
 
@@ -2346,125 +2671,6 @@ window.addEventListener('DOMContentLoaded', lazyLoad);
    - 如今的许多现代浏览器在高DPI显示器上处理0.5像素已经没有太大的问题。但是老浏览器可能还是会有兼容性问题。可以通过针对具体浏览器进行测试来确保视觉效果符合预期。
 
 在多数情况下，现代浏览器中的0.5像素问题不会过多地影响最终用户体验，尤其是在高DPI的显示器上。然而，通过上述的一些方法，可以在需要的时候优化和调整视觉效果。
-
-## flex的grow和shrink是什么
-
-在CSS的Flexbox布局中，`flex-grow`和`flex-shrink`是两个非常重要的属性，它们用于控制弹性容器中的子项（或称为flex items）如何占据可用空间。
-
-### flex-grow
-
-- **定义**：`flex-grow`属性定义了弹性容器中项目的增长因子。如果容器有剩余的可用空间，具有较高`flex-grow`值的项目将会占据更多的可用空间。
-  
-- **默认值**：默认是`0`，意味着该项目将不增长，也就是说，容器的可用空间不会分配给此项目。
-  
-- **用法**：
-  ```css
-  .flex-item {
-      flex-grow: 1;
-  }
-  ```
-  如果多个项目都具有不同的`flex-grow`值，那么值较大的项目相对于其他项目会获得更多的空间。例如，假设容器中有三个项目，`flex-grow`值分别是`1`, `2`, 和`1`，那么可用空间将会按`1:2:1`的比例分配。
-
-### flex-shrink
-
-- **定义**：`flex-shrink`属性定义了弹性容器中项目的收缩因子。如果容器空间不足以容纳所有子项目，它决定了项目被收缩的程度。
-
-- **默认值**：默认是`1`，意味着项目在空间不足时会收缩。但如果设置为`0`，则项目将不会收缩，可能导致溢出容器。
-
-- **用法**：
-  ```css
-  .flex-item {
-      flex-shrink: 1;
-  }
-  ```
-  如果容器中的项目有不同的`flex-shrink`值，那么值较大的项目将在不足空间的情况下收缩更多。例如，三个项目的`flex-shrink`值分别是`1`, `2`, 和`1`，则空间不足时会按照`1:2:1`的比例进行收缩。
-
-### 实际使用
-
-通常情况下，你会使用简写`flex`属性结合`flex-grow`、`flex-shrink`和`flex-basis`来一起定义，例如：
-
-```css
-.flex-item {
-    flex: 1 1 100px; /* 相当于 flex-grow: 1; flex-shrink: 1; flex-basis: 100px; */
-}
-```
-
-在这个示例中：
-- `flex-grow: 1` 指定项目可以增长以填充容器的可用空间。
-- `flex-shrink: 1` 表示项目可以在空间不足时收缩。
-- `flex-basis: 100px` 指定项目的初始尺寸。
-
-通过理解和使用`flex-grow`和`flex-shrink`，可以创建出高效、响应性强的布局，尤其在需要处理动态内容时。
-
-## css 水平居中
-
-在CSS中，可以通过多种方式实现水平居中，具体的方法取决于需要居中的元素类型（如行内元素、块级元素、或者是具有定位的元素）以及布局上下文（如Flexbox或Grid布局）。以下是一些常见的水平居中方法：
-
-### 1. 行内元素
-
-对于行内元素（如`<span>`, `<a>`等），可以通过`text-align`属性实现水平居中：
-
-```html
-<div style="text-align: center;">
-  <span>水平居中</span>
-</div>
-```
-
-### 2. 块级元素
-
-#### 方法1：使用`margin: auto;`（适用于已知宽度）
-
-对于块级元素，设置`margin: auto;`并指定宽度，可以使其水平居中。
-
-```html
-<div style="width: 50%; margin: 0 auto;">
-  块级元素水平居中
-</div>
-```
-
-#### 方法2：使用Flexbox
-
-Flexbox是一种强大而灵活的布局方式，可以非常简便地实现各种居中效果。
-
-```html
-<div style="display: flex; justify-content: center;">
-  <div>水平居中</div>
-</div>
-```
-
-#### 方法3：使用Grid布局
-
-Grid布局也可以用于简化水平居中对齐。
-
-```html
-<div style="display: grid; place-items: center;">
-  <div>水平居中</div>
-</div>
-```
-
-### 3. 绝对定位元素
-
-对于使用绝对定位的元素，可以通过组合使用`left`、`right`、`transform`属性达到居中效果。
-
-```html
-<div style="position: relative; height: 100px;">
-  <div style="position: absolute; left: 50%; transform: translateX(-50%);">
-    绝对定位元素水平居中
-  </div>
-</div>
-```
-
-### 总结
-
-选择适合的水平居中方法往往取决于具体的布局和需求：
-
-- **行内元素**：`text-align: center`
-- **块级元素，已知宽度**：`margin: auto`
-- **使用Flexbox布局**：`display: flex; justify-content: center;`
-- **使用Grid布局**：`display: grid; place-items: center;`
-- **绝对定位元素**：`left: 50%; transform: translateX(-50%);`
-
-不同的项目和布局需求可能需要不同的方法，上述方法可根据具体需求选择和组合使用。
 
 ## 如果绝对定位失效可能是什么原因
 
