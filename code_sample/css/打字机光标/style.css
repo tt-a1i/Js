@@ -12,21 +12,29 @@ body {
 	display: flex;
 	align-items: center;
 	font-size: 2rem;
-	white-space: nowrap;
+	white-space: pre-wrap; /* 允许换行 */
 	overflow: hidden;
 }
 
-.cursor {
+/* .cursor {
 	display: inline-block;
-	background-color: red; /* 确保光标颜色与背景颜色对比明显 */
-	width: 12px; /* 增加光标宽度 */
-	height: 2.5rem; /* 增加光标高度 */
+	background-color: red;
+	width: 12px;
+	height: 2.5rem;
 	margin-left: 5px;
-	border-radius: 2px; /* 添加圆角边框 */
-	animation: blink 0.7s steps(2, start) infinite; /* 调整闪烁频率 */
+	border-radius: 2px;
+	animation: blink 0.7s steps(2, start) infinite;
+} */
+#typing-text::after{
+	content: '|';
+	background-color: red;
+	width: 12px;
+	height: 2.5rem;
+	margin-left: 5px;
+	border-radius: 2px;
+	animation: blink 0.7s steps(2, start) infinite;
 }
 
-/* 使用 steps() 以确保光标突然闪烁而不是渐变 */
 @keyframes blink {
 	0%,
 	100% {

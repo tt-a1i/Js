@@ -1,6 +1,6 @@
-const text = "Hello, this is a typing effect!";
+const text =
+	"Hello, this is a typing effect!Hello, this is a typing effect!Hello, this is a typing effect!Hello, this is a typing effect!Hello, this is a typing effect!";
 const typingTextElement = document.getElementById("typing-text");
-const cursor = document.querySelector('.cursor')
 
 let index = 0;
 
@@ -10,11 +10,15 @@ function typeText() {
 		typingTextElement.textContent += text[index];
 		index++;
 		setTimeout(typeText, 100); // 调整速度：100ms
-	}else{
-        // 移除光标类，并强制重绘
-        cursor.classList.remove('cursor');
-        cursor.style.display = 'none'; // 强制隐藏光标
-    }
+	} else {
+		// 动态添加样式以隐藏伪元素
+		const style = document.createElement("style");
+		style.innerHTML = `
+			#typing-text::after {
+				content: none;
+			}`;
+		document.head.appendChild(style);
+	}
 }
 
 // 启动打字效果
