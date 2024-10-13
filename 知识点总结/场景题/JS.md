@@ -6062,3 +6062,355 @@ sessionStorage.clear();
 6. 考虑使用其他存储机制如 IndexedDB。
 
 通过采取这些措施，可以更高效地管理和利用客户端的存储空间，确保用户体验的平稳和稳定。
+
+## 不同窗口数据共享场景题
+
+### 打开两个相同的页面，例如： 页面1：https://space.bilibili.com/8692067 页面2：https://space.bilibili.com/8692067 你在页面1中点击关注，我们希望第二个页面的未关注变为已关注，也就是第二个页面同步第一个页面的状态，有哪些方法可以做到？
+
+要实现在同一浏览器中打开的两个相同页面之间同步状态（如关注状态），有多种方法可以实现。以下是一些常用的方法，我们将详细讨论每种方法的原理、优缺点和实现方式：
+
+#### LocalStorage 和 StorageEvent
+
+原理：
+
+- 使用 localStorage 存储关注状态。
+- 利用 StorageEvent 在不同标签页之间通信。
+
+实现：
+
+```javascript
+// 在页面1中：
+localStorage.setItem('followStatus', 'followed');
+
+// 在页面2中：
+window.addEventListener('storage', (event) => {
+  if (event.key === 'followStatus' && event.newValue === 'followed') {
+    updateFollowUI();
+  }
+});
+
+function updateFollowUI() {
+  // 更新关注按钮UI
+}
+```
+
+优点：
+
+- 简单易实现, 不需要服务器参与, 适用于同源页面
+
+缺点：
+
+- 仅适用于同源页面, 数据存储在客户端，可能不安全, 存储容量有限
+
+#### Broadcast Channel API
+
+原理：
+
+- 创建一个命名的通道，允许同源的不同浏览上下文（如窗口、标签页、iframe）之间相互通信。
+
+实现：
+
+```javascript
+// 创建或连接到一个通道
+const channel = new BroadcastChannel('follow_status');
+
+// 在页面1中：
+channel.postMessage('followed');
+
+// 在页面2中：
+channel.onmessage = (event) => {
+  if (event.data === 'followed') {
+    updateFollowUI();
+  }
+};
+```
+
+优点：
+
+- 专门为跨标签页通信设计, 使用简单，API直观, 性能较好
+
+缺点：
+
+- 仅适用于同源页面, 旧版浏览器可能不支持
+
+#### SharedWorker
+
+原理：
+
+- SharedWorker 是一种可以被多个浏览器上下文共享的 Web Worker。
+
+实现：
+
+```javascript
+// shared-worker.js
+let ports = [];
+onconnect = (e) => {
+  const port = e.ports[0];
+  ports.push(port);
+  port.onmessage = (event) => {
+    ports.forEach(p => p.postMessage(event.data));
+  };
+};
+
+// 在两个页面中：
+const worker = new SharedWorker('shared-worker.js');
+worker.port.onmessage = (event) => {
+  if (event.data === 'followed') {
+    updateFollowUI();
+  }
+};
+
+// 在页面1中点击关注时：
+worker.port.postMessage('followed');
+```
+
+优点：
+
+- 可以在多个标签页之间共享状态
+- 性能好，不会阻塞主线程
+
+缺点：
+
+- 实现相对复杂
+- 需要额外的文件
+- 浏览器支持可能不够广泛
+
+#### 服务器端同步 + 轮询
+
+原理：
+
+- 将关注状态保存在服务器端
+- 客户端定期轮询服务器获取最新状态
+
+实现：
+
+```javascript
+// 在页面1中点击关注时：
+fetch('/api/follow', { method: 'POST', body: JSON.stringify({ userId: '8692067' }) })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      updateFollowUI();
+    }
+  });
+
+// 在两个页面中定期轮询：
+setInterval(() => {
+  fetch('/api/follow-status?userId=8692067')
+    .then(response => response.json())
+    .then(data => {
+      if (data.followed) {
+        updateFollowUI();
+      }
+    });
+}, 5000); // 每5秒轮询一次
+```
+
+优点：
+
+- 可靠，状态由服务器控制
+- 适用于不同源的页面
+- 可以跨设备同步
+
+缺点：
+
+- 增加服务器负载
+- 可能存在延迟
+- 频繁的网络请求可能影响性能
+
+#### WebSocket
+
+原理：
+
+- 使用 WebSocket 建立客户端和服务器之间的持久连接
+- 服务器可以主动推送状态更新
+
+实现：
+
+```javascript
+const socket = new WebSocket('wss://your-websocket-server.com');
+
+// 在页面1中点击关注时：
+socket.send(JSON.stringify({ action: 'follow', userId: '8692067' }));
+
+// 在两个页面中：
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  if (data.action === 'follow' && data.userId === '8692067') {
+    updateFollowUI();
+  }
+};
+```
+
+优点：
+
+- 实时更新，延迟低
+- 服务器可以主动推送
+- 适用于不同源的页面
+
+缺点：
+
+- 需要服务器支持 WebSocket
+- 实现相对复杂
+- 需要处理连接断开和重连
+
+#### IndexedDB 和 ServiceWorker
+
+原理：
+
+- 使用 IndexedDB 存储关注状态
+- 使用 ServiceWorker 在后台同步数据
+
+实现：
+
+```javascript
+// 在 ServiceWorker 中：
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'follow-sync') {
+    event.waitUntil(
+      fetch('/api/follow-status')
+        .then(response => response.json())
+        .then(data => {
+          return updateIndexedDB(data);
+        })
+    );
+  }
+});
+
+// 在页面中：
+navigator.serviceWorker.ready.then((registration) => {
+  registration.sync.register('follow-sync');
+});
+
+// 监听 IndexedDB 变化
+// (需要通过 IndexedDB 观察者模式或轮询实现)
+```
+
+优点：
+
+- 可以在离线状态下工作
+- 后台同步，不影响页面性能
+- 可以处理复杂的同步逻辑
+
+缺点：
+
+- 实现复杂
+- 需要考虑兼容性问题
+- 调试可能比较困难
+
+7. 跨域消息传递 (postMessage)
+
+原理：
+
+#### 利用 window.postMessage() 在不同源的页面间传递消息
+
+实现：
+
+```javascript
+// 在页面1中：
+const otherWindow = window.open('https://other-domain.com/page2');
+otherWindow.postMessage({ action: 'follow', userId: '8692067' }, 'https://other-domain.com');
+
+// 在页面2中：
+window.addEventListener('message', (event) => {
+  if (event.origin !== 'https://original-domain.com') return;
+  if (event.data.action === 'follow' && event.data.userId === '8692067') {
+    updateFollowUI();
+  }
+});
+```
+
+优点：
+
+- 可以在不同源的页面间通信
+- 相对安全，可以验证消息来源
+
+缺点：
+
+- 需要知道其他窗口的引用
+- 实现可能比较复杂
+
+总结：
+选择哪种方法取决于具体的需求和约束：
+
+- 如果是同源页面，LocalStorage 或 Broadcast Channel API 是简单有效的选择。
+- 对于需要实时性的场景，WebSocket 是很好的选择。
+- 如果需要在不同源的页面间同步，可以考虑服务器端同步或 postMessage。
+- 对于复杂的离线同步需求，IndexedDB 和 ServiceWorker 的组合可能是更好的选择。
+
+在实际应用中，可能需要结合多种方法来实现最佳的用户体验和性能。同时，还需要考虑安全性、兼容性和可维护性等因素。
+
+## 定时器轮询区别
+
+### 两种轮询的方式，下面这个每隔5秒它会去执行这个fn2，上面fn1里边它会启动一个定时器，5秒后再次执行这个fn1。这两种轮询的方式有什么区别呢？
+
+![discuss_1723014901021](./assets/discuss_1723014901021.jpeg)
+
+这两种轮询方式在 JavaScript 中的主要区别在于它们的执行机制和时序。让我们逐一分析它们：
+
+### 第一种方式：递归定时器调用
+
+```javascript
+function fn1() {
+  // ... 其他逻辑执行耗时2s
+  
+  setTimeout(() => {
+    fn1();
+  }, 5000);
+}
+```
+
+#### 特点和分析：
+
+1. **函数执行完再去排队：**
+   - `fn1` 执行后，会设置一个5秒的定时器，之后函数结束。
+   - 5秒后定时器触发，`fn1` 再次被调用。
+   - 注意，**这里的5秒是从`setTimeout`被调用时开始算起**，而不是从`fn1`开始执行到再执行之间的总时间。
+
+2. **包括执行时间：**
+   - 如果`fn1`中的逻辑（假设包括耗时2秒的其他逻辑）需要花费大量时间，这会导致每次间隔可能会比预期的5秒长。
+   - 实际上，下一次`fn1` 的调用是上一次执行结束后5秒。
+
+3. **适用场景：**
+   - 适用于需要等待前一次操作完成后再进行下一次操作的情况。
+   - 通常用于递归操作或需要依赖于前一次操作结果的任务调度。
+
+### 第二种方式：独立定时器调用
+
+```javascript
+setTimeout(() => {
+  fn2();
+}, 5000);
+```
+
+#### 特点和分析：
+
+1. **独立运行：**
+   - 定时器设置后，不管`fn2`执行需要多久，每隔5秒定时器都会触发。
+   - 这里的5秒是严格意义上的，每隔5秒触发一次，不受到`fn2`执行时间的影响。
+
+2. **并行执行：**
+   - 如果`fn2`执行时间超过5秒，比如`fn2`又花费2秒来完成任务，同时又有下一个定时器在等待，这可能会导致执行的重叠或并行。
+
+3. **适用场景：**
+   - 适用于需要严格固定间隔时间进行触发的任务，例如轮询服务器状态、定时刷新数据等。
+   - 在任务不依赖于前一次执行的结果时效果最佳。
+
+### 实际效果差异
+
+假设`fn1`及其逻辑执行时间是2秒：
+
+1. **递归定时器：**
+   - 总时间 = 执行时间(2秒) + 间隔时间(5秒) = 每7秒执行一次新的`fn1`。
+   - 充分保证每个定时器间隔5秒是在前一个`fn1`完成后开始。
+
+2. **独立定时器：**
+   - 每隔5秒`fn2`执行一次，不考虑上一次`fn2`执行时间。
+   - 如果执行时间 + 下一次定时器触发间隔时间超过5秒，`fn2`会重叠执行。
+
+### 总结
+
+- 第一种递归定时器更适合需要逐次操作完成后继续下一次的场景，间隔时间和执行时间加总决定了轮询频率。
+- 第二种独立定时器方式适合需要固定时间段内反复执行的操作，不考虑操作本身的执行时间，从而使得操作具有更严格的时间间隔。
+
+选择使用哪种方式应该依赖于具体的使用场景和对时间间隔的严格性要求。

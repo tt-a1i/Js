@@ -2468,105 +2468,7 @@ console.log(person instanceof Object); // true
 3. 绑定 `this` 到新对象并执行构造函数。
 4. 返回新对象（如果构造函数未显式返回对象）。
 
-## Ajax
 
-Ajax，全称是 Asynchronous JavaScript and XML（异步JavaScript和XML），是一种在网页中实现异步交互技术的开发方法。Ajax允许网页在不重新加载整个页面的情况下，向服务器请求数据并更新页面内容。这种技术极大地提升了用户体验，使得Web应用程序能够像桌面应用程序一样流畅和即时响应。
-
-### Ajax的核心技术
-
-Ajax并不是一种单一的技术，而是一种多种技术的融合。以下是Ajax的核心组成技术：
-
-1. **HTML/XHTML**：用来构建网页的基本结构。
-2. **CSS**：用来控制网页的样式和布局。
-3. **JavaScript**：用来实现动态交互逻辑。
-4. **DOM（Document Object Model）**：用来访问和操作网页内容。
-5. **XMLHttpRequest对象**：用来与服务器进行异步通信。
-6. **XML/JSON**：用来在客户端和服务器之间传输数据。XML是早期广泛使用的数据格式，JSON是目前更流行和轻量级的数据格式。
-
-### XMLHttpRequest对象
-
-XMLHttpRequest 是Ajax的核心对象，用来与服务器进行异步通信。以下是它的一些基本方法和属性：
-
-- **open(method, url, async)**：初始化请求，method可以是"GET"或"POST"，url是请求的地址，async是异步标志（true为异步，false为同步）。
-- **send(data)**：发送请求。如果是POST请求，可以将数据作为参数传递。
-- **abort()**：取消当前请求。
-- **setRequestHeader(header, value)**：设置HTTP请求头。
-- **getResponseHeader(header)**：获取指定的HTTP响应头。
-- **responseText**：服务器响应的数据（文本）。
-- **responseXML**：服务器响应的数据（XML格式）。
-- **status**：HTTP状态码。
-- **statusText**：HTTP状态文本信息。
-
-### Ajax常见应用场景
-
-1. **动态内容加载**：
-   - 使用Ajax技术，可以在不刷新页面的情况下动态加载内容。例如，在电子商务网站中，可以使用Ajax技术动态加载产品列表、产品详情等。
-2. **表单提交**：
-   - 通过Ajax，可以在浏览器中提交表单而无需重新加载整个页面。例如，用户注册、登录表单提交等。
-3. **实时验证**：
-   - 在表单输入时，可以使用Ajax根据用户输入内容进行实时验证。例如，验证用户名是否可用等。
-4. **实时搜索**：
-   - Ajax可以实现实时搜索功能，用户在输入框中输入时，动态显示搜索建议或搜索结果。
-5. **数据可视化**：
-   - 使用Ajax从服务器获取数据，用于动态更新数据图表和表格等。
-
-### Ajax的优点和缺点
-
-**优点**：
-
-1. **提高用户体验**：
-   - Ajax可以在不重新加载整个页面的情况下，更新页面的一部分内容，从而减少等待时间，提高响应速度，提升用户体验。
-2. **节省带宽**：
-   - Ajax的异步通信只传输关键信息，不会重复传输整个页面内容，从而节省了带宽资源。
-3. **增强交互性**：
-   - Ajax可以实现更加复杂和高级的用户交互效果，例如实时数据更新、动态内容加载等。
-
-**缺点**：
-
-1. **搜索引擎不友好**：
-   - 因为Ajax加载的内容不会被搜索引擎抓取，不利于SEO优化。
-2. **浏览器兼容性问题**：
-   - 虽然现代浏览器对Ajax的支持已经非常好，但在不同浏览器之间可能仍然存在一些细节上的差异。
-3. **代码复杂度增加**：
-   - Ajax的异步特性以及状态管理、错误处理等，可能会增加开发和维护的复杂度。
-4. **安全问题**：
-   - Ajax请求的数据传输可能会被拦截或篡改，因此需要额外注意数据传输的安全性，确保使用HTTPS和其他防护措施。
-5. **依赖JavaScript**：
-   - Ajax技术依赖于JavaScript，如果用户禁用了浏览器的JavaScript功能，则Ajax功能将无法正常工作。
-
-### 现代Ajax技术的发展
-
-随着技术的发展，Ajax已经从最初的纯XMLHttpRequest对象发展到了更加现代化和简洁的方案。以下是一些更加现代的Ajax技术和方法：
-
-#### Fetch API
-
-Fetch API 是现代浏览器提供的用于发起网络请求的接口，旨在取代旧的XMLHttpRequest对象。Fetch API 使用Promise，将异步操作处理变得更加简洁清晰。
-
-```javascript
-fetch('https://api.example.com/data')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();  // 假定返回JSON数据
-    })
-    .then(data => console.log(data))
-    .catch(error => console.error('Fetch error:', error));
-```
-
-#### Axios
-
-Axios是一个基于Promise的HTTP客户端，功能强大、易于使用，在前端开发中广泛应用。
-
-```javascript
-axios.get('https://api.example.com/data')
-    .then(response => console.log(response.data))
-    .catch(error => console.error('Axios error:', error));
-```
-
-### 总结
-
-Ajax技术极大地提升了Web应用的交互性和用户体验，使得网页应用能够更快速、更动态地响应用户操作。无论是通过原生的XMLHttpRequest、jQuery的封装、还是现代的Fetch API和Axios，开发者都可以选择适合自己的工具和方法来实现异步的数据请求和页面更新。然而，使用Ajax时也需要注意可能的兼容性、安全性和代码复杂度问题。合理地应用Ajax技术，将为Web应用带来更高的用户满意度和更好的用户体验。
 
 ## bind、call、apply 区别
 
@@ -2574,137 +2476,40 @@ Ajax技术极大地提升了Web应用的交互性和用户体验，使得网页�
 
 - 三者都可以改变函数的`this`对象指向
 - 三者第一个参数都是`this`要指向的对象，如果如果没有这个参数或参数为`undefined`或`null`，则默认指向全局`window`
-- 三者都可以传参，但是`apply`是数组，而`call`是参数列表，且`apply`和`call`是一次性传入参数，而`bind`可以分为多次传入
-- `bind`是返回绑定this之后的函数，`apply`、`call` 则是立即执行
+- 三者都可以传参，但是`apply`是**数组**，而`call`是参数**列表**，且`apply`和`call`是**一次性**传入参数，而`bind`可以分为**多次**传入
+- `bind`是**返回绑定this之后的函数**，`apply`、`call` 则是**立即执行**
 
-##### 实现一个Bind
 
-```javascript
-Function.prototype.myBind = function (context) {
-    var self = this; // 保存原函数的引用
-    var args = Array.prototype.slice.call(arguments, 1); // 获取除 context 外的参数
 
-    return function () { // 返回一个新函数
-        var bindArgs = Array.prototype.slice.call(arguments); // 获取新函数的参数
-        return self.apply(context, args.concat(bindArgs)); // 使用 apply 执行原函数，将 context 和参数合并传入
-    };
-};
-```
+
 
 - `call`：在函数调用时需要立即传递多个参数。
 - `apply`：在函数调用时需要立即传递一个参数数组（例如，数组元素作为独立参数传递给函数）。
 - `bind`：在需要创建一个新函数，并希望在之后的某个时间点调用这个新函数，同时预置一些参数。
 
-## 正则表达式
+## Node的事件循环
 
-### 1. 创建正则表达式
+> （1）V8引擎解析JavaScript脚本。
+>
+> （2）解析后的代码，调用Node API。
+>
+> （3）[libuv库](https://github.com/joyent/libuv)负责Node API的执行。它将不同的任务分配给不同的线程，形成一个Event Loop（事	    件循环），以异步的方式将任务的执行结果返回给V8引擎。
+>
+> （4）V8引擎再将结果返回给用户。
 
-在 JavaScript 中，可以通过两种方式创建正则表达式：字面量和 RegExp 构造函数。
+除了setTimeout和setInterval这两个方法，Node.js还提供了另外两个与"任务队列"有关的方法：[process.nextTick](http://nodejs.org/docs/latest/api/process.html#process_process_nexttick_callback)和[setImmediate](http://nodejs.org/docs/latest/api/timers.html#timers_setimmediate_callback_arg)。它们可以帮助我们加深对"任务队列"的理解。
 
-```javascript
-// 字面量
-const regex1 = /pattern/flags;
+**process.nextTick方法可以在当前"执行栈"的尾部**----下一次Event  Loop（主线程读取"任务队列"）之前----触发回调函数。也就是说，**它指定的任务总是发生在所有异步任务之前**。**setImmediate方法则是在当前"任务队列"的尾部添加事件**，也就是说，**它指定的任务总是在下一次Event Loop时执行**
 
-// 构造函数
-const regex2 = new RegExp('pattern', 'flags');
-```
 
-### 2. 元字符
 
-元字符（metacharacters）在正则表达式中有特殊含义，需要转义才能匹配其字面值。
-
-- `.`: 匹配除换行符以外的任何单个字符
-- `^`: 匹配输入的开始
-- `$`: 匹配输入的结尾
-- `*`: 匹配前面的子表达式零次或多次
-- `+`: 匹配前面的子表达式一次或多次
-- `?`: 匹配前面的子表达式零次或一次
-- `\`: 转义字符
-- `|`: 或
-- `{}`: 界定符
-- `[]`: 字符类
-- `()`: 捕获组
-- `\b`: 匹配一个单词边界
-- `\d`: 匹配一个数字字符
-- `\D`: 匹配一个非数字字符
-- `\w`: 匹配一个单字字符（字母、数字或下划线）
-- `\W`: 匹配一个非单字字符
-- `\s`: 匹配任何空白字符
-- `\S`: 匹配任何非空白字符
-
-### 3. 标志（Flags）
-
-正则表达式的标志用来控制正则表达式的行为。
-
-- `g`: 全局匹配
-- `i`: 忽略大小写
-- `m`: 多行匹配
-- `u`: 启用Unicode匹配
-- `y`: 粘性（sticky）匹配
-- `s`: 允许 `.`（点）匹配换行符
-
-### 4. 常用方法
-
-#### String 的正则方法
-
-- `match()`: 在字符串内检索正则表达式的匹配
-- `replace()`: 替换与正则表达式匹配的子字符串
-- `search()`: 检索与正则表达式匹配的值
-- `split()`: 使用正则表达式将字符串分割成数组
-
-```javascript
-const str = "Hello, this is a test.";
-const regex = /test/;
-
-console.log(str.search(regex));  // 输出 17
-console.log(str.match(regex));   // 输出 ["test"]
-console.log(str.replace(regex, 'demo'));  // 输出 "Hello, this is a demo."
-console.log(str.split(/\s/));  // 输出 ["Hello,", "this", "is", "a", "test."]
-```
-
-#### RegExp 对象的方法
-
-- `exec()`: 在一个指定字符串中执行查找，并返回一个结果数组（如果没有匹配，则返回null）
-- `test()`: 测试一个字符串是否匹配一个模式（如果匹配则返回true，否则返回false）
-
-```javascript
-const regex = /\d+/;
-const str = "The answer is 42";
-
-console.log(regex.test(str));  // 输出 true
-console.log(regex.exec(str));  // 输出 ["42", index: 14, input: "The answer is 42", groups: undefined]
-```
-
-### 5. 捕获组和反向引用
-
-捕获组用圆括号 `()` 来定义，用来匹配子表达式。
-
-```javascript
-const regex = /(foo)bar\1/;
-const str = "foobarfoo";
-
-console.log(regex.test(str));  // 输出 true
-```
-
-### 6. 前瞻和后顾
-
-前瞻（lookahead）和后顾（lookbehind）用于描述在某个位置前后出现的字符而不包含它们在捕获中。
-
-- 前瞻：`(?=...)`（正前瞻），`(?!...)`（负前瞻）
-- 后顾：`(?<=...)`（正后顾），`(?<!...)`（负后顾）
-
-```javascript
-const regex1 = /\d(?=\D)/;
-const regex2 = /\d(?=\D)/;
-const str = "a1b 2c3";
-
-console.log(str.match(regex1));  // 输出 ["1"]
-console.log(str.match(regex2));  // 输出 ["2"]
-```
-
-### 7. 嵌入条件
-
-JavaScript 不支持嵌入式条件（条件表达式），这是一些其他语言的特性。
+1. **`process.nextTick`**：
+   - 这个方法会在**当前执行栈（即同步代码执行的部分）清空之后**，但在**事件循环的下一次迭代之前执行**。
+   - 因此，它允许你立即（几乎）执行一个回调函数，但它会在任何 I/O 事件或定时器事件之前执行。
+   - 这意味着 `process.nextTick` 中的回调会在事件循环的当前阶段立即被调度，而不是在下一个事件循环迭代中。
+2. **`setImmediate`**：
+   - `setImmediate` 方法用于**安排在当前"任务队列"的末尾执行回调函数**，这意味着它会在**下一次事件循环迭代中执行**，而不是在当前迭代中。
+   - 使用 `setImmediate` 可以将代码推迟到下一个事件循环迭代，从而避免阻塞 I/O 操作。
 
 ## 事件循环
 
@@ -2804,7 +2609,7 @@ Timeout
 
 ### 任务队列的优先级
 
-微任务队列中的任务总是会在下一个宏任务之前执行。例如，如果有多个 `then` 方法连在一起，它们会按顺序放入微任务队列，并在调用栈清空时执行完毕。
+**微任务队列中的任务总是会在下一个宏任务之前执行**。例如，如果有多个 `then` 方法连在一起，它们会按顺序放入微任务队列，并在调用栈清空时执行完毕。
 
 ### 宏任务和微任务的源
 
@@ -2855,16 +2660,16 @@ Node.js 的事件循环实现与浏览器中略有不同。在 Node.js 中，事
 
 ### 3. **微任务是为了细化和补充宏任务**
 
-微任务（microtask）是事件循环中用来处理更小、更细粒度的异步任务。这些任务通常是在应用内部发生的，例如：
+**微任务**（microtask）是**事件循环中用来处理更小**、**更细粒度的异步任务**。这些任务通常是在应用内部发生的，例如：
 
 - `Promise.then`
 - `MutationObserver`
 - `process.nextTick`（Node.js）
 
-微任务通常是在执行宏任务的过程中被调度的，例如：
+微任务**通常是在执行宏任务的过程中被调度**的，例如：
 
 - 一个 `Promise.then` 可能会在处理 HTTP 请求时被触发，而 HTTP 请求作为宏任务已经完成。
-- `MutationObserver` 可能在 DOM 变动后被调度，但 DOM 操作是一个宏任务。
+- `MutationObserver` 可能在 **DOM 变动后被调度**，但 **DOM 操作是一个宏**任务。
 
 因此，微任务的执行是在每个宏任务之后，为了确保**内部逻辑的延续性和一致性**。
 
@@ -2891,7 +2696,7 @@ Node.js 的事件循环实现与浏览器中略有不同。在 Node.js 中，事
 ### `requestAnimationFrame` 的调度：
 
 - **不属于宏任务或微任务**：它是一个**渲染任务**，专门用于在浏览器下一次重绘之前执行。与宏任务和微任务不同，`requestAnimationFrame` 的调度是基于浏览器的刷新率（通常是每秒60帧，约16.66ms一次）。
-- **用于高效动画更新**：`requestAnimationFrame` 适合用于动画的更新，因为它的执行时机是和浏览器的渲染周期同步的，可以避免不必要的重绘和掉帧。
+- **用于高效动画更新**：`requestAnimationFrame` 适合用于动画的更新，因为它的**执行时机是和浏览器的渲染周期同步**的，可以避免不必要的重绘和掉帧。
 
 ### 流程总结：
 
@@ -2993,13 +2798,14 @@ Javascript 具有自动垃圾回收机制（GC：Garbage Collecation），也就
 
 ## Javascript本地存储的方式有哪些？区别及应用场景？
 
+总的来说，cookie 是受同源策略限制的，但可以通过现代 web 技术如 CORS 来支持跨域请求中的 cookie 传输
+
 JavaScript 在浏览器环境中提供了多种本地存储方式，可以用于存储和管理数据。这些存储方式包括：
 
 1. **Cookie**
 2. **LocalStorage**
 3. **SessionStorage**
 4. **IndexedDB**
-5. **Web SQL（已废弃）**
 
 ### 1. Cookie
 
@@ -3018,7 +2824,6 @@ JavaScript 通过 `document.cookie` 读写 Cookie。
 ```javascript
 // 设置 Cookie
 document.cookie = "username=JohnDoe; expires=Fri, 31 Dec 2023 23:59:59 GMT; path=/";
-
 // 读取 Cookie
 console.log(document.cookie);  // "username=JohnDoe"
 ```
@@ -3036,19 +2841,17 @@ LocalStorage 是 HTML5 提供的一种持久化的客户端存储机制，数据
 **特点**：
 - **数据大小**：最大存储容量约为 5-10MB（视浏览器而定）。
 - **持久性**：持久存储，除非明确删除，否则数据不会过期。
-- **访问范围**：同源策略下，域名和端口必须相同才能访问相同的 LocalStorage。
+- **访问范围**：**同源策略**下，**域名和端口必须相同**才能**访问相同的 LocalStorage**。
 
 **API**:
+
 ```javascript
 // 存储数据
 localStorage.setItem('key', 'value');
-
 // 读取数据
 let value = localStorage.getItem('key');
-
 // 删除数据
 localStorage.removeItem('key');
-
 // 清空所有数据
 localStorage.clear();
 ```
@@ -3061,7 +2864,7 @@ localStorage.clear();
 ### 3. SessionStorage
 
 **简介**：
-SessionStorage 类似于 LocalStorage，但它的作用域为单个窗口或标签页，数据仅在会话期间有效。关闭窗口或标签页后，数据即被清除。
+SessionStorage 类似于 LocalStorage，但它的**作用域为单个窗口或标签页**，数据**仅在会话期间有效**。关闭窗口或标签页后，数据即被清除。
 
 **特点**：
 - **数据大小**：最大存储容量约为 5-10MB（视浏览器而定）。
@@ -3072,13 +2875,10 @@ SessionStorage 类似于 LocalStorage，但它的作用域为单个窗口或标�
 ```javascript
 // 存储数据
 sessionStorage.setItem('key', 'value');
-
 // 读取数据
 let value = sessionStorage.getItem('key');
-
 // 删除数据
 sessionStorage.removeItem('key');
-
 // 清空所有数据
 sessionStorage.clear();
 ```
@@ -3124,395 +2924,35 @@ request.onsuccess = function(event) {
 **应用场景**：
 - 大量结构化数据存储。
 - 需要复杂查询的本地应用。
-- 离线应用的数据存储。
+- **离线应用的数据存储**。
 
 ### 选择合适的存储方式
 
 | 方式           | 数据大小     | 持久性                     | 访问范围     | 主要应用场景                             |
 | -------------- | ------------ | -------------------------- | ------------ | ---------------------------------------- |
-| Cookie         | ~4KB         | 可配置                     | 同域名       | 用户认证、保存用户首选项、用户行为跟踪   |
+| Cookie         | ~4KB         | 可配置                     | 可配置       | 用户认证、保存用户首选项、用户行为跟踪   |
 | LocalStorage   | ~5-10MB      | 持久存储                   | 同域名       | 持久化用户设置、轻量数据                 |
 | SessionStorage | ~5-10MB      | 会话存储（窗口关闭后清除） | 同域名同窗口 | 临时数据、单页应用（SPA）                |
 | IndexedDB      | 理论上无限制 | 持久存储                   | 同域名       | 大量结构化数据、离线应用、高性能数据存储 |
-| Web SQL (废弃) | -            | -                          | -            | 不推荐使用                               |
 
-选择合适的存储方式取决于具体的应用场景和需求。例如，对于需要持久化和大数据量的存储场景，IndexedDB 是最佳选择；而对于简单的用户设置和偏好保存，LocalStorage 则比较合适。了解并正确使用这些存储方式，能使前端应用在数据存储层面更加灵活高效。
-
-## 函数式编程
-
-函数式编程是一种"编程范式"（programming paradigm），一种编写程序的方法论
-
-主要的编程范式有三种：`命令式编程`，`声明式编程`和`函数式编程`
-
-函数式编程更加`强调程序执行的结果`而非执行的过程，
-
-#### 命令式编程（Imperative Programming）：
-
-- **特点：**
-  - 通过编写一系列的命令和指令来描述程序的执行过程。
-  - 程序员需要关注程序的具体实现细节，指定每一步的执行过程。
-  - 强调如何实现某个目标，而不仅仅是描述目标是什么。
-- **示例：** 典型的命令式编程语言包括 C、C++、Java 等，例如使用循环、条件语句、变量赋值等来控制程序流程。
-
-#### 声明式编程（Declarative Programming）：
-
-- **特点：**
-  - 强调描述问题的解决方案，而不是解决问题的步骤。
-  - 程序员关注需要实现的目标，而不是具体的执行过程。
-  - 更关注问题的本质和解决方案的逻辑，而不是实现细节。
-- **示例：** SQL 是声明式编程的一个典型例子，通过简单的 SQL 查询语句描述数据查询操作，而不需要指定具体的执行过程。
-
-#### 函数式编程（Functional Programming）：
-
-- **特点：**
-  - 将计算视为数学函数的求值，强调使用纯函数和不可变数据结构来进行编程。
-  - 函数是一等公民，可以作为参数传递、返回值返回，支持高阶函数和函数组合。
-  - 避免了状态变量和可变数据，强调无副作用的函数调用。
-
-函数式编程（Functional Programming，简称 FP）是一种编程范式，它强调使用纯函数和不可变的数据结构来编写程序。函数式编程源自数学中的 λ 演算（Lambda Calculus），近年来由于其在处理并行计算、容错性和可维护性方面的优势，越来越受欢迎。JavaScript 支持函数式编程，使其在命令式和面向对象编程之外，提供了一种不同的编程方法。
-
-### 函数式编程的基本概念
-
-#### 1. 纯函数 (Pure Functions)
-
-纯函数是指给定相同的输入，永远返回相同的输出，并且没有任何副作用的函数。副作用包括修改全局变量、修改参数、IO 操作（如写文件、网络请求）等。
-
-#### 特点：
-- 幂等性：相同输入产生相同输出，便于测试和调试。
-- 无副作用：不依赖或改变外部状态，增强代码可预测性和可重用性。
-
-**示例**：
-```javascript
-// 纯函数
-const add = (a, b) => a + b;
-
-// 非纯函数：有副作用修改外部变量
-let counter = 0;
-const increment = (value) => counter += value;
-```
-
-#### 2. 不可变性 (Immutability)
-
-不可变性意味着一旦创建的数据结构不能再修改。所有对数据的操作都会返回一个新的数据结构，而不是在原有数据结构上进行修改。
-
-**示例**：
-```javascript
-const list = [1, 2, 3];
-
-// 非纯函数（可变操作）
-list.push(4);
-
-// 纯函数（不可变操作）
-const newList = [...list, 4];
-
-console.log(list);    // [1, 2, 3]
-console.log(newList); // [1, 2, 3, 4]
-```
-
-#### 3. 高阶函数 (Higher-Order Functions)
-
-高阶函数是指函数可以接受另一个函数作为参数，或者返回一个函数。
-
-**示例**：
-```javascript
-// 接受函数作为参数
-const map = (arr, fn) => arr.map(fn);
-
-// 返回一个函数
-const greaterThan = (n) => (m) => m > n;
-
-const greaterThanTen = greaterThan(10);
-console.log(greaterThanTen(11)); // true
-```
-
-#### 4. 函数组合 (Function Composition)
-
-函数组合是将多个函数组合成一个新的函数，这个新的函数会依次调用所有组合的函数。常用工具函数 `compose` 可以实现这个功能。
-
-**示例**：
-```javascript
-const compose = (f, g) => (x) => f(g(x));
-
-const double = (x) => x * 2;
-const increment = (x) => x + 1;
-
-const doubleThenIncrement = compose(increment, double);
-console.log(doubleThenIncrement(3)); // 7
-```
-
-#### 5. 柯里化 (Currying)
-
-柯里化是将多个参数的函数转换为多个嵌套的单参数函数。柯里化有助于部分应用某些参数，生成更具体的函。
-
-**示例**：
-```javascript
-// 普通函数
-const add = (a, b) => a + b;
-
-// 柯里化函数
-const curriedAdd = (a) => (b) => a + b;
-
-const addFive = curriedAdd(5);
-console.log(addFive(3)); // 8
-```
-
-### JavaScript 中的函数式编程
-
-在 JavaScript 中，尽管函数式编程不是唯一的编程范式，但它通过了以下特性支持函数式编程：
-
-1. **一等函数（First-Class Functions）**：JavaScript 中的函数被视为“一等公民”，这意味着函数可以存储在变量中，作为参数传递或作为返回值。
-2. **高阶函数**：许多 JavaScript 内建方法如 `map`、`filter` 和 `reduce` 等均是高阶函数。
-3. **闭包（Closures）**：JavaScript 支持闭包，这使得函数能够捕捉周围环境中的变量。
-
-### 函数式编程的优势
-
-1. **代码简洁，可读性高**：纯函数和不可变数据使代码更为简洁明了。
-2. **易于测试**：由于纯函数的确定性，测试变得简单，只需关注输入和输出。
-3. **调试容易**：没有副作用的纯函数使得调试变得更容易。
-4. **并发编程**：不可变数据和无副作用使多线程编程更易于管理。
-
-### 函数式编程的挑战
-
-1. **学习曲线**：对于习惯了命令式编程的人来说，函数式编程需要一种新的思维方式。
-2. **性能开销**：频繁创建新的数据结构，可能带来性能的开销，尤其是在某些高频操作中。
-3. **调试复杂度**：使用大量高阶函数和函数组合时，调试栈追踪可能变得复杂。
-
-### 实践与应用
-
-#### 1. 数组操作
-
-函数式编程常用于数组的操作，利用高阶函数如 `map`、`filter` 和 `reduce`。
-
-```javascript
-const numbers = [1, 2, 3, 4, 5];
-
-// 使用 map 对数组元素做平方
-const squares = numbers.map(x => x * 2);
-
-// 使用 filter 过滤掉所有偶数
-const oddNumbers = numbers.filter(x => x % 2 !== 0);
-
-// 使用 reduce 累加所有元素
-const sum = numbers.reduce((acc, x) => acc + x, 0);
-
-console.log(squares);    // [1, 4, 9, 16, 25]
-console.log(oddNumbers); // [1, 3, 5]
-console.log(sum);        // 15
-```
-
-#### 2. 数据转换
-
-函数式编程擅长处理数据流转换。假设我们有一个用户数据数组，我们可以用函数式编程进行一系列的转换。
-
-```javascript
-const users = [
-  { name: 'John Doe', age: 28 },
-  { name: 'Jane Doe', age: 32 },
-  { name: 'Mary Jane', age: 22 }
-];
-
-// 提取用户的名字并转换为大写字母
-const usernames = users.map(user => user.name.toUpperCase());
-
-console.log(usernames); // ['JOHN DOE', 'JANE DOE', 'MARY JANE']
-```
-
-#### 3. 组合复杂函数
-
-通过嵌套函数和组合来实现复杂的逻辑。
-
-```javascript
-const compose = (...fns) => res =>
-  fns.reduceRight((acc, fn) => fn(acc), res);
-
-// 简单函数
-const double = x => x * 2;
-const square = x => x ** 2;
-
-// 组合函数
-const doubleAndSquare = compose(square, double);
-
-console.log(doubleAndSquare(3)); // 36
-```
-
-#### 区别：
-
-1. **实现方式：**` 命令式编程关注如何实现目标`，`以具体的步骤和指令描述程序执行过程`；`声明式编程`关注`描述目标的解决方案`，`以描述性的语句表达解决方案`；函数式编程则将计算视为函数的求值，避免了状态变量和可变数据。
-2. **抽象程度：** 函数式编程是声明式编程的一种，它更强调抽象和高级概念，通过函数组合和高阶函数实现更高层次的抽象；而命令式编程更侧重于底层细节和具体实现。
-3. **可变性：** 命令式编程和一些声明式编程方式（如部分的函数式编程）通常允许可变数据和状态变量，而函数式编程强调不可变性和纯函数的使用。
-
-## 函数缓存
-
-函数缓存（Function Caching），也称“记忆化”（Memoization），是一种优化技术，特别适用于那些存在重复计算需求的场景。通过缓存函数的计算结果，可以避免重复计算，从而提高性能。
-
-### 什么是函数缓存？
-
-函数缓存是指在函数第一次运行时，将计算结果缓存起来。下次当函数被调用时，如果输入相同，就直接返回缓存的结果，而不再进行重复计算。函数缓存通常用于那些计算复杂且代价较高的函数。
-
-### 基本实现思路
-
-1. 创建一个缓存对象，用于存储输入参数和相应的输出结果。
-2. 在每次函数调用时，先检查输入参数是否在缓存对象中。
-3. 如果在缓存中找到相应的结果，直接返回该结果。
-4. 如果未找到，执行计算，并将结果存储到缓存对象中，然后返回该结果。
-
-### 简单实现
-
-我们先来看一个简单的 Memoization 实现，用于缓存单一参数的函数结果：
-
-```javascript
-function memoize(fn) {
-  const cache = {};
-  return function(...args) {
-    const key = JSON.stringify(args);
-    if (cache[key]) {
-      return cache[key];
-    } else {
-      const result = fn.apply(this, args);
-      cache[key] = result;
-      return result;
-    }
-  };
-}
-
-// 示例函数：计算斐波那契数列
-function fibonacci(n) {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-// 使用 memoize 包装斐波那契函数
-const memoizedFibonacci = memoize(fibonacci);
-console.time()
-console.log(memoizedFibonacci(40));
-console.timeEnd()
-console.time()
-console.log(memoizedFibonacci(40))
-console.timeEnd()
----------------------------------------log-------------------------------------------
-102334155
-default: 932.363ms
-102334155
-default: 0.079ms
-
-```
-
-### 深入理解
-
-让我们更加深入地阐述函数缓存的细节和优化：
-
-#### 1. 缓存策略
-
-不同的缓存策略可能影响缓存的命中率和性能。例如，缓存可能按值（value-based）或按引用（reference-based）存储数据。对于复杂对象，通常需要对输入参数进行序列化（如使用 JSON.stringify）。
-
-#### 2. 自动清理
-
-在实际应用中，缓存可能会占用大量内存。可以使用“缓存过期”或者“LRU（Least Recently Used）”策略进行自动清理。下面是一个简单的 LRU 缓存示例：
-
-```javascript
-function memoize(fn, limit = 10) {
-  const cache = new Map();
-
-  return function(...args) {
-    const key = JSON.stringify(args);
-
-    if (cache.has(key)) {
-      const value = cache.get(key);
-      cache.delete(key);
-      cache.set(key, value);
-      return value;
-    }
-
-    const result = fn.apply(this, args);
-
-    cache.set(key, result);
-    if (cache.size > limit) {
-      // 删除最早添加的缓存
-      cache.delete(cache.keys().next().value);
-    }
-    return result;
-  };
-}
-```
-
-#### 3. 函数缓存适用场景
-
-函数缓存尤其适用于以下场景：
-
-- **计算密集型任务**：如数学计算、图形处理。
-- **纯函数**：无副作用且仅依赖输入参数。例如，斐波那契数列、阶乘运算。
-- **网络请求缓存**：避免多次请求同一资源。
-- **重复性数据转换**：如大型数据集的转换和映射。
-
-#### 4. 函数缓存的注意事项
-
-- **内存使用**：缓存数据会占用内存，在处理大数据量或长时间运行的程序中需要注意内存管理。
-- **副作用**：仅对纯函数有效，带有副作用的函数不适合使用缓存。
-- **缓存命中率**：低命中率可能导致不如预期的性能提升，需根据具体情况使用缓存。
-
-### 实际案例
-
-来看一个实际应用中的函数缓存案例：HTTP 请求结果缓存。
-
-```javascript
-function memoizeAsync(fn) {
-  const cache = new Map();
-
-  return async function(...args) {
-    const key = JSON.stringify(args);
-
-    if (cache.has(key)) {
-      return cache.get(key);
-    }
-
-    const result = await fn.apply(this, args);
-    cache.set(key, result);
-    return result;
-  };
-}
-
-// 模拟异步请求函数
-async function fetchData(url) {
-  const response = await fetch(url);
-  return response.json();
-}
-
-// 包装异步请求函数
-const memoizedFetchData = memoizeAsync(fetchData);
-
-// 使用示例
-memoizedFetchData('https://jsonplaceholder.typicode.com/todos/1')
-  .then(data => console.log(data))
-  .catch(err => console.error(err));
-```
-
-### 高阶库和工具
-
-在实际开发中，可以使用某些库和工具来简化和增强函数缓存的实现：
-
-1. **lodash.memoize**：流行的实用工具库 lodash 提供了 memoize 方法。
-2. **memoizee**：功能强大的 memoization 库，支持多参数、异步和限时缓存。
-
-```javascript
-const memoize = require('lodash.memoize');
-
-const memoizedFunction = memoize((n) => {
-  // 模拟复杂计算
-  console.log(`Computing for ${n}`);
-  return n * 2;
-});
-
-console.log(memoizedFunction(5)); // Computing for 5, 10
-console.log(memoizedFunction(5)); // 10 (缓存命中，没有计算)
-```
-
-### 总结
-
-函数缓存（Memoization）是一种高效的优化技术，适用于纯函数和计算密集型任务。通过缓存计算结果，可以大幅减少计算次数，提高性能。实际应用中要结合具体情况选择合适的缓存策略，并注意内存管理和缓存命中率。充分利用现有的库和工具也可以简化实现，提升开发效率。掌握这一技术，可以使代码在性能优化方面达到一个新的水平。
+，对于需要持久化和大数据量的存储场景，IndexedDB 是最佳选择；而对于简单的用户设置和偏好保存，LocalStorage 则比较合适。
 
 ## Javascript 数字精度
 
 JavaScript 的数字精度是一个复杂而重要的话题，涉及到 IEEE 754 标准、浮点数表示、以及在实际编程中的各种注意事项。让我们深入探讨这个主题：
+
+JavaScript 在内部使用二进制来表示数字，但它不直接暴露二进制表示形式给用户。JavaScript 中的所有数字都是以64位浮点数格式存储的，这是遵循IEEE 754标准
+
+##### 为什么在二进制中表示十进制的0.3是一个无限循环小数
+
+在二进制中表示十进制的0.3是一个无限循环小数，这是因为0.3不能被2整除，且其分母（即10）与2的幂次没有直接的联系。让我们逐步了解为什么会出现这种情况。
+
+##### 十进制转换为二进制
+
+1. **理解十进制小数**：
+   - 十进制的0.3可以写成分数：0.3=3100.3=103
+2. **二进制表示**：
+   - 在二进制中，小数点后的每一位代表12,14,18,116,…21,41,81,161,…等。
 
 ### JavaScript 中的数字表示
 
@@ -3638,23 +3078,8 @@ console.log(parseInt("Hello")); // NaN
 对于需要高精度计算的场景，可以使用专门的库：
 
 a) decimal.js
-```javascript
-import Decimal from 'decimal.js';
-
-const a = new Decimal(0.1);
-const b = new Decimal(0.2);
-console.log(a.plus(b).toString()); // "0.3"
-```
 
 b) big.js
-```javascript
-import Big from 'big.js';
-
-const x = new Big(0.1);
-const y = x.plus(0.2);
-console.log(y.toString()); // "0.3"
-```
-
 #### 性能考虑
 
 - 整数运算通常比浮点数运算快
@@ -3691,14 +3116,9 @@ console.log(Number.isSafeInteger(9007199254740991)); // true
 console.log(Number.isSafeInteger(9007199254740992)); // false
 ```
 
-结论：
-JavaScript 的数字精度问题源于其使用 IEEE 754 浮点数表示法的特性。虽然这种表示方法在大多数情况下工作良好，但在需要高精度计算（如金融应用）或处理非常大的数字时，可能会遇到问题。理解这些限制并采用适当的策略（如使用专门的库、正确的比较方法、适当的舍入技术等）可以帮助开发者有效地处理 JavaScript 中的数字精度问题。随着 JavaScript 的发展，新的特性如 BigInt 的引入也为处理大整数提供了新的解决方案。在实际开发中，选择合适的数字处理方法应该基于具体的应用需求和性能考虑。
-
 ## 8种数据类型
 
 JavaScript 作为一门动态、松散类型的编程语言，其数据类型体系相对简单，但也有一些独特的设计。JavaScript 的数据类型可以分为两大类：**原始类型（Primitive Types）**和**引用类型（Reference Types）**。原始类型包括 `Undefined`、`Null`、`Boolean`、`Number`、`String`、`Symbol` 和 `BigInt`。引用类型主要是 `Object`。
-
-JavaScript 中的8种主要数据类型可以分为原始类型和引用类型：
 
 - **原始类型**：
   - Undefined
@@ -3718,14 +3138,6 @@ JavaScript 中的8种主要数据类型可以分为原始类型和引用类型�
 
 `Undefined` 表示一个未赋值的变量或者一个未定义的属性。
 
-```javascript
-let x;
-console.log(x); // undefined
-console.log(typeof x); // "undefined"
-const obj = {};
-console.log(obj.nonExistentProperty); // undefined
-```
-
 ### 2. Null
 
 `Null` 表示一个空值或者一个无效的对象引用。它是一个关键字，可以用作字面量。
@@ -3739,13 +3151,6 @@ console.log(typeof y); // "object" (这是一个被认为是设计错误的问�
 ### 3. Boolean
 
 `Boolean` 类型有两个值：`true` 和 `false`，主要用于条件判断。
-
-```javascript
-const isTrue = true;
-const isFalse = false;
-console.log(typeof isTrue); // "boolean"
-console.log(typeof isFalse); // "boolean"
-```
 
 ### 4. Number
 
@@ -3773,23 +3178,6 @@ console.log("hello" / 2); // NaN
 
 `String` 是用于表示文本数据的类型。字符串可以用单引号（`'`）、双引号（`"`）或者反引号（`` ` ``）括起来。
 
-```javascript
-const singleQuoteStr = 'Hello, World!';
-const doubleQuoteStr = "Hello, World!";
-const templateStr = `Hello, World!`;
-console.log(typeof singleQuoteStr); // "string"
-console.log(typeof doubleQuoteStr); // "string"
-console.log(typeof templateStr); // "string"
-
-// 模板字符串还支持插值和多行字符串：
-const name = "John";
-const greeting = `Hello, ${name}!`;
-const multiLineStr = `This is line 1
-This is line 2`;
-console.log(greeting); // "Hello, John!"
-console.log(multiLineStr);
-```
-
 ### 6. Symbol
 
 `Symbol` 是 ES6 引入的一种原始数据类型，表示唯一的标识符，通常用于对象属性的键，以避免属性命名冲突。
@@ -3808,7 +3196,7 @@ console.log(obj[symKey]); // 'value'
 
 ### 7. BigInt
 
-`BigInt` 是 ES11 引入的一种原始类型，用于表示任意精度的整数。这种类型主要为了解决 `Number` 类型无法精确表示大整数的问题。
+`BigInt` 是 ES11 引入的一种类型，用于表示任意精度的整数。这种类型主要为了解决 `Number` 类型无法精确表示大整数的问题。bigInt有自己的原型对象,我猜测是引用类型
 
 ```javascript
 const bigInt1 = 1234567890123456789012345678901234567890n;
@@ -3826,12 +3214,6 @@ console.log(sum); // 2469135780246913578024691357802469135780n
 常见的对象类型包括：
 
 1. **普通对象（Object）**：
-
-```javascript
-const obj = { name: "John", age: 30 };
-console.log(typeof obj); // "object"
-console.log(obj.name); // "John"
-```
 
 2. **数组（Array）**：
 
@@ -3917,8 +3299,6 @@ console.log(set.has(1)); // true
 - **鼠标连续移动事件（MouseMove Event）**：在某些情况下，无需实时响应鼠标每一点微小的移动，只需要在一定时间间隔内（如每100毫秒）取最近一次移动事件坐标进行处理。
 
 ## 如何判断一个元素是否在可视区域中
-
-判断一个元素是否在可视区域中，是前端开发中常见的需求，尤其是在实现懒加载、滚动加载等功能时。判断元素是否在可视区域涉及到浏览器视口（Viewport）和元素的边界盒的计算。以下是详细的方法和技术细节。
 
 ### 方法概述
 
@@ -4292,17 +3672,13 @@ app.post('/mergeChunks', (req, res) => {
 用户选择文件 -> 文件分块 -> 上传每个块 -> 服务器接收块 -> 服务器保存块 -> 上传完成通知 -> 服务端合并块
 ```
 
-### 总结
-
-通过以上步骤，可以实现前端大文件的断点续传功能。分块上传、进度跟踪、错误处理和文件合并是实现这一功能的关键。在实现过程中，需要注意文件的元数据管理、网络错误处理和服务器端合并逻辑的优化。这样可以确保大文件上传的可靠性和用户体验。
-
 ## 单点登录？如何实现？
 
-单点登录（Single Sign-On，简称SSO）是一种身份验证机制，允许用户在多个相关但独立的系统中进行一次登录，即可访问所有系统。这种机制旨在提升用户体验并简化管理。接下来，我们深入探讨单点登录的原理、实现方法和注意事项。
+单点登录（Single Sign-On，简称SSO）是一种身份验证机制，允许用户在**多个相关但独立的系统中**进行**一次登录**，即可**访问所有系统**。
 
 ### 单点登录的原理
 
-单点登录的基本原理是通过一个集中式的认证服务（Identity Provider，简称IDP）来管理和验证用户身份。当一个用户登录时，IDP会发放一个认证令牌或票据，不同的应用系统通过验证这个令牌来确认用户身份。
+单点登录的基本**原理是通过一个集中式的认证服务**（Identity Provider，简称IDP）来管理和验证用户身份。当一个**用户登录时**，IDP会**发放一个认证令牌或票据**，**不同的应用系统通过验证这个令牌来确认用户身份**。
 
 ### 单点登录的实现方式
 
@@ -4314,10 +3690,10 @@ app.post('/mergeChunks', (req, res) => {
 
 - **实现步骤**：
   1. 用户访问应用A，未登录，重定向至SSO登录页面。
-  2. 用户登录成功，SSO创建会话并设置一个域范围的Cookie（如`.example.com`）。
-  3. 用户访问应用B，携带Cookie，应用B通过SSO验证Cookie，确认用户身份。
+  2. 用户登录成功，**SSO创建会话并设置一个域范围的Cookie**（如`.example.com`）。
+  3. 用户访问应用B，携带Cookie，应用B**通过SSO验证Cookie**，确认用户身份。
 - **优缺点**：
-  - 优点：实现简单，适用于单域名下的多个子系统。
+  - 优点：实现简单，**适用于单域名下的多个子系统**。
   - 缺点：跨域支持困难，安全性较低，容易被劫持。
 
 #### 2. 基于Token的单点登录
@@ -4369,8 +3745,6 @@ SAML（Security Assertion Markup Language）是一种标准的用于描述和交
 
 ## web常见的攻击方式有哪些？如何防御？
 
-Web应用在互联网环境中面临多种多样的攻击威胁，了解这些攻击方式及其防御手段对于保障应用安全至关重要。以下是一些常见的Web攻击方式及其防御方法的详细说明：
-
 ### 1. SQL注入（SQL Injection）
 
 #### 攻击描述：
@@ -4406,7 +3780,7 @@ SQL注入攻击是指攻击者通过输入恶意的SQL语句，利用应用程�
 ### 2. 跨站脚本攻击（XSS，Cross-Site Scripting）
 
 #### 攻击描述：
-XSS攻击是指攻击者在网页中注入恶意脚本，当其他用户访问该网页时，恶意脚本会在他们的浏览器中执行，从而导致信息窃取、会话劫持等风险。
+XSS攻击是指攻击者**在网页中注入恶意脚本**，当**其他用户访问该网页时**，**恶意脚本会在他们的浏览器中执行，从而导致信息窃取、会话劫持等风险**。
 
 #### 防御方法：
 1. **输出编码**：
@@ -4438,7 +3812,7 @@ XSS攻击是指攻击者在网页中注入恶意脚本，当其他用户访问�
 ### 3. 跨站请求伪造（CSRF，Cross-Site Request Forgery）
 
 #### 攻击描述：
-CSRF攻击是指攻击者冒充用户发送恶意请求，利用用户已经认证的会话在受信任的网站上执行未经授权的操作。
+CSRF攻击是指**攻击者冒充用户发送恶意请求**，**利用用户已经认证的会话在受信任的网站上执行未经授权的操作**。
 
 #### 防御方法：
 1. **CSRF令牌**：
@@ -4449,7 +3823,7 @@ CSRF攻击是指攻击者冒充用户发送恶意请求，利用用户已经认�
    ```
 
 2. **验证Referer和Origin头**：
-   - 检查请求头中的Referer和Origin字段，确保请求来自信任的域。
+   - **检查请求头中的Referer和Origin字段**，确保请求来自信任的域。
    
    ```javascript
    const referer = req.get('Referer');
@@ -4459,7 +3833,7 @@ CSRF攻击是指攻击者冒充用户发送恶意请求，利用用户已经认�
    ```
 
 3. **SameSite Cookie属性**：
-   - 将Cookie设置为SameSite属性，这样只允许同站点请求携带Cookie。
+   - 将Cookie设置为**SameSite属性，这样只允许同站点请求携带Cookie**。
    
    ```javascript
    res.cookie('sessionId', 'your-session-id', { sameSite: 'Strict' });
@@ -4525,44 +3899,20 @@ RCE攻击是指攻击者通过某种方式在服务器上执行恶意代码，�
 3. **定期刷新会话**：
    - 定期刷新会话令牌（例如登录后，特定操作后），提高会话安全性。
 
-### 7. 目录遍历（Directory Traversal）
-
-#### 攻击描述：
-目录遍历攻击是指攻击者利用相对路径（如`../`）访问服务器上未公开的文件和目录，从而获取敏感信息。
-
-#### 防御方法：
-1. **净化和验证路径参数**：
-   - 严格净化和验证路径参数，禁止相对路径的使用。
-   
-   ```javascript
-   const filePath = path.join('/safe/directory', path.basename(requestedPath));
-   ```
-
-2. **限制文件访问范围**：
-   - 使用服务器配置限制文件访问的范围。
-
-### 8. 拒绝服务攻击（DoS，Denial of Service）
+### 拒绝服务攻击（DoS，Denial of Service）
 
 #### 攻击描述：
 DoS攻击通过大量无效请求使服务器过载，从而导致正当用户无法访问服务。
 
 #### 防御方法：
 1. **使用负载均衡和CDN**：
-   - 通过负载均衡和CDN分散攻击流量，缓解服务器压力。
+   - 通过**负载均衡和CDN分散攻击流量**，缓解服务器压力。
 
 2. **限制请求速率**：
-   - 使用速率限制（Rate Limiting）和IP白名单策略，限制单个IP的请求频率。
+   - 使用速率限制（Rate Limiting）和IP白名单策略，**限制单个IP的请求频率**。
    
 3. **监控和报警**：
    - 实时监控流量，及时发现和应对攻击。
-
-### 总结
-
-Web应用安全是一个复杂而广泛的领域，需结合具体的应用场景和威胁建模，制定全面的防御措施。这些常见的攻击方式只是冰山一角，防御方法也在不断演进。定期进行安全审计、代码评审、漏洞扫描、渗透测试等安全措施，有助于及早发现并修复安全隐患，从而有效保障Web应用的安全性。
-
-## Session
-
-session在网络应用中称为“会话控制”，是服务器为了保存用户状态而创建的一个特殊的对象。简而言之，`session就是一个对象`，用于`存储信息`。 
 
 ## JS字符串和数组的区别
 
@@ -4804,67 +4154,41 @@ console.log(arr); // 输出: [0, 2, 3]
 
 理解这些基本概念和操作，对于高效编写和调试 JavaScript 代码至关重要。根据具体的需求选择合适的数据结构，可以提高代码的性能和可维护性。
 
-## 网页出现卡顿,怎么排查怎么解决
+## javascript字符串和数组都是存储在堆中的，那么为什么数组可变字符串不可变呢
 
-1. **检查`网络和服务器`**：
-   - 网络延迟或服务器响应时间过长可能会导致网页加载缓慢或卡顿。使用网络工具（如浏览器开发者工具的 Network 标签）检查网络请求和响应时间，并确保服务器性能良好。
-2. **检查`代码质量`**：
-   - 大量的`无效代码、冗余代码、重复代码、死循环`或者复杂的算法可能会导致网页运行缓慢。通过代码审查和性能分析工具（如Chrome DevTools的Performance标签）来检查和优化代码。
-3. **优化`页面渲染`**：
-   - 复杂的DOM结构、大量的DOM操作、频繁的重绘和重排可能会导致页面渲染性能下降。优化CSS样式，`减少不必要的DOM操作`，`使用 CSS 动画而不是 JavaScript 动画`，尽量减少频繁更新 DOM。
-4. **`压缩和合并`资源**：
-   - 优化网页加载速度，可以`压缩和合并 JavaScript、CSS、图片等静态资源`，减少网络请求次数，提高加载速度。
-5. **使用`懒加载`**：
-   - 对于大型网页或者包含大量图片的网页，可以使用懒加载技术，延迟加载图片或者其他资源，减少首次加载时的压力。
-6. **使用`缓存`**：
-   - `合理使用浏览器缓存和服务器缓存，减少不必要的重复请求，提高网页加载速度`。
-7. **`处理大量数据`**：
-   - 如果网页需要处理大量数据，可以`考虑使用分页、虚拟滚动`等技术，`减少一次性加载大量数据`导致的性能问题。
-8. **浏览器`兼容性`**：
-   - 不同浏览器可能对同一段代码的性能表现有所差异，需要进行跨浏览器测试，并针对性地进行优化。
-9. **`硬件加速`**：
-   - 对于一些复杂的动画或者渲染效果，可以考虑使用硬件加速，通过 CSS 属性 `transform` 或者 `opacity` 触发 `GPU 加速`，提高动画性能。
-10. **使用`服务端渲染`（SSR）**：
-    - 对于需要大量计算或者复杂逻辑的页面，可以考虑使用`服务端渲染来提高网页的性能`和加载速度。
+javascript数组和字符串其实都是存储在堆中的，而栈只存储引用
 
-## css包大怎么处理
+### 1. **字符串不可变的原因**
 
-1. **`代码优化`**：
-   - 检查 CSS 代码，`删除不必要的样式和规则`，减少冗余和重复的代码。
-   - 使用压缩工具（例如CSS压缩器）`对CSS文件进行压缩`，减少文件大小。
-   - 将大型的`CSS文件拆分成多个小文件，按需加载`，减少单个文件的大小和加载时间。
-2. **使用 `CSS 预处理器`**：
-   - 使用 CSS 预处理器（如`Sass、Less`等）可以提高CSS代码的可维护性，并通过`使用变量、嵌套、混合等功能来减少重复代码量`。
-   - 预处理器可以帮助你更好地组织和管理 CSS 代码，同时生成压缩的 CSS 输出。
-3. **`图像优化`**：
-   - 对于使用了大量图像的网页，可以使用`图像压缩工具`（如ImageOptim、TinyPNG等）来减少图像文件的大小，从而减少 CSS 包的大小。
-   - 考虑使用 `CSS Sprites 技术将多个小图标合并成一张大图`，`减少 HTTP 请求`次数。
-4. **使用`字体子集`**：
-   - 如果网页中使用了自定义字体，可以考虑使用字体子集（Font Subset）来仅包含页面所需的字符，减少字体文件的大小。
-5. **`模块化开发`**：
-   - 使用模块化开发工具（如Webpack、Parcel等）来`对 CSS 进行模块化管理和打包`，`只打包页面所需的 CSS 文件`，减少冗余和不必要的代码。
-6. **`CDN 加速`**：
-   - 使用内容分发网络（CDN）来`加速 CSS 文件的加载`，提高网页的访问速度。
-7. **`缓存和资源优化`**：
-   - 合理设置缓存策略，利用`浏览器缓存和服务器缓存`来`减少重复加载 CSS 文件的次数`。
-   - 将CSS文件放置在静态资源服务器上，通过优化服务器配置来提高文件的传输速度。
+在网络连接和数据库连接中经常使用字符串作为参数，例如，网络连接地址URL，反射机制所需要的 String 参数，其不变性可以保证连接的安全性。如果字符串是可变的，那么可以通过修改字符串指向对象的值进行破坏，可能会引起严重的安全问题。
 
-## 排序算法有哪些,时间复杂度多少
+字符串池是用来存储Java常量的一块空间。主要用来缓存和重用字符串对象，从而提高性能和节省内存。当我们声明一个字符串常量时，会先检查字符串池是否存在相同内容的字符串常量。如果存在，则直接返回字符串池中的对象引用；如果不存在，则在字符串池中创建一个新的字符串对象，并返回对象的引用。
 
-| 算法     | 最快时间复杂度 | 最慢时间复杂度 | 平均时间复杂度 | 空间复杂度 | 简单介绍                                                     |
-| -------- | :------------: | :------------: | :------------: | :--------: | :----------------------------------------------------------- |
-| 冒泡排序 |      O(n)      |     O(n^2)     |     O(n^2)     |    O(1)    | 通过比较相邻元素，将较大的元素逐步“冒泡”到数组的末尾。       |
-| 选择排序 |     O(n^2)     |     O(n^2)     |     O(n^2)     |    O(1)    | 从未排序部分选择最小（或最大）元素并放入已排序部分。         |
-| 插入排序 |      O(n)      |     O(n^2)     |     O(n^2)     |    O(1)    | 将元素逐个插入已排序的部分，以构建有序数组。                 |
-| 快速排序 |    O(nlogn)    |     O(n^2)     |    O(nlogn)    |  O(logn)   | 使用分治法将数组划分为较小的子数组，然后递归地排序子数组。   |
-| 归并排序 |    O(nlogn)    |    O(nlogn)    |    O(nlogn)    |    O(n)    | 将数组分成两半，递归地排序每一半，然后合并两个有序子数组。   |
-| 堆排序   |    O(nlogn)    |    O(nlogn)    |    O(nlogn)    |    O(1)    | 使用堆数据结构，将数组视为完全二叉树，然后进行排序。         |
-| 希尔排序 | 取决于步长选择 | 取决于步长选择 | 取决于步长选择 |    O(1)    | 通过多次插入排序，每次使用不同的步长，逐渐改进数组的有序性。 |
-| 基数排序 |    O(logRB)    |    O(logRB)    |    O(logRB)    |   O(RB)    | 按照位数（个位、十位、百位等）对数字进行排序，从低位到高位。 |
+#### **(1) 内存与性能优化**
+
+- **共享与缓存**：因为字符串在很多程序中是高频操作的数据，如果每次修改字符串都重新分配新内存，会导致内存浪费和性能下降。
+  - 比如，JavaScript 中不同变量可能引用**相同的字符串对象**（即某些字符串可能被缓存和共享）。
+- **不变性**允许在底层实现时优化：如常量池的设计和字符串缓存，使得字符串的处理效率更高。
+
+#### **(2) 安全性**
+
+不可变字符串可以防止因多次引用造成的意外修改。
+
+- 比如，当一个字符串传递到不同函数时，不需要担心其他函数会意外修改它。这对于程序的**可预测性**和**调试**非常重要。
+
+#### **(3) JavaScript 设计中的决定**
+
+JavaScript 遵循的 ECMAScript 规范定义了字符串为不可变对象，即使你对字符串执行拼接或截取操作，实际上会返回一个新的字符串，而不是在原字符串上修改。
+
+
+
+1. **字符串不可变**是为了提升性能、安全性和优化共享缓存机制，减少不必要的内存使用。
+2. **数组可变**是因为数组设计用于频繁修改数据，这种灵活性更适合程序开发中的需求。
+3. **堆和栈**的存储位置并不决定数据的可变性，而是数据结构和语言规范决定的。
 
 ## 什么是`运行时`
 
-在JavaScript（以及其他编程语言）中，`运行时`（runtime）指的是程序代码在运行或执行的阶段，相对于编译时或静态分析阶段而言。在运行时，程序的所有逻辑、计算和交互都被动态执行，变量和函数被解析和调用，内存被分配和释放，异常被捕获和处理。理解运行时有助于更加深入地掌握如何编写高效、健壮的代码。
+在JavaScript（以及其他编程语言）中，`运行时`（runtime）指的是**程序代码在运行或执行的阶段**，相对于编译时或静态分析阶段而言。**在运行时**，程序的**所有逻辑**、**计算和交互都被动态执行**，变量和函数被解析和调用，内存被分配和释放，异常被捕获和处理。
 
 ### 运行时的主要概念
 
@@ -4874,15 +4198,15 @@ console.log(arr); // 输出: [0, 2, 3]
         - **函数执行上下文**：每调用一个JavaScript函数，都会为这个函数创建一个新的上下文。
         - **Eval执行上下文**：执行 `eval` 函数时会创建一个新的执行上下文，但在现代JavaScript中很少推荐使用 `eval` 。
     
-    - 每个执行上下文都有自己的变量对象（Variable Object）、作用域链（Scope Chain） 和 `this` 绑定。
+    - 每个**执行上下文**都有自己的**变量对象**（Variable Object）、**作用域链**（Scope Chain） 和 `this` 绑定。
 
 2. **调用栈（Call Stack）**：
-    - JavaScript引擎使用调用栈来管理函数的调用。当一个函数被调用时，其执行上下文被压入栈顶，当函数执行完毕时，该执行上下文从栈顶移除。
+    - JavaScript引擎使用调用栈来**管理函数的调用**。当一个**函数被调用时**，其**执行上下文被压入栈顶**，当**函数执行完毕时**，该**执行上下文从栈顶移除**。
     - 通过调用栈，JavaScript能够知道当前正在执行的代码片段和接下来要执行的代码。
 
 3. **事件循环（Event Loop）**：
-    - JavaScript是单线程语言，使用事件循环来处理异步操作。事件循环有助于管理任务队列（Task Queue），确保异步操作（例如计时器、I/O操作等）在合适的时间段执行。
-    - 它通过不断检查调用栈是否为空，然后从任务队列中取出任务并执行，确保程序不会阻塞。
+    - JavaScript是单线程语言，使用**事件循环来处理异步操作**。事件循环有助于管理任务队列（Task Queue），确保异步操作（例如计时器、I/O操作等）在合适的时间段执行。
+    - 它通过不断检查调用栈是否为空，然后从任务队列中取出任务并执行，**确保程序不会阻塞**。
 
 4. **内存管理**：
     - 在运行时，内存分配、垃圾回收（Garbage Collection）是非常关键的部分。JavaScript引擎会自动进行内存分配和回收，程序员不需要手动管理内存。
@@ -4892,10 +4216,10 @@ console.log(arr); // 输出: [0, 2, 3]
 
 #### 执行上下文详解
 
-每个执行上下文在创建时会进行以下步骤：
+每个**执行上下文在创建时**会进行以下步骤：
 1. **创建阶段**：
-    a. 创建变量对象（Variable Object，VO）：存储变量、函数声明和函数参数。
-    b. 建立作用域链（Scope Chain）：包括当前上下文的变量对象和其父级作用域链，直到全局上下文。
+    a. **创建变量对象**（Variable Object，VO）：**存储变量**、**函数声明**和**函数参数**。
+    b. **建立作用域链**（Scope Chain）：包括**当前上下文的变量对象**和其**父级作用域链**，**直到全局上下文**。
     c. 确定 `this` 的指向。
 
 2. **执行阶段**：
@@ -4942,29 +4266,8 @@ firstFunction();
 3. `secondFunction` 被调用，并压入调用栈。
 4. `console.log("Inside secondFunction");` 执行，随后 `firstFunction` 和 `secondFunction` 移出调用栈。
 
-#### 事件循环详解
 
-事件循环的关键在于同步任务和异步任务的调度：
-- 同步任务：直接进入调用栈执行。
-- 异步任务：当异步操作完成后，将回调函数放入任务队列中等待执行。
 
-```javascript
-console.log('Hi');
-
-setTimeout(function () {
-    console.log('There');
-}, 0);
-
-console.log('JS');
-```
-
-执行顺序：
-1. `'Hi'` 打印。
-2. `setTimeout` 登记异步任务，但不会立即执行，将其放入任务队列。
-3. `'JS'` 打印。
-4. 主线程空闲，事件循环检查任务队列，将异步任务回调函数加入调用栈执行，最终 `'There'` 打印。
-
-### 总结
 运行时涵盖了程序执行期间发生的所有动态行为，包括执行上下文的创建与销毁、内存分配与回收、函数调用顺序管理、事件和异步任务调度等。理解运行时机制有助于开发者编写性能更好、响应更及时的代码，并有效避免内存泄漏和其他性能问题。
 
 ## 数组扁平化(多维转一维数组)
@@ -4980,7 +4283,7 @@ let flatArray = arr.flat(); // 默认深度是 1
 console.log(flatArray); // 输出: [1, 2, 3, 4, 5]
 ```
 
-### 2. 使用 `Array.prototype.reduce()` 和 `Array.prototype.concat()`
+### `Array.prototype.reduce()` 和 `Array.prototype.concat()`
 这种方法利用 `reduce` 来累加每个元素，如果元素是数组就用 `concat` 方法来扩展。
 
 ```javascript
@@ -5197,23 +4500,6 @@ obj.foo2()()
 
 - **`async`**：脚本异步加载并尽快执行，打断 HTML 解析。如不依赖其它脚本或 DOM 内容的独立脚本。
 - **`defer`**：脚本异步加载但在 HTML 完全解析后按顺序执行。如依赖 DOM 结构或其它脚本的业务逻辑。
-- **无属性时**：脚本同步加载和执行，阻塞HTML解析。
-
-通过理解 `async` 和 `defer` 的细微差别，可以在适当的场景中选择合适的加载方式，从而优化网页性能和用户体验。async和defer的区别
-
-1. **执行顺序**：
-   - `async`：脚本下载完成后立即执行，执行顺序可能与HTML中出现的顺序不同。
-   - `defer`：脚本按照它们在文档中出现的顺序执行，并在HTML文档解析完成后执行。
-
-2. **对页面渲染的影响**：
-   - `async`可能会在页面解析过程中的任意时刻执行脚本，可能会影响页面的渲染（尤其是长时间执行的脚本）。
-   - `defer`会等到页面解析完成之后再执行，因此对页面初始渲染几乎没有影响。
-
-3. **属性兼容性**：
-   - 这两个属性只能用于外部脚本文件，不能用于内联脚本。
-
-4. **浏览器支持**：
-   - 大多数现代浏览器都支持`async`和`defer`属性。需要注意的是，在非常旧版本的浏览器中，支持情况可能有所不同。
 
 ### 实际应用建议
 
@@ -5240,9 +4526,7 @@ obj.foo2()()
 
 <script>
   let i = 0;
-
   function count() {
-
     // 做繁重的任务的一部分 (*)
     do {
       i++;
@@ -5252,9 +4536,7 @@ obj.foo2()()
     if (i < 1e6) {
       queueMicrotask(count);
     }
-
   }
-
   count();
 ```
 
@@ -5298,67 +4580,16 @@ obj.foo2()()
    - 复杂计算
    - 大量数据的前端处理
 
-## java跟js的区别
-
-语言类型：
-
-- Java:` 静态类型`、`编译型语言`
-- JavaScript: `动态类型`、`解释型语言`
-
-运行环境：
-
-- Java: 主要在Java虚拟机(JVM)上运行
-- JavaScript: 主要在浏览器中运行，也可以在Node.js等环境中运行
-
-应用领域：
-
-- Java: 主要用于后端开发、Android应用开发、大型企业级应用等
-- JavaScript: 主要用于前端web开发，也可用于后端(Node.js)、移动应用开发等
-
-面向对象：
-
-- Java: 完全面向对象
-- JavaScript: 基于原型的面向对象
-
-类型系统：
-
-- Java: `强类型`，变量必须声明类型
-- JavaScript: `弱类型`，变量类型可以动态改变
-
-编译过程：
-
-- Java: 需要`编译成字节码后运行`
-- JavaScript: `直接解释执行`
-
-多线程：
-
-- Java: 支持`多线程`
-- JavaScript: `单线程`（尽管有异步编程模型）
-
-内存管理：
-
-- Java: 自动垃圾回收
-- JavaScript: 自动垃圾回收，但管理方式不同
-
-语法：
-
-- 虽有一些相似之处，但整体语法差异较大
-
-标准库和生态系统：
-
-- Java: 拥有庞大的标准库和第三方库
-- JavaScript: 标准库相对较小，但有大量的npm包可用
-
 ## map和set的原理以及区别
 
-在JavaScript中，`Map`和`Set`是两种常用的数据结构，它们在ES6版本中被正式引入。尽管两者都用于存储数据，但它们的用途和内部实现原理有所不同。
+在**ES6**正式**引入**
 
 ### Map
 
 #### 原理:
 
 - **Map** 是键值对的集合，类似于对象，但键可以是任意类型的值，包括对象、数组或任何其他的原始类型。
-- 内部实现通常是通过哈希表实现的，但具体实现取决于JavaScript引擎。哈希表是一种使用哈希函数来计算数据存储位置的数据结构，从而实现快速的数据查找、添加和删除等操作。
+- 内部实现通常是通过**哈希表实现**的，但具体实现取决于JavaScript引擎。哈希表是一种使用哈希函数来计算数据存储位置的数据结构，从而实现快速的数据查找、添加和删除等操作。
 
 #### 特点:
 
@@ -5371,7 +4602,7 @@ obj.foo2()()
 #### 原理:
 
 - **Set** 是值的集合，每个元素只能出现一次，即所有元素都是唯一的。
-- Set的实现通常也基于哈希表，以支持快速访问和修改集合。Set中的每个元素被视为键和值相同（或者仅作为键），这一点类似于只有键没有值的Map。
+- Set的实现通常**也基于哈希表**，以支持快速访问和修改集合。Set中的每个元素被视为键和值相同（或者仅作为键），这一点类似于只有键没有值的Map。
 
 #### 特点:
 
@@ -5440,7 +4671,10 @@ let obj = {
 }
 obj.func()
 //undefined
-为什么输出是undefined
+node环境下输出是undefined
+浏览器环境下输出是空
+因为浏览器的全局window对象有name属性,值为空
+注意let声明的对象不会挂在window上,var会
 ```
 
 在这个代码示例中，您使用了一个箭头函数来定义 `obj.func`。箭头函数的一个关键特性是它不会创建自己的 `this` 上下文。相反，箭头函数捕获其在定义时所处的上下文的 `this` 值。在您的示例中，因为 `obj.func()` 是在全局作用域中定义的（即使它被赋给了一个对象的属性），其 `this` 指向的是全局对象（在浏览器中通常是 `window`），而不是 `obj` 对象本身。
@@ -5483,63 +4717,6 @@ var y = 10;
 
 在这个例子中，变量`y`在声明语句执行之前就已经存在，但是它的值是`undefined`直到执行到声明语句的位置。这种提升行为只适用于`var`声明的变量，不适用于`let`或`const`声明的变量。
 
-## MVVM
-
-MVVM（Model-View-ViewModel）是一种==软件架构模式==，通常用于构建用户界面，特别是在前端开发中。它主要分为三个组成部分：
-
-1. **Model（模型）**：
-   - 模型==代表应用程序的数据和业务逻辑==。它们通常是通过 REST API、数据库或其他数据源获取的数据。在==前端开发中，模型通常是应用程序需要显示或操作的数据对象==。
-2. **View（视图）**：
-   - 视图是==用户界面的结构、布局和外观==。它们通常是由 HTML、CSS 和 UI 组件构成，==负责将数据呈现给用户==，并==处理用户的输入和交互==。
-3. **ViewModel（视图模型）**：
-   - `视图模型`是连接`视图`和`模型`之间的`中介`。它==从模型中获取数据==，并对其进行适当的转换，然后==暴露给视图使用==。视图模型通常包含了展示逻辑和业务逻辑，以便视图能够简化和优化展示和交互。
-
-MVVM 的`关键思想`是通过`数据绑定`将`视图和视图模型连接起来`。具体来说，视图通过数据绑定从视图模型获取数据，并将用户的操作传递给视图模型处理。这种双向绑定使得`当视图模型中的数据发生变化时`，视图会`自动更新`，而当视图中的用户操作发生时，视图模型也能即时地响应并更新相关数据或状态。
-
-MVVM（Model-View-ViewModel）是一种软件架构模式，主要用于构建用户界面，使之与业务逻辑和数据相分离。这种设计模式特别适合于数据绑定和双向数据流的应用程序，尤其在WPF（Windows Presentation Foundation）和Xamarin等框架中被广泛使用。下面对MVVM模式进行详细深入的讲解：
-
-### 组成部分
-
-1. **Model（模型）**
-   - **定义**：Model代表应用程序的核心业务逻辑和数据。在这个层次中，不包含任何界面相关的代码。
-   - **职责**：负责获取数据，通常来自数据库、网络服务或本地存储。Model的变化通常通过通知或事件来更新ViewModel。
-   - **特点**：独立于UI，它不关注数据如何被展示。
-
-2. **View（视图）**
-   - **定义**：View是用户界面的展现层，负责定义UI的布局和外观。
-   - **职责**：只负责展示，不包含任何业务逻辑。响应用户的输入，并通过绑定的方式与ViewModel交互。
-   - **特点**：通常是声明式的，通过XAML等标记语言定义布局。它依赖于ViewModel提供的数据。
-
-3. **ViewModel**
-   - **定义**：ViewModel充当View和Model之间的中介，它是模型数据在视图中的抽象化表示。
-   - **职责**：
-     - 处理View的请求，再向Model请求数据或处理业务逻辑。
-     - 将Model的数据转换为UI可以展示的形式。
-     - 实现双向数据绑定，以便自动更新View。
-   - **特点**：不直接引用View，而是通过数据绑定和命令来实施交互逻辑。
-
-### 工作原理
-
-1. **数据绑定**：View通过数据绑定与ViewModel通信。每当ViewModel中的数据发生更改时，View会自动更新以反映这些更改。
-   
-2. **命令模式**：View中的用户交互（如按钮点击）通过命令向ViewModel发送请求。ViewModel通过命令处理逻辑操作，然后更新Model。
-   
-3. **通知变更**：ViewModel实现了通知机制（如INotifyPropertyChanged接口），确保当其属性变更时，View能够自动更新。
-
-### 优势
-
-- **清晰的分离**：UI与业务逻辑的清晰分离，促进代码的可维护性和可测试性。
-- **代码重用性高**：ViewModel可以独立测试，因为它不依赖于具体的UI。
-- **开发效率高**：支持设计人员和开发人员并行工作，设计人员专注于View开发，而开发人员专注于业务逻辑。
-
-### 缺点
-
-- **复杂性**：对于简单的应用程序，引入MVVM可能增加不必要的复杂性。
-- **学习曲线**：需要理解数据绑定、命令模式和通知机制。
-- **性能问题**：错误实现双向绑定可能会导致性能问题，需要对绑定的管理进行仔细考虑。
-
-总的来说，MVVM模式在需要高维护性、复杂数据交互或多人协作开发的应用程序中显得非常有效。在适当的环境中使用MVVM，能够极大地提高软件的质量和开发效率。
-
 ## JSON.stringfy做深拷贝的缺点
 
 1. 无法处理`函数`
@@ -5570,7 +4747,42 @@ MVVM（Model-View-ViewModel）是一种软件架构模式，主要用于构建�
 12. `不安全`
     - `如果数据中包含用户输入`，使用 JSON.parse() `可能会执行恶意代码`。
 
-因为这些限制，在需要完整、准确的深拷贝时，通常建议使用专门的深拷贝函数或库（如 lodash 的 _.cloneDeep()），或者根据具体需求自己实现深拷贝函数。这些方法虽然可能会稍微复杂一些，但能够处理更多的边界情况，提供更可靠的深拷贝结果。
+```javascript
+const original = {
+	a: 1,
+	b: [2, 3],
+	c: {
+		d: 4,
+		func: function () {
+			console.log("Function");
+		},
+	},
+	e: undefined,
+	f: NaN,
+	g: Infinity,
+	h: Symbol("h"),
+	i: { j: undefined, k: NaN, l: Infinity, m: Symbol("m") },
+	o: new Date()
+};
+// 创建循环引用
+// original.i.n = original;
+
+const stringified = JSON.stringify(original);
+const parsed = JSON.parse(stringified);
+console.log(parsed);
+//输出
+{
+  a: 1,
+  b: [ 2, 3 ],
+  c: { d: 4 },
+  f: null,
+  g: null,
+  i: { k: null, l: null },
+  o: '2024-10-13T08:29:26.006Z'
+}
+```
+
+
 
 ## 检测循环引用
 
@@ -5673,8 +4885,6 @@ function hasCycle(obj) {
   }
 }
 ```
-
-
 
 ## 深拷贝的一个问题
 
@@ -5826,75 +5036,12 @@ JavaScript 的作用域是一个非常重要的概念，它决定了变量的可
     - 这两个特性`可以动态改变作用域`，但通常不推荐使用，因为它们会影响性能和代码可读性。
 11. 严格模式 ('use strict')
     - 严格模式下，未声明的变量赋值会抛出错误，而不是创建全局变量。
-    - 
 
-JavaScript 作用域是该语言中一个核心且复杂的概念，它决定了变量的可访问性和生命周期。让我们深入探讨 JavaScript 中的作用域：
 
-1. 作用域的定义
 
-作用域是指程序中定义变量的区域，它决定了变量的可访问性和生命周期。在 JavaScript 中，作用域主要分为以下几种：
 
-- 全局作用域
-- 函数作用域
-- 块级作用域（ES6引入）
 
-2. 全局作用域
-
-- 定义：在程序的最外层定义的变量，或者在任何函数外部定义的变量。
-- 特点：
-  - 全局变量可以在程序的任何地方被访问。
-  - 在浏览器环境中，全局作用域通常是 window 对象。
-  - 过多的全局变量可能导致命名冲突和代码难以维护。
-
-示例：
-```javascript
-var globalVar = "I'm a global variable";
-
-function testScope() {
-    console.log(globalVar); // 可以访问
-}
-```
-
-3. 函数作用域
-
-- 定义：在函数内部定义的变量只在该函数内部可见。
-- 特点：
-  - 函数作用域遵循词法作用域（Lexical Scope）规则。
-  - 内部函数可以访问外部函数的变量，但外部函数不能访问内部函数的变量。
-
-示例：
-```javascript
-function outer() {
-    var outerVar = "I'm from outer";
-    
-    function inner() {
-        var innerVar = "I'm from inner";
-        console.log(outerVar); // 可以访问
-    }
-    
-    inner();
-    // console.log(innerVar); // 错误：innerVar is not defined
-}
-```
-
-4. 块级作用域
-
-- 定义：ES6 引入的概念，使用 let 和 const 关键字声明的变量具有块级作用域。
-- 特点：
-  - 变量仅在声明它们的代码块内可见。
-  - 提供了更精细的控制和更少的意外。
-
-示例：
-```javascript
-if (true) {
-    let blockVar = "I'm a block-scoped variable";
-    const BLOCK_CONST = "I'm a block-scoped constant";
-}
-// console.log(blockVar); // 错误：blockVar is not defined
-// console.log(BLOCK_CONST); // 错误：BLOCK_CONST is not defined
-```
-
-5. 词法作用域（Lexical Scope）
+词法作用域（Lexical Scope）
 
 - 定义：也称为静态作用域，指变量的作用域在代码编写时就已确定。
 - 特点：
@@ -5915,7 +5062,7 @@ var closureFn = outer();
 closureFn(); // 输出 10
 ```
 
-6. 变量提升（Hoisting）
+变量提升（Hoisting）
 
 - 定义：JavaScript 引擎在执行代码之前，会将变量和函数声明移到其所在作用域的顶部。
 - 特点：
@@ -5940,7 +5087,7 @@ function foo() {
 }
 ```
 
-7. 闭包（Closure）
+闭包（Closure）
 
 - 定义：一个函数和对其周围状态（词法环境）的引用捆绑在一起构成闭包。
 - 特点：
@@ -6010,163 +5157,7 @@ const myModule = (function() {
 - 引入了新的模块系统，每个模块有自己的作用域。
 - 通过 import 和 export 语句控制变量和函数的可见性。
 
-总结：
-理解 JavaScript 的作用域对于编写高质量、可维护的代码至关重要。它涉及到变量的可访问性、生命周期管理、代码组织和性能优化等多个方面。随着 ES6 及后续版本的发展，JavaScript 的作用域系统变得更加强大和灵活，但也增加了一些复杂性。深入理解这些概念可以帮助开发者更好地控制代码的结构和行为，避免常见的陷阱，并充分利用语言的特性。
 
-## set和map进行查找的时间复杂度
-
-Set 和 Map 在 JavaScript 中都是基于`哈希表实现的数据结构`，因此它们的查找（查询）操作通常具有很高的效率。以下是它们查找操作的时间复杂度：
-
-1. Set 的查找操作:
-
-   - 时间复杂度：`O(1) 平均情况`
-
-   Set 使用 has() 方法进行查找。例如：
-
-   ```javascript
-   const mySet = new Set([1, 2, 3]);
-   mySet.has(2); // 返回 true
-   ```
-
-2. Map 的查找操作:
-
-   - 时间复杂度：`O(1) 平均情况`
-
-   Map 使用 get() 或 has() 方法进行查找。例如：
-
-   ```javascript
-   const myMap = new Map([['a', 1], ['b', 2]]);
-   myMap.get('a'); // 返回 1
-   myMap.has('b'); // 返回 true
-   ```
-
-需要注意的是：
-
-1. 这里的` O(1) 是平均情况和理想情况下的时间复杂度`。在`极端情况`下（比如`哈希冲突非常严重时`），最坏情况下的`时间复杂度可能会退化到 O(n)`，其中 n 是 Set 或 Map 中的元素数量。
-2. 实际性能可能会受到各种因素的影响，如数据量大小、哈希函数的质量、JavaScript 引擎的具体实现等。
-3. 相比于数组或普通对象，Set 和 Map 在大量数据的快速查找方面通常表现更好。
-4. 对于小型数据集，简单的数组或对象可能因为较低的开销而表现得更好。
-
-## 介绍一下哈希表并说明为什么set和map平均是O1
-
-#### `哈希表`（Hash Table）：
-
-哈希表是一种`基于数组实现`的`数据结构`，它`利用哈希函数将键（key）映射到数组的索引上`，从而实现快速的插入、删除和查找操作。
-
-哈希表的核心组成：
-
-1. `数组`：`用于存储数据`。
-2. `哈希函数`：将`键转换为数组索引`。
-3. 冲突解决机制：处理不同键可能映射到同一索引的情况。
-
-工作原理：
-
-1. 当插入一个键值对时：
-   - 使用哈希函数计算键的哈希值。
-   - 将哈希值映射到数组的索引。
-   - 在该索引位置存储值。
-2. 当`查找一个键时`：
-   - 再次`使用哈希函数计算键的哈希值`。
-   - `找到对应的数组索引`。
-   - `返回该位置存储的值`。
-
-#### `为什么 Set 和 Map 的平均查找时间复杂度是 O(1)：`
-
-1. `直接访问`：`哈希表利用数组的特`性，可以`通过索引直接访问元素`，这个操作的时间复杂度是 O(1)。
-2. `哈希函数`：好的哈希函数能够`将键均匀地分布在数组中`，`减少冲突`。`计算哈希值的时间通常是固定的`，不`依赖于数据量`。
-3. `数组大小调整`：当`元素数量增加时`，`哈希表会自动增大数组大小并重新分配元素`，保持较低的冲突率。
-4. `冲突解决`：即使发生冲突，常见的解决方法（如链地址法）也能在较小的常数时间内完成。
-5. 平均情况：虽然在`最坏情况`下（`所有键都冲突到同一个索引`），查找可能`退化到 O(n)`，但这种情况在实际中极少发生。通过良好的哈希函数和动态调整数组大小，可以使平均情况保持在 O(1)。
-
-示例： 假设有一个存储 1000 个元素的 Set：
-
-- 如果使用数组，查找一个元素平均需要检查 500 次。
-- 使用哈希表，通常只需要 1 次哈希计算和 1 次数组访问，无论元素有多少。
-
-总结： Set 和 Map 之所以能够实现 O(1) 的平均查找时间复杂度，是因为它们基于哈希表实现。哈希表通过牺牲一些空间来换取时间效率，利用直接数组访问的特性，使得大多数操作能够在常数时间内完成。这使得 Set 和 Map 在需要频繁查找、插入和删除操作的场景中非常高效。
-
-## 发布订阅模式
-
-前端中的发布订阅模式（Publish-Subscribe Pattern）是一种常用的设计模式，用于实现对象之间的松耦合通信。这种模式允许对象（称为订阅者）订阅一个事件，当该事件被发布时，所有订阅该事件的对象都会收到通知。
-
-以下是发布订阅模式的基本原理和实现方式：
-
-1. 核心组件：
-
-   - 发布者（Publisher）：负责发布事件。
-   - 订阅者（Subscriber）：订阅并响应事件。
-   - 事件中心（Event Channel）：管理订阅和发布的过程。
-
-2. 基本原理：
-
-   - 维护一个事件到订阅者的映射表。
-   - 提供订阅和取消订阅的方法。
-   - 提供发布事件的方法。
-
-3. 实现步骤：
-
-   a. 创建事件中心：
-
-   - 使用对象存储事件及其对应的订阅者列表。
-   - 实现订阅（on/subscribe）、取消订阅（off/unsubscribe）和发布（emit/publish）方法。
-
-   b. 订阅过程：
-
-   - 订阅者调用事件中心的订阅方法。
-   - 事件中心将订阅者添加到相应事件的订阅者列表中。
-
-   c. 发布过程：
-
-   - 发布者调用事件中心的发布方法。
-   - 事件中心遍历该事件的所有订阅者，并通知它们。
-
-4. 代码示例：
-
-```javascript
-class EventEmitter {
-    constructor() {
-      this.events = {};
-    }
-    // 订阅事件
-    on(event, listener) {
-      if (!this.events[event]) {
-        this.events[event] = [];
-      }
-      this.events[event].push(listener);
-    }
-    // 取消订阅事件
-    off(event, listener) {
-      if (!this.events[event]) return;
-      this.events[event] = this.events[event].filter(l => l !== listener);
-    }
-    // 发布事件
-    emit(event, ...args) {
-      if (!this.events[event]) return;
-      this.events[event].forEach(listener => listener(...args));
-    }
-  }
-  // 示例使用
-  const emitter = new EventEmitter();
-  
-  const greetListener = (name) => {
-    console.log(`Hello, ${name}!`);
-  };
-  
-  emitter.on('greet', greetListener);
-  emitter.emit('greet', 'Alice');  // 输出: Hello, Alice!
-  
-  emitter.off('greet', greetListener);
-  emitter.emit('greet', 'Bob');    // 没有输出，因为已经取消订阅
-  
-```
-
-1. 优点：
-   - 松耦合：发布者和订阅者不需要直接知道对方的存在。
-   - 灵活性：可以动态地添加或移除订阅者。
-   - 可扩展性：易于添加新的发布者和订阅者。
-2. 缺点：
-   - 可能导致内存泄漏：如果订阅者忘记取消订阅。
-   - 复杂性：在大型应用中，可能难以追踪事件流。
 
 ## 为什么typeof null === 'object'?
 
@@ -6200,19 +5191,19 @@ console.log(value === null); // true
 ## js为什么是单线程的
 
 1. 简单性和可预测性
-   - 单线程模型使得 JavaScript 代码的执行顺序是可预测的,避免了多线程编程中的复杂性和同步问题。
-   - 开发者不需要处理线程安全、死锁等并发问题,降低了编程难度。
+   - 单线程模型使得 JavaScript 代码的**执行顺序是可预测**的,**避免了多线程编程中的复杂性和同步问题**。
+   - 开发者**不需要处理线程安全、死锁**等并发问题,降低了编程难度。
 2. 浏览器环境的需求
-   - JavaScript 最初是为了在浏览器中操作 DOM 而设计的。如果是多线程,可能会导致多个线程同时操作 DOM,造成冲突。
-   - 单线程模型确保了对 DOM 的操作是串行的,避免了潜在的竞争条件。
+   - **JavaScript 最初是为了在浏览器中操作 DOM** 而设计的。如果是**多线程**,可能会**导致多个线程同时操作 DOM,造成冲突**。
+   - 单线程模型**确保了对 DOM 的操作是串行的**,避免了潜在的竞争条件。
 3. 历史原因
-   - 当 JavaScript 被创建时(1995年),计算机性能相对较低,多线程编程复杂度高,单线程模型更适合当时的技术环境。
+   - 当 JavaScript 被创建时(1995年),**计算机性能相对较低**,多线程编程复杂度高,单线程模型更适合当时的技术环境。
 4. 避免资源竞争
    - 在浏览器环境中,多个线程可能会导致对共享资源(如用户界面)的竞争,单线程模型避免了这个问题。
 5. 事件驱动模型
-   - JavaScript 采用事件驱动的编程模型,这与单线程执行非常契合。通过事件循环和回调机制,可以高效地处理异步操作。
+   - JavaScript 采用**事件驱动的编程模型**,这与单线程执行非常契合。通过**事件循环和回调机制,可以高效地处理异步操作**。
 6. 内存效率
-   - 单线程模型在内存使用上更加高效,不需要为多线程管理分配额外的资源。
+   - 单线程模型在**内存使用上更加高效**,不需要为多线程管理分配额外的资源。
 
 虽然 JavaScript 是单线程的,但它通过以下机制来处理并发和异步操作:
 
@@ -6225,520 +5216,7 @@ console.log(value === null); // true
 4. 定时器和 I/O 操作
    - 这些操作在后台执行,不会阻塞主线程。
 
-## 不同窗口数据共享场景题
 
-### 打开两个相同的页面，例如： 页面1：https://space.bilibili.com/8692067 页面2：https://space.bilibili.com/8692067 你在页面1中点击关注，我们希望第二个页面的未关注变为已关注，也就是第二个页面同步第一个页面的状态，有哪些方法可以做到？
-
-要实现在同一浏览器中打开的两个相同页面之间同步状态（如关注状态），有多种方法可以实现。以下是一些常用的方法，我们将详细讨论每种方法的原理、优缺点和实现方式：
-
-1. LocalStorage 和 StorageEvent
-
-原理：
-- 使用 localStorage 存储关注状态。
-- 利用 StorageEvent 在不同标签页之间通信。
-
-实现：
-```javascript
-// 在页面1中：
-localStorage.setItem('followStatus', 'followed');
-
-// 在页面2中：
-window.addEventListener('storage', (event) => {
-  if (event.key === 'followStatus' && event.newValue === 'followed') {
-    updateFollowUI();
-  }
-});
-
-function updateFollowUI() {
-  // 更新关注按钮UI
-}
-```
-
-优点：
-- 简单易实现
-- 不需要服务器参与
-- 适用于同源页面
-
-缺点：
-- 仅适用于同源页面
-- 数据存储在客户端，可能不安全
-- 存储容量有限
-
-2. Broadcast Channel API
-
-原理：
-- 创建一个命名的通道，允许同源的不同浏览上下文（如窗口、标签页、iframe）之间相互通信。
-
-实现：
-```javascript
-// 创建或连接到一个通道
-const channel = new BroadcastChannel('follow_status');
-
-// 在页面1中：
-channel.postMessage('followed');
-
-// 在页面2中：
-channel.onmessage = (event) => {
-  if (event.data === 'followed') {
-    updateFollowUI();
-  }
-};
-```
-
-优点：
-- 专门为跨标签页通信设计
-- 使用简单，API直观
-- 性能较好
-
-缺点：
-- 仅适用于同源页面
-- 旧版浏览器可能不支持
-
-3. SharedWorker
-
-原理：
-- SharedWorker 是一种可以被多个浏览器上下文共享的 Web Worker。
-
-实现：
-```javascript
-// shared-worker.js
-let ports = [];
-onconnect = (e) => {
-  const port = e.ports[0];
-  ports.push(port);
-  port.onmessage = (event) => {
-    ports.forEach(p => p.postMessage(event.data));
-  };
-};
-
-// 在两个页面中：
-const worker = new SharedWorker('shared-worker.js');
-worker.port.onmessage = (event) => {
-  if (event.data === 'followed') {
-    updateFollowUI();
-  }
-};
-
-// 在页面1中点击关注时：
-worker.port.postMessage('followed');
-```
-
-优点：
-- 可以在多个标签页之间共享状态
-- 性能好，不会阻塞主线程
-
-缺点：
-- 实现相对复杂
-- 需要额外的文件
-- 浏览器支持可能不够广泛
-
-4. 服务器端同步 + 轮询
-
-原理：
-- 将关注状态保存在服务器端
-- 客户端定期轮询服务器获取最新状态
-
-实现：
-```javascript
-// 在页面1中点击关注时：
-fetch('/api/follow', { method: 'POST', body: JSON.stringify({ userId: '8692067' }) })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      updateFollowUI();
-    }
-  });
-
-// 在两个页面中定期轮询：
-setInterval(() => {
-  fetch('/api/follow-status?userId=8692067')
-    .then(response => response.json())
-    .then(data => {
-      if (data.followed) {
-        updateFollowUI();
-      }
-    });
-}, 5000); // 每5秒轮询一次
-```
-
-优点：
-- 可靠，状态由服务器控制
-- 适用于不同源的页面
-- 可以跨设备同步
-
-缺点：
-- 增加服务器负载
-- 可能存在延迟
-- 频繁的网络请求可能影响性能
-
-5. WebSocket
-
-原理：
-- 使用 WebSocket 建立客户端和服务器之间的持久连接
-- 服务器可以主动推送状态更新
-
-实现：
-```javascript
-const socket = new WebSocket('wss://your-websocket-server.com');
-
-// 在页面1中点击关注时：
-socket.send(JSON.stringify({ action: 'follow', userId: '8692067' }));
-
-// 在两个页面中：
-socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  if (data.action === 'follow' && data.userId === '8692067') {
-    updateFollowUI();
-  }
-};
-```
-
-优点：
-- 实时更新，延迟低
-- 服务器可以主动推送
-- 适用于不同源的页面
-
-缺点：
-- 需要服务器支持 WebSocket
-- 实现相对复杂
-- 需要处理连接断开和重连
-
-6. IndexedDB 和 ServiceWorker
-
-原理：
-- 使用 IndexedDB 存储关注状态
-- 使用 ServiceWorker 在后台同步数据
-
-实现：
-```javascript
-// 在 ServiceWorker 中：
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'follow-sync') {
-    event.waitUntil(
-      fetch('/api/follow-status')
-        .then(response => response.json())
-        .then(data => {
-          return updateIndexedDB(data);
-        })
-    );
-  }
-});
-
-// 在页面中：
-navigator.serviceWorker.ready.then((registration) => {
-  registration.sync.register('follow-sync');
-});
-
-// 监听 IndexedDB 变化
-// (需要通过 IndexedDB 观察者模式或轮询实现)
-```
-
-优点：
-- 可以在离线状态下工作
-- 后台同步，不影响页面性能
-- 可以处理复杂的同步逻辑
-
-缺点：
-- 实现复杂
-- 需要考虑兼容性问题
-- 调试可能比较困难
-
-7. 跨域消息传递 (postMessage)
-
-原理：
-- 利用 window.postMessage() 在不同源的页面间传递消息
-
-实现：
-```javascript
-// 在页面1中：
-const otherWindow = window.open('https://other-domain.com/page2');
-otherWindow.postMessage({ action: 'follow', userId: '8692067' }, 'https://other-domain.com');
-
-// 在页面2中：
-window.addEventListener('message', (event) => {
-  if (event.origin !== 'https://original-domain.com') return;
-  if (event.data.action === 'follow' && event.data.userId === '8692067') {
-    updateFollowUI();
-  }
-});
-```
-
-优点：
-- 可以在不同源的页面间通信
-- 相对安全，可以验证消息来源
-
-缺点：
-- 需要知道其他窗口的引用
-- 实现可能比较复杂
-
-总结：
-选择哪种方法取决于具体的需求和约束：
-- 如果是同源页面，LocalStorage 或 Broadcast Channel API 是简单有效的选择。
-- 对于需要实时性的场景，WebSocket 是很好的选择。
-- 如果需要在不同源的页面间同步，可以考虑服务器端同步或 postMessage。
-- 对于复杂的离线同步需求，IndexedDB 和 ServiceWorker 的组合可能是更好的选择。
-
-在实际应用中，可能需要结合多种方法来实现最佳的用户体验和性能。同时，还需要考虑安全性、兼容性和可维护性等因素。
-
-## 定时器轮询区别
-
-### 两种轮询的方式，下面这个每隔5秒它会去执行这个fn2，上面fn1里边它会启动一个定时器，5秒后再次执行这个fn1。这两种轮旋的方式有什么区别呢？
-
-![discuss_1723014901021](assets/discuss_1723014901021.jpeg)
-
-这两种轮询方式在 JavaScript 中的主要区别在于它们的执行机制和时序。让我们逐一分析它们：
-
-### 第一种方式：递归定时器调用
-```javascript
-function fn1() {
-  // ... 其他逻辑执行耗时2s
-  
-  setTimeout(() => {
-    fn1();
-  }, 5000);
-}
-```
-
-#### 特点和分析：
-1. **函数执行完再去排队：**
-   - `fn1` 执行后，会设置一个5秒的定时器，之后函数结束。
-   - 5秒后定时器触发，`fn1` 再次被调用。
-   - 注意，这里的5秒是从`setTimeout`被调用时开始算起，而不是从`fn1`开始执行到再执行之间的总时间。
-
-2. **包括执行时间：**
-   - 如果`fn1`中的逻辑（假设包括耗时2秒的其他逻辑）需要花费大量时间，这会导致每次间隔可能会比预期的5秒长。
-   - 实际上，下一次`fn1` 的调用是上一次执行结束后5秒。
-
-3. **适用场景：**
-   - 适用于需要等待前一次操作完成后再进行下一次操作的情况。
-   - 通常用于递归操作或需要依赖于前一次操作结果的任务调度。
-
-### 第二种方式：独立定时器调用
-```javascript
-setTimeout(() => {
-  fn2();
-}, 5000);
-```
-
-#### 特点和分析：
-1. **独立运行：**
-   - 定时器设置后，不管`fn2`执行需要多久，每隔5秒定时器都会触发。
-   - 这里的5秒是严格意义上的，每隔5秒触发一次，不受到`fn2`执行时间的影响。
-
-2. **并行执行：**
-   - 如果`fn2`执行时间超过5秒，比如`fn2`又花费2秒来完成任务，同时又有下一个定时器在等待，这可能会导致执行的重叠或并行。
-
-3. **适用场景：**
-   - 适用于需要严格固定间隔时间进行触发的任务，例如轮询服务器状态、定时刷新数据等。
-   - 在任务不依赖于前一次执行的结果时效果最佳。
-
-### 实际效果差异
-假设`fn1`及其逻辑执行时间是2秒：
-
-1. **递归定时器：**
-   - 总时间 = 执行时间(2秒) + 间隔时间(5秒) = 每7秒执行一次新的`fn1`。
-   - 充分保证每个定时器间隔5秒是在前一个`fn1`完成后开始。
-
-2. **独立定时器：**
-   - 每隔5秒`fn2`执行一次，不考虑上一次`fn2`执行时间。
-   - 如果执行时间 + 下一次定时器触发间隔时间超过5秒，`fn2`会重叠执行。
-
-### 总结
-- 第一种递归定时器更适合需要逐次操作完成后继续下一次的场景，间隔时间和执行时间加总决定了轮询频率。
-- 第二种独立定时器方式适合需要固定时间段内反复执行的操作，不考虑操作本身的执行时间，从而使得操作具有更严格的时间间隔。
-
-选择使用哪种方式应该依赖于具体的使用场景和对时间间隔的严格性要求。
-
-## web accessibility
-
-Web Accessibility（网络可访问性）指的是确保所有用户，包括那些有视觉、听觉、运动和认知障碍的用户，都能够平等地访问和使用网站。实现Web可访问性可以提高网站的用户体验，并且在很多地区已经成为法律或法规的要求。
-
-### 为什么Web可访问性很重要？
-
-1. **法律要求**：
-   在许多国家和地区（例如美国的《残疾人法案》（ADA）和欧洲的《无障碍信息技术指令》），不符合可访问性标准的网站可能面临法律诉讼。
-
-2. **更大的受众群体**：
-   提高了网站的用户覆盖面，使得有各种障碍的用户也能顺利访问和使用你的网站。
-
-3. **改进的用户体验**：
-   可访问性措施往往也会带来更好的用户体验，不仅对障碍用户，对所有用户都有益。
-
-4. **SEO 优化**：
-   一些可访问性实践（如文本替代标签、结构化HTML）有助于搜索引擎优化，提高搜索引擎排名。
-
-### 在网页设计中实现Web可访问性的方法
-
-1. **语义化HTML**：
-   使用正确的HTML标签，例如`<header>`, `<nav>`, `<main>`, `<aside>`, 和`<footer>`。这些标签帮助屏幕阅读器理解页面结构。
-   
-   ```html
-   <header>
-       <h1>网站标题</h1>
-       <nav>
-           <ul>
-               <li><a href="#home">首页</a></li>
-               <li><a href="#about">关于我们</a></li>
-               <li><a href="#contact">联系</a></li>
-           </ul>
-       </nav>
-   </header>
-   ```
-
-2. **提供文本替代标签 (Alt Text)**：
-   所有图像应当有描述性替代文本 (`alt` 属性)，帮助视觉障碍用户了解图像内容。
-
-   ```html
-   <img src="logo.png" alt="公司标志" />
-   ```
-
-3. **使用适当的对比度**：
-   确保文本和背景有足够的颜色对比度，以便有视觉障碍的用户可以阅读内容。可以使用工具如 [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) 来验证对比度。
-
-4. **键盘导航**：
-   确保网站可以通过键盘导航。所有的交互元素如链接、按钮和表单应当可以通过 tab 键进行访问。
-
-   ```html
-   <button>点击我</button>
-   ```
-
-5. **使用ARIA（Accessible Rich Internet Applications）标签**：
-   ARIA标签能够为动态内容提供附加信息，使屏幕阅读器更容易理解和解释。
-   
-   ```html
-   <div role="alert">这是一个重要的警告信息。</div>
-   ```
-
-6. **提供可操作的表单**：
-   为表单元素提供标签，并使用正确的输入类型。
-
-   ```html
-   <form>
-       <label for="name">姓名:</label>
-       <input type="text" id="name" name="name" required />
-       <button type="submit">提交</button>
-   </form>
-   ```
-
-7. **避免闪烁内容**：
-   闪烁或频闪会对有癫痫症的用户产生危险，尽量避免这种设计。
-
-8. **字幕和文字说明**：
-   为视频和音频内容提供字幕和文字说明，这对听力障碍用户至关重要。
-
-   ```html
-   <video controls>
-       <source src="movie.mp4" type="video/mp4">
-       <track kind="captions" src="captions.vtt" srclang="en" label="English">
-   </video>
-   ```
-
-9. **可调整字体大小**：
-   确保用户可以自由调整文本的大小而不影响页面布局和功能。
-
-10. **定期测试和验证**：
-    使用工具和屏幕阅读器（比如NVDA、JAWS、VoiceOver）进行测试，确保网站符合Web可访问性标准。可以参考WCAG（Web Content Accessibility Guidelines）中的具体标准。
-
-## Babel
-
-Babel 是一个流行的 JavaScript 转译器（transpiler），用于将最新版本的 JavaScript 代码（包括  ECMAScript 2015+ 或更高版本）转换为兼容旧浏览器和运行环境的代码。Babel 可以处理新语法和新  API，将它们转译为兼容性更好的旧语法和旧 API。它的主要目的是帮助开发者使用最新的 JavaScript  功能，同时保证代码在所有目标运行环境中都能正常运行。
-
-### Babel 的核心功能
-
-1. **语法转译（Syntax Transformation）**：将新的 JavaScript 语法转译为旧语法。
-2. **Polyfills**：通过加载库（如 `core-js` 和 `regenerator-runtime`），提供新的 JavaScript API 的兼容实现。
-3. **插件体系**：提供灵活的插件系统，可以根据需要裁剪和扩展功能。
-
-### Babel 的工作原理
-
-Babel 的工作流程大致可以分为三个步骤：
-
-1. **解析（Parsing）**：
-   - **词法分析（Lexical Analysis）**：将代码拆解成标记（tokens）。
-   - **语法分析（Syntactic Analysis）**：将标记转换为抽象语法树（AST）。
-2. **转换（Transforming）**：
-   - 使用插件或预设（presets）对抽象语法树进行转换。例如，ES6 的 `let` 被转换为 ES5 的 `var`，箭头函数被转换为普通的函数表达式。
-3. **生成（Generation）**：
-   - 将转换后的抽象语法树重新生成代码。
-
-### 详细解释
-
-1. **解析**： 使用 `@babel/parser` 将 JavaScript 代码解析为抽象语法树（AST）。
-
-   ```javascript
-   const parser = require("@babel/parser");
-   const ast = parser.parse(code);
-   ```
-
-2. **转换**： 使用 `@babel/traverse` 遍历 AST，并应用转换规则。在这个例子中，将所有的 `const` 声明转换为 `var` 声明：
-
-   ```javascript
-   traverse(ast, {
-     enter(path) {
-       if (t.isVariableDeclaration(path.node, { kind: "const" })) {
-         path.node.kind = "var";
-       }
-     }
-   });
-   ```
-
-3. **生成**： 使用 `@babel/generator` 将修改后的 AST 重新生成代码：
-
-   ```javascript
-   const output = generator(ast, {}, code);
-   console.log(output.code); // 输出: var x = 1;
-   ```
-
-## JS的底层实现
-
-JavaScript 的底层实现通常是由 C 或 C++ 编写的。不同的 JavaScript 引擎可能使用不同的具体实现，但大多数主流引擎都是用 C++ 编写的。以下是一些主要的 JavaScript 引擎及其实现语言：
-
-1. V8 (Google Chrome, Node.js)
-   - 主要由 C++ 实现
-2. SpiderMonkey (Mozilla Firefox)
-   - 主要由 C 和 C++ 实现
-3. JavaScriptCore (Apple Safari)
-   - 主要由 C++ 实现
-4. Chakra (Microsoft Edge 旧版)
-   - 主要由 C++ 实现
-5. Hermes (Facebook, 用于 React Native)
-   - 主要由 C++ 实现
-6. QuickJS (独立的轻量级引擎)
-   - 主要由 C 实现
-
-这些引擎的底层实现涉及多个方面：
-
-1. 解析器 (Parser)：将 JavaScript 源代码转换为抽象语法树 (AST)。
-2. 解释器 (Interpreter)：直接执行 AST 或字节码。
-3. 编译器 (Compiler)：将 JavaScript 代码编译为机器码。许多现代引擎使用即时编译（JIT）技术。
-4. 垃圾回收器 (Garbage Collector)：管理内存分配和回收。
-5. 运行时 (Runtime)：提供 JavaScript 标准库和内置对象的实现。
-6. 优化器 (Optimizer)：应用各种优化技术来提高代码执行效率。
-
-使用 C/C++ 实现 JavaScript 引擎的主要原因包括：
-
-- 性能：C/C++ 是编译型语言，可以直接编译为机器码，执行效率高。
-- 底层控制：C/C++ 提供了对系统底层资源的直接访问和控制。
-- 成熟的工具链：C/C++ 有成熟的编译器、调试器和性能分析工具。
-- 跨平台能力：C/C++ 可以在多种操作系统和硬件平台上编译和运行。
-
-虽然 JavaScript 引擎的核心通常是用 C/C++ 实现的，但在引擎的某些部分或工具中可能会使用其他语言。例如，一些测试套件或辅助工具可能用 Python 或其他高级语言编写。
-
-总的来说，JavaScript 作为一种高级解释型语言，其执行环境（引擎）是由更低级的系统编程语言实现的，这使得 JavaScript 可以在保持其灵活性和易用性的同时，通过优化的底层实现来获得良好的性能。
-
-## 浏览器的每个页面是一个线程还是一个进程
-
-现代主流浏览器中，通常每个页面是一个独立的进程，而不是线程
-
-使用多进程架构可以带来许多好处：
-
-1. **稳定性**：一个标签页或插件崩溃不会影响整个浏览器，可以提高整体的稳定性。
-2. **安全性**：进程间隔离提供了一个额外的安全层，防止恶意网页或扩展影响其他页面或系统。
-3. **性能**：不同进程可以运行在不同 CPU 核心上，以实现更好的并发性能。缺点
-
-然而，多进程架构也带来了一些缺点：
-
-1. **内存消耗**：每个进程需要独立的内存空间，会增加整体的内存使用量。
 
 ## 数组去重
 
@@ -6966,8 +5444,6 @@ for (const item of array) {
 
 虽然 forEach 不支持直接中断，但这符合其设计初衷。在需要提前终止循环的场景中，可以考虑使用 some()、every()，或者直接使用传统的 for 循环或 for...of 循环。选择哪种方法应该基于具体需求、代码可读性和团队编码规范。
 
-记住，清晰的代码通常比聪明但难以理解的技巧更有价值。如果发现自己经常需要中断 forEach，这可能是一个信号，表明应该重新考虑使用其他更适合的循环方法。
-
 ## 判断一个对象为空对象
 
 在JavaScript中，可以通过几种不同的方法来判断一个对象是否为空对象。以下是一些常见的方法：
@@ -7082,127 +5558,23 @@ console.log(arr);
 */
 ```
 
-## 路由懒加载的实现及其原理
-
-路由懒加载是一种优化网页性能的技术，它允许我们按需加载组件，而不是在初始加载时就将所有组件都加载完毕。这种方法可以显著减少初始加载时间，特别是对于大型应用来说。下面我们来详细讲解路由懒加载的实现及其原理：
-
-实现方式：
-
-### 使用动态 import()
-
-在现代前端框架中（如 React、Vue），我们可以使用动态 import() 语法来实现懒加载：
-
-Vue 示例：
-
-```javascript
-import Vue from 'vue'
-import Router from 'vue-router'
-
-Vue.use(Router)
-
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: () => import('./components/Home.vue')
-    },
-    {
-      path: '/about',
-      name: 'About',
-      component: () => import('./components/About.vue')
-    }
-  ]
-})
-```
-
-### 使用 RequireJS 等模块加载器
-
-在一些older的项目中，可能会使用 RequireJS 这样的模块加载器来实现懒加载：
-
-```javascript
-define(['require'], function(require) {
-  return {
-    load: function(name, req, onload, config) {
-      require([name], function(value) {
-        onload(value);
-      });
-    }
-  };
-});
-```
-
-### 原理：
-
-路由懒加载的原理主要包括以下几个方面：
-
-1. 代码分割（Code Splitting）：
-   - 构建工具（如 Webpack）在打包时会将懒加载的组件分割成单独的 chunk。
-   - 每个 chunk 都有一个唯一的 ID，可以在需要时通过这个 ID 加载。
-
-2. 动态导入：
-   - 当用户访问特定路由时，才会触发相应组件的加载。
-   - 这通常通过 ES6 的动态 import() 或类似的异步加载机制实现。
-
-3. Promise 和异步加载：
-   - 动态 import() 返回一个 Promise，允许我们在组件加载完成后再渲染。
-   - 在加载过程中，可以显示加载指示器或占位内容。
-
-4. 缓存：
-   - 一旦组件被加载，它通常会被缓存，以便后续访问时可以立即使用，无需重新加载。
-
-5. 预加载（可选）：
-   - 一些实现可能会在空闲时预加载可能soon需要的组件，以提高用户体验。
-
-### 实现细节：
-
-1. 当用户首次加载应用时，只加载核心代码和初始路由所需的组件。
-
-2. 当用户导航到新路由时：
-   - 检查该路由对应的组件是否已加载。
-   - 如果未加载，触发动态导入。
-   - 显示加载指示器。
-   - 组件加载完成后，隐藏加载指示器并渲染组件。
-
-3. 浏览器通过网络请求获取相应的 JS chunk。
-
-4. 执行加载的 JS 代码，注册新的组件。
-
-5. 框架（如 React 或 Vue）接管并渲染新加载的组件。
-
-### 优势：
-
-1. 减少初始加载时间和初始bundle大小。
-2. 提高应用性能，特别是在移动设备或低速网络环境下。
-3. 按需加载资源，节省带宽。
-
-### 注意事项：
-
-1. 过度使用懒加载可能导致路由切换时出现明显延迟。
-2. 需要合理设置加载指示器，以提供良好的用户体验。
-3. 考虑预加载策略，在适当时机预加载可能soon需要的组件。
-
-总之，路由懒加载是一种强大的性能优化技术，通过延迟加载非即时需要的代码，可以显著提升大型应用的初始加载速度和整体性能。
-
 ## 如果页面性能差，如何进行定位
-
-定位和解决页面性能问题是前端开发中的一个重要任务。以下是一个系统性的方法来定位页面性能问题：
 
 1. 使用性能分析工具：
 
-   a) Chrome DevTools Performance 面板：
+   a) Chrome **DevTools Performance** 面板：
       - 记录页面加载和运行时的性能数据。
-      - 分析 Main 线程活动、JS 执行、布局、绘制等。
+      - **分析 Main 线程活动**、**JS 执行、布局、绘制**等。
 
-   b) Lighthouse：
+   b) **Lighthouse**：
       - 提供整体性能评分和具体优化建议。
-      - 分析首次内容绘制（FCP）、最大内容绘制（LCP）等关键指标。
+      - **分析首次内容绘制（FCP）、最大内容绘制（LCP）**等关键指标。
 
    c) WebPageTest：
       - 提供详细的加载瀑布图和各种性能指标。
       - 可以模拟不同网络条件和设备。
 
-2. 检查网络性能：
+2. 检查**网络性能**：
 
    a) 使用 Network 面板分析资源加载：
       - 查看总下载大小和时间。
@@ -7214,11 +5586,11 @@ define(['require'], function(require) {
 
 3. 分析 JavaScript 性能：
 
-   a) 使用 Performance 面板的 Call Tree 和 Bottom-Up 视图：
+   a) 使用 **Performance 面板的 Call Tree 和 Bottom-Up** 视图：
       - 识别耗时长的函数调用。
       - 查找可能的 JavaScript 性能瓶颈。
 
-   b) 检查长任务（Long Tasks）：
+   b) **检查长任务**（Long Tasks）：
       - 超过 50ms 的任务可能会导致界面卡顿。
 
 4. 检查渲染性能：
@@ -7227,11 +5599,11 @@ define(['require'], function(require) {
       - 查看是否有频繁的强制同步布局。
 
    b) 检查绘制和合成：
-      - 使用 DevTools 的 Rendering 面板，开启 Paint flashing 和 Layer borders。
+      - 使用 **DevTools 的 Rendering 面板，开启 Paint flashing 和 Layer borders**。
 
 5. 内存使用分析：
 
-   a) 使用 Memory 面板：
+   a) 使用 **Memory 面板**：
       - 检查内存泄漏。
       - 分析 JS 堆内存使用情况。
 
@@ -7251,9 +5623,9 @@ define(['require'], function(require) {
 
 9. 缓存策略：
 
-   - 检查是否正确使用了浏览器缓存和 CDN。
+   - **检查是否正确使用了浏览器缓存和 CDN**。
 
-10. 代码分割和懒加载：
+10. **代码分割和懒加载**：
 
     - 分析是否有机会进行代码分割和懒加载。
 
@@ -7264,7 +5636,7 @@ define(['require'], function(require) {
 
 12. CSS 性能：
 
-    - 分析 CSS 选择器复杂度。
+    - **分析 CSS 选择器复杂度**。
     - 检查是否有未使用的 CSS。
 
 13. 字体加载：
@@ -7273,7 +5645,7 @@ define(['require'], function(require) {
 
 14. 动画性能：
 
-    - 检查是否使用了高性能的动画技术（如 CSS transitions/animations, requestAnimationFrame）。
+    - **检查是否使用了高性能的动画技术（如 CSS transitions/animations, requestAnimationFrame）。**
 
 15. 关键渲染路径优化：
 
@@ -7281,7 +5653,7 @@ define(['require'], function(require) {
 
 16. 预加载和预连接：
 
-    - 检查是否合理使用了 preload, prefetch, 和 dns-prefetch。
+    - **检查是否合理使用了 preload, prefetch, 和 dns-prefetch。**
 
 定位过程：
 
@@ -7292,8 +5664,6 @@ define(['require'], function(require) {
 5. 对于渲染问题，结合 Performance 和 Rendering 面板。
 6. 对于内存问题，使用 Memory 面板。
 7. 根据分析结果，逐一解决发现的问题，并在修复后重新测试。
-
-通过系统性地使用这些工具和方法，你应该能够有效地定位和解决大多数页面性能问题。记住，性能优化是一个持续的过程，需要在开发过程中不断关注和改进。
 
 ## 微前端沙箱隔离机制原理
 
@@ -7311,17 +5681,20 @@ define(['require'], function(require) {
 #### 1. Iframe沙箱
 
 **原理**：
-- **Iframe**天然具有隔离性。每个**iframe**都有自己独立的JavaScript上下文、样式作用域和资源加载环境。
+
+- **Iframe**天然具有隔离性。每个**iframe**都有自己**独立的JavaScript上下文**、**样式作用域和资源加载环境**。
 
 **优点**：
+
 - 隔离彻底，天然解决了全局变量和样式的污染问题。
 
 **缺点**：
-- 性能开销较大，页面切换和资源加载速度相对较慢。
-- Iframe与父窗口之间的通信相对复杂。
+- **性能开销较大**，页面切换和资源加载速度相对较慢。
+- Iframe与父窗口之间的**通信相对复杂**。
 
 **示例**：
 用Iframe加载子应用：
+
 ```html
 <iframe src="https://subapp.example.com" >
 </iframe>
@@ -7621,10 +5994,6 @@ console.log(numbers); // 输出 [1, 2, 3]
 
 3. **状态机**：Generator 函数适合实现复杂的状态机逻辑。
 
-### 总结
-
-Generator 是一个强大且灵活的工具，通过 `yield` 可以控制函数的执行顺序，通过 `return` 可以终止生成器并返回值。理解和应用 Generator 需要一些练习，但它们给予了开发者强大的控制力和灵活性，特别是在处理异步编程和构建复杂状态逻辑方面。
-
 ## Reflect
 
 `Reflect` 是 ES6 中引入的一个内置对象，用于提供若干静态方法以便更方便、更一致地操作对象。与 `Object` 对象的方法类似，`Reflect` 的方法做了以下几方面的改进和补充：
@@ -7674,31 +6043,7 @@ Generator 是一个强大且灵活的工具，通过 `yield` 可以控制函数�
 
 `Reflect` 是一个辅助操作对象的工具类，提供了一致化、简洁化与 `Proxy` 对象一致的对象操作方法。它使得 JavaScript 的底层对象操作更加简便、安全，代码的可读性和可维护性也得到了提升。
 
-## 面向对象
 
-面向对象（Object-Oriented, OO）是一种编程范式，它将软件设计和开发中的问题抽象为对象，并通过这些对象的交互来解决问题。面向对象编程（Object-Oriented Programming, OOP）通过封装、继承和多态等特性，使代码更易于管理、重用和扩展。
-
-### 主要概念
-
-1. **对象（Object）**：
-   - 一个对象是程序中的一个实体，包含属性（数据）和方法（行为）。
-   - 例如，一个“汽车”对象可以有属性，比如颜色、型号，以及方法，比如启动、停车。
-2. **类（Class）**：
-   - 类是对象的蓝图或模板，定义了一类对象所共有的属性和方法。
-   - 使用类可以创建多个具有相似属性和方法的对象实例。
-   - 例如，“汽车”类可以定义颜色、型号等属性和启动、停车等方法，然后基于此类创建不同实例。
-3. **封装（Encapsulation）**：
-   - 封装是将数据（属性）和操作数据的方法封装在对象内部，隐藏对象的内部实现细节，只暴露接口给外部使用。
-   - 这种方式提高了代码的安全性和可维护性。
-   - 例如，汽车内部的引擎细节对用户不可见，用户通过汽车的接口（方向盘、油门）来操作汽车。
-4. **继承（Inheritance）**：
-   - 继承是面向对象的一个重要特性，它允许一个类（子类）继承另一个类（父类）的属性和方法，从而实现代码的复用。
-   - 子类可以重用父类的代码并增强或修改其行为。
-   - 例如，“电动车”类可以继承“汽车”类的基本属性和方法，并增加新的属性和方法。
-5. **多态（Polymorphism）**：
-   - 多态性是指同一个方法在不同对象上可以有不同的实现。
-   - 多态允许对象以其父类或接口的形式出现，具体调用哪个方法由运行时确定。
-   - 例如，“驾驶”方法在不同类型的车辆（如汽车、电动车）上的实现可以不同，但调用时使用统一的接口。
 
 ## 函数覆盖声明输出
 
@@ -9580,6 +7925,8 @@ console.log(sum.toNumber());  // 输出 0.3
 每种方式都有其适用场景，例如，HTML链接和表单提交适用于传统的多页面应用（MPA），而前端路由库和History API适用于单页面应用（SPA）。Ajax请求和哈希模式则常用于实现无刷新更新页面内容。服务器端重定向则用于在服务器层面控制页面跳转。
 
 ## 性能优化怎么做
+
+[前端性能优化——首页资源压缩63%、白屏时间缩短86%提升首屏的加载速度，是前端性能优化中最重要的环节，这里笔者梳理出一 - 掘金 (juejin.cn)](https://juejin.cn/post/7188894691356573754?searchId=20241013151323C86452BF8F80B921AEFA)
 
 尽量减少dom操作，
 
