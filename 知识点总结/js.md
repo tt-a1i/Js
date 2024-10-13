@@ -1121,6 +1121,23 @@ console.log(incrementer()); // 输出: 7
 
 在**闭包中，内部函数会保存对外部函数作用域的引用**，当**内部函数需要访问外部函数的变量时**，它将**沿着作用域链找到这些变量**。
 
+#### 闭包作用
+
+1. **状态的封装和持久化**：
+   - 闭包允许将函数与其词法环境（即创建该函数时的变量作用域）绑定在一起。这意味着函数可以访问其创建上下文的变量，即使函数在该上下文之外被调用。这在需要维护状态记忆的情况下非常有用。
+
+2. **变量的私有性和数据隐藏**：
+   - 闭包为创建私有变量提供了一种方式。在闭包内定义的变量对于外部是不可见和不可访问的，只能通过闭包提供的接口访问。这样可以实现数据封装和信息隐藏，增强代码的安全性和模块化。
+
+3. **函数式编程特点的支持**：
+   - 在函数式编程中，函数是一等公民，可以作为参数传递或返回。闭包允许函数捕获并记住其作用域中的变量，即便函数已exit了创建的作用域。这使得更高阶函数的实现成为可能，比如常见的回调函数、装饰器等。
+
+4. **异步编程模型支持**：
+   - 闭包的特性常用于异步编程中，尤其是事件驱动的编程模型下。它使得事件处理函数或回调函数能够访问和操作其创建上下文中的变量，而不会因上下文退出（例如，函数返回）而失去对这些变量的引用。
+
+5. **减少全局变量的使用**：
+   - 通过闭包，可以避免使用过多的全局变量。变量可以被封装在闭包内，减少全局作用域的污染，利于提升代码的可维护性和可读性。
+
 ## JavaScript原型，原型链
 
 ##### 看这个文章
@@ -5996,6 +6013,8 @@ console.log(numbers); // 输出 [1, 2, 3]
 
 ## Reflect
 
+【Reflect的本质【渡一教育】】https://www.bilibili.com/video/BV13p42197sv?vd_source=f0023585540bbe6ab9edf17e0ec3b5a8
+
 `Reflect` 是 ES6 中引入的一个内置对象，用于提供若干静态方法以便更方便、更一致地操作对象。与 `Object` 对象的方法类似，`Reflect` 的方法做了以下几方面的改进和补充：
 
 ### 简单介绍 Reflect
@@ -6004,28 +6023,7 @@ console.log(numbers); // 输出 [1, 2, 3]
    
 2. **没有实例方法**：所有方法都是静态方法，直接通过 `Reflect` 对象调用。
 
-### Reflect 可以做什么
 
-`Reflect` 提供了一系列与对象操作相关的方法，下面列举一些主要的功能：
-
-- **属性操作**：
-  - `Reflect.get`：获取对象的属性值。
-  - `Reflect.set`：设置对象的属性值。
-  - `Reflect.has`：检测对象是否拥有某个属性。
-  - `Reflect.deleteProperty`：删除对象的属性。
-
-- **对象操作**：
-  - `Reflect.defineProperty`：在对象上定义一个新属性或修改现有属性。
-  - `Reflect.getOwnPropertyDescriptor`：获取对象自身某个属性的属性描述符。
-  - `Reflect.ownKeys`：返回对象自身所有属性的键，包括不可枚举和 Symbol 属性。
-
-- **函数与构造函数操作**：
-  - `Reflect.apply`：调用一个目标函数，可以绑定 `this` 和传递参数。
-  - `Reflect.construct`：调用一个构造函数，类似于使用 `new` 操作符。
-
-- **原型链操作**：
-  - `Reflect.getPrototypeOf`：获取对象的原型。
-  - `Reflect.setPrototypeOf`：设置对象的原型。
 
 ### 为什么要有 Reflect
 
@@ -6039,97 +6037,7 @@ console.log(numbers); // 输出 [1, 2, 3]
 
 4. **增强安全性**：某些方法（如 `Reflect.defineProperty`）在操作失败时会返回 `false`，而不是抛出错误。使用 `Reflect` 可以更安全地编写代码。
 
-### 小结
-
-`Reflect` 是一个辅助操作对象的工具类，提供了一致化、简洁化与 `Proxy` 对象一致的对象操作方法。它使得 JavaScript 的底层对象操作更加简便、安全，代码的可读性和可维护性也得到了提升。
-
-
-
-## 函数覆盖声明输出
-
-这段代码涉及了变量和函数声明提升（Hoisting）以及函数调用的概念。理解代码执行的正确流程需要考虑到这些 JavaScript 语言特性。让我们一步步解释这段代码的执行过程。
-
-### 代码分析
-
-首先，来看完整的代码：
-
-```javascript
-let a = 1;
-
-function foo(a) {
-  return a = a + 1;
-} // 2
-
-var b = foo(a); // 2
-
-function foo(a) {
-  return a = a + 2;
-} // 4
-
-const c = foo(a); // 4
-
-function foo(a) {
-  return a = a + 3;
-}
-
-console.log(a, b, c);
-```
-
-### 关键点
-
-1. **变量声明提升**：`var` 声明的变量会被提升到其作用域的顶部。
-2. **函数声明提升**：函数声明会被提升到其作用域的顶部，并覆盖之前已经提升的函数。
-3. **顺序执行**：代码执行会按照从上到下顺序执行。
-
-### 详细执行流程
-
-1. **提升阶段**：
-   - 所有变量声明和函数声明都会提升到顶部。
-   - 变量声明 `var b` 会被提升，但不会被初始化为`undefined`。
-   - 函数声明 `foo` 会被提升，最初定义的 `foo` 会被后来的定义覆盖。因此，最终的 `foo` 会是 `function foo(a) { return a = a + 3; }`。
-
-   提升后的代码块实质上看起来像这样：
-
-   ```javascript
-   let a;
-   var b;
-   const c; // 注意这里 const 变量不会在声明前被初始化为 undefined
-   function foo(a) { return a = a + 3; }
-   ```
-
-2. **代码执行**：
-   
-   - 执行 `let a = 1;`，因此 `a` 的值为 `1`。
-   
-   - 数据流走到函数 `foo(a) { return a = a + 1; }`，但是由于之前的提升规则，最终的 `foo` 函数并不会是这个版本，会被后面定义的函数覆盖。
-   
-   - 执行 `var b = foo(a);`：
-     - 当执行到这一行时，函数 `foo` 已经被最后的声明 `function foo(a) { return a = a + 3; }` 覆盖。
-     - 调用 `foo(1)`，这里的 `foo` 是 `return a = a + 3;`。
-     - 因此计算结果为 `1 + 3 = 4`，所以 `b` 被赋值 `4`。
-   
-   - 执行 `const c = foo(a);`：
-     - 由于函数 `foo` 是最后版本的 `return a = a + 3;`。
-     - 调用 `foo(1)`，因此结果依旧为 `1 + 3 = 4`，所以 `c` 被赋值 `4`。
-   
-   - 执行 `console.log(a, b, c);`：
-     - 最终输出 `a` 为 `1`，`b` 为 `4`，`c` 为 `4`。
-
-### 最终结果
-
-所以，输出结果为：
-
-```
-1 4 4
-```
-
-### 小结
-
-由于函数声明会提升并覆盖之前的声明，因此最终的 `foo` 函数是 `function foo(a) { return a = a + 3; }`。这解释了为什么调用 `foo` 的结果都是 `4`。通过理解提升（Hoisting）、变量和函数的声明覆盖，能准确地解读这段代码的执行流程。
-
 ## SVG和Canvas
-
-是的，我了解 SVG 和 Canvas 的用法。它们都是用于在网页上创建和操作图形的技术，但各自有不同的特点和应用场景。以下是对 SVG 和 Canvas 的用法及其特点的详细说明：
 
 ### SVG (Scalable Vector Graphics)
 
@@ -6137,10 +6045,10 @@ console.log(a, b, c);
 - **XML 语法**: SVG 是基于 XML 的，用于描述二维矢量图形。通过在 HTML 中嵌入 `<svg>` 标签来使用。
 - **创建图形**: 直接在 HTML 中编写 SVG 元素，例如 `<circle>`, `<rect>`, `<line>`, `<path>` 等。
 - **样式和动画**: 可以使用 CSS 和 JavaScript 对 SVG 元素进行样式和动画处理。
-- **交互性**: SVG 允许为其元素直接绑定事件（例如 `onclick`, `onmouseover`等），使得其具有良好的交互性。
+- **交互性**: SVG **允许为其元素直接绑定事件**（例如 `onclick`, `onmouseover`等），使得其具有良好的交互性。
 
 #### 特点
-- **可缩放性**: 由于是矢量图形，SVG 可以在不同分辨率和尺寸下保持高质量。
+- **可缩放性**: 由于是矢量图形，**SVG 可以在不同分辨率和尺寸下保持高质量**。
 - **可访问性**: 基于文本的格式可以更容易被搜索引擎和助视器读取。
 - **复杂性**: 适合渲染相对简单的和中等复杂度的图形。不适合渲染大量的图形元素，可能会导致性能问题。
 
@@ -6159,10 +6067,10 @@ console.log(a, b, c);
 - **绘图命令**: 使用上下文对象的方法绘制形状、路径、图像等。
 
 #### 特点
-- **像素操作**: 基于像素的渲染，适合实时图形和动画。
-- **性能**: 优于 SVG 的性能，在绘制大量对象或动画时表现良好。
-- **无内置交互**: 需要手动管理交互事件（例如，计算坐标并检测是否点击到某个图形）。
-- **不可缩放**: 图形默认是基于分辨率的，如果放大像素化严重。
+- **像素操作**: **基于像素的渲染，适合实时图形和动画**。
+- **性能**: **优于 SVG 的性能，在绘制大量对象或动画时表现良好**。
+- **无内置交互**: **需要手动管理交互事件**（例如，计算坐标并检测是否点击到某个图形）。
+- **不可缩放**: 图形**默认是基于分辨率的，如果放大像素化严重**。
 
 #### 示例
 ```html
@@ -6177,27 +6085,25 @@ console.log(a, b, c);
 
 ### 比较和应用场景
 
-- **SVG** 适合于要求高质量缩放和良好访问性的应用，如界面图标、简单图表、LOGO等。
-- **Canvas** 更适合需要立即渲染和更新图形的应用场景，如游戏、数据密集型图表、复杂动画等。
-
-这两种技术各有优势选择时应根据具体应用场景和性能需求来决定使用哪一种。
+- **SVG** 适合于要求**高质量缩放和良好访问性的应用**，如**界面图标**、简单图表、**LOGO**等。
+- **Canvas** 更适合需要**立即渲染**和**更新图形**的应用场景，如游戏、数据密集型图表、复杂动画等。
 
 ### Canvas为什么性能好
 
 Canvas 的性能通常被认为优于 SVG 尤其是在处理大量图形元素或复杂动画时，主要原因如下：
 
 1. **逐像素绘制**：
-   - Canvas 基于一套逐像素绘制的模式。这使得渲染引擎可以直接操作每一个像素，从而提供更细粒度的控制和更高效的图形处理能力。
-   - 因为是逐像素绘制，Canvas 不需要在内存中维护每个形状的 DOM 节点树结构，这减少了在更改画面时的开销。
+   - Canvas 基于一套**逐像素绘制**的模式。这使得渲染引擎可以直接操作每一个像素，从而提供**更细粒度的控制和更高效的图形处理能力**。
+   - 因为是逐像素绘制，Canvas **不需要在内存中维护每个形状的 DOM 节点树结构**，这减少了在更改画面时的开销。
 
 2. **一次性绘制**：
    - 当使用 Canvas 绘制图形时，所有绘制操作都是立即生效的，图像直接被渲染到画布上。不需要像 SVG 那样管理和维护每个图形元素的状态，降低了复杂性。
 
 3. **无额外的 DOM 负担**：
-   - 与 SVG 不同，Canvas 不会创建和操作大量的 DOM 节点。因此，浏览器在处理和管理 DOM 树时会减少负载，尤其是在元素繁多的情况下显得更为高效。
+   - 与 SVG 不同，**Canvas 不会创建和操作大量的 DOM 节点**。因此，浏览器在处理和管理 DOM 树时会减少负载，尤其是在元素繁多的情况下显得更为高效。
 
 4. **低内存消耗**：
-   - 由于不需要存储元素的状态和属性，Canvas 的内存使用量相对较低。绘图一旦完成，只有像素数据被保留，而不是整个图形对象的定义。
+   - 由于**不需要存储元素的状态和属性**，Canvas 的内存使用量相对较低。**绘图一旦完成**，**只有像素数据被保留**，而不是整个图形对象的定义。
 
 5. **优化的图形库**：
    - Canvas 可以使用 GPU 加速来执行某些绘图操作（尤其在涉及复杂的图形变换和过滤时），这通过使用现代浏览器的图形硬件加速技术来提升性能。
@@ -6365,14 +6271,14 @@ doSomething(42);      // Output: Handling number: 42
 
 ## WebAssembly 深入解析
 
-WebAssembly (wasm) 是一种全新的编程语言和运行时环境，为 Web 带来了革命性的性能提升和新的可能性。它不仅可以极大地提高 Web 应用的运行速度，还能让开发者使用 C/C++、Rust 等语言编写高性能的 Web 应用。
+WebAssembly (wasm) 是一种全新的编程语言和运行时环境，为 Web 带来了革命性的性能提升和新的可能性。它不仅可以极大地提高 Web 应用的运行速度，还能**让开发者使用 C/C++、Rust 等语言编写高性能的 Web 应用**。
 
 ###  一、WebAssembly 是什么？
 
-WebAssembly 是一种底层字节码格式，可以在现代 Web 浏览器中运行。它被设计为一种快速、安全、可移植的 Web 代码格式，可以用于：
+WebAssembly 是一种**底层字节码格式**，**可以在现代 Web 浏览器中运行**。它被设计为一种快速、安全、可移植的 Web 代码格式，可以用于：
 
 * **提高 Web 应用性能：**wasm 字节码经过优化，可以比 JavaScript 代码更快地解析和执行。
-* **扩展 Web 应用功能：**wasm 允许开发者使用 C/C++、Rust 等语言编写高性能代码，并将其编译成 wasm 模块，然后在 Web 浏览器中运行。
+* **扩展 Web 应用功能：**wasm 允许开发者使用 C/C++、Rust 等语言编写高性能代码，并将其**编译成 wasm 模块，然后在 Web 浏览器中运行**。
 * **支持新的 Web 平台功能：**wasm 为 Web 平台带来了新的可能性，例如机器学习、游戏开发、虚拟现实等等。
 
 ### 二、WebAssembly 的核心概念
@@ -6511,7 +6417,7 @@ scores.forEach(score => {
 
 #### 用法
 
-`for...in` 语句是用来遍历对象的可枚举属性（包括继承的可枚举属性）的键名。它适用于对象或数组的键（索引）。
+`for...in` 语句是用来**遍历对象的可枚举属性**（包括继承的可枚举属性）的键名。它**适用于对象或数组的键（索引）**。
 
 ```javascript
 const obj = { a: 1, b: 2, c: 3 };
@@ -6537,7 +6443,7 @@ for (let key in obj) {
 
 #### 用法
 
-`for...of` 语句是用来遍历可迭代对象（包括数组、字符串、Set、Map 等等）的值。`for...of` 不能直接用于普通对象（因为普通对象不可迭代），但对象的属性可以通过其他方式（如使用 `Object.keys()`）转为可迭代对象，再使用 `for...of`。
+`for...of` 语句是用来**遍历可迭代对象**（包括数组、字符串、Set、Map 等等）的值。`for...of` 不能直接用于普通对象（因为普通对象不可迭代），但对象的属性可以通过其他方式（如使用 `Object.keys()`）转为可迭代对象，再使用 `for...of`。
 
 ```javascript
 const array = [10, 20, 30];
@@ -6562,7 +6468,7 @@ for (let value of array) {
 
 #### 用法
 
-`forEach` 是数组的方法，用于遍历数组中的每个元素，并对每个元素执行提供的回调函数。回调函数接收三个参数：当前元素值、当前索引及数组本身。
+`forEach` 是数组的方法，用于**遍历数组中的每个元素**，并**对每个元素执行提供的回调函数**。回调函数接收三个参数：**当前元素值**、**当前索引**及**数组本身**。
 
 ```javascript
 const array = [10, 20, 30];
@@ -6606,7 +6512,7 @@ array.forEach((value, index, arr) => {
 `Web Worker 是线程`，不是进程。让我详细解释一下：
 
 1. Web Worker 的本质：
-   Web Worker 提供了在 Web 应用程序中运行脚本的背景线程。它允许长时间运行的脚本在后台执行，而不会影响网页的性能或响应性。
+   Web Worker 提供了**在 Web 应用程序中运行脚本的背景线程**。它允许长时间运行的脚本在后台执行，而不会影响网页的性能或响应性。
 
 2. 线程 vs 进程：
    - 进程是操作系统分配资源的基本单位，每个进程都有自己的内存空间。
@@ -6636,201 +6542,19 @@ array.forEach((value, index, arr) => {
 
 总结：Web Worker 是浏览器提供的一种在后台线程中运行脚本的技术。它们是线程，不是独立的进程，这使得它们能够高效地执行任务，同时保持与主 JavaScript 环境的隔离和安全性。
 
-## js的作用域
-
-JavaScript 中的作用域是指代码中变量、函数和对象的可访问范围。理解作用域是掌握 JavaScript 变量声明和生命周期的关键。以下是 JavaScript 中的主要作用域类型：
-
-1. **全局作用域（Global Scope）**：
-   - 在代码的任何地方都可以访问的作用域。
-   - 任何在全局作用域中定义的变量都会成为全局变量。
-   - 在浏览器环境中，最外层的 `window` 对象就是全局作用域的顶层对象。
-
-2. **函数作用域（Function Scope）**：
-   - 每个函数在创建时都会创建一个新的作用域。
-   - 在函数内用 `var` 关键字声明的变量仅在该函数内部可访问。
-   - 外部无法直接访问函数内用 `var` 声明的变量，这保证了函数内部变量的封装性。
-
-3. **块级作用域（Block Scope）**：
-   - 块级作用域由花括号 `{}` 包裹，典型的如 `if`, `for`, `while` 等结构体。
-   - 在 ES6 之前，JavaScript 只有全局作用域和函数作用域。然而，ES6 引入了 `let` 和 `const` 关键字来创建块级作用域。
-   - 用 `let` 和 `const` 声明的变量仅在其声明的块内有效。
-
-4. **模块作用域（Module Scope）**：
-   - 在采用模块化系统（如 ESModules）时，每个模块文件都有其独立作用域。
-   - 模块中的变量和函数默认不暴露给全局作用域，需要通过导出（export）和导入（import）来分享和使用。
-
-5. **动态/临时作用域（Dynamic/Temporary Scope）**：
-   - JavaScript 本身不具备动态作用域的特性，但在某些上下文中可以通过 `eval` 或者一些特定全局函数来模拟。这种做法通常不推荐，因为它可能导致不可预测的行为及性能损失。
-
-6. **词法作用域（Lexical Scope）**：
-   - JavaScript 使用词法作用域规则，这意味着函数的作用域在函数定义时就已经决定，而不是在函数调用时。
-   - 这意味着嵌套函数可以访问其外层函数作用域中的变量（闭包）。
-
-理解作用域中的关键点是变量访问的范围、变量声明时机以及 JavaScript 引擎在遇到代码块时是如何确定变量的可访问性的。特别是在现代 JavaScript 中，`let` 和 `const` 的出现加强了对变量范围的控制，提高了代码的安全性和可维护性。
-
-## node的事件循环
-
-确实，我之前的解释中尚未完成对微任务和事件循环关系的详细描述。请允许我继续补充和完成：
-
-### 事件循环与微任务的详细关系
-
-在 Node.js 中，微任务（Microtasks）的执行时机非常关键，它是在事件循环的每一个阶段结束后执行。在实际应用中，微任务主要通过 `process.nextTick()` 和 `Promise` 来创建。
-
-### 微任务详解
-
-1. **`process.nextTick`**
-
-   是 Node.js 提供的一种机制，使得在当前操作后、事件循环的下一阶段（甚至在异步 I/O 之前）就能执行的回调。`process.nextTick` 常用于需要在事件循环的任意阶段执行一些紧急任务而不等待下一个事件循环。
-
-   ```javascript
-   process.nextTick(() => {
-     console.log('NextTick callback');
-   });
-   ```
-
-2. **`Promise`**
-
-   创建的回调会被放入微任务队列，并在当前宏任务完成后立即执行。
-
-   ```javascript
-   Promise.resolve().then(() => {
-     console.log('Promise callback');
-   });
-   ```
-
-### 类比解释
-
-```javascript
-setTimeout(() => {
-  console.log('Timeout callback');
-}, 0);
-
-setImmediate(() => {
-  console.log('Immediate callback');
-});
-
-process.nextTick(() => {
-  console.log('NextTick callback');
-});
-
-Promise.resolve().then(() => {
-  console.log('Promise callback');
-});
-```
-
-上述代码的输出顺序如下：
-
-```
-NextTick callback
-Promise callback
-Timeout callback
-Immediate callback
-```
-
-#### 解释：
-
-1. **`process.nextTick`** 的回调 `NextTick callback` 会首先执行，因为它被放入了微任务队列，并且具有最高优先级。
-
-2. **`Promise.resolve`** 的回调 `Promise callback` 紧随其后，因为承诺创建的回调也在微任务队列中，仅次于 `process.nextTick` 回调。
-
-3. **`setTimeout`** 的回调 `Timeout callback` 会在 `Promise` 和 `process.nextTick` 的回调执行完后，根据事件循环的 Timers 阶段，被放入到其队列中执行。
-
-4. **`setImmediate`** 的回调 `Immediate callback` 将在 Check 阶段执行，并且会在经过上述所有阶段（包括 Timers 阶段）的回调之后执行，因此是最后一个执行的。
-
-### 完整的时序说明
-
-1. **进入事件循环**
-2. **执行 Timers 阶段回调**
-   - 发现 `setTimeout`，设定回调准备在多少时间后执行。
-3. **进入微任务队列**
-   - 发现 `process.nextTick`，立即执行其回调。
-   - 紧接着发现 `Promise`，加入到微任务队列，并立即执行。
-4. **继续事件循环**
-5. **Pending Callbacks**
-6. **Poll 阶段**
-   - 检查是否有新的 I/O 事件，如果没有且有定时器过期，则进入 Timers 阶段。
-7. **Check 阶段**
-   - 执行 `setImmediate` 回调。
-8. **Close Callbacks**
-9. **重复上述步骤**
-
-### 实际上的一次事件循环示例：
-```javascript
-const fs = require('fs');
-
-setTimeout(() => {
-  console.log('setTimeout 1');
-}, 0);
-
-setTimeout(() => {
-  console.log('setTimeout 2');
-  process.nextTick(() => console.log('nextTick inside setTimeout'));
-}, 0);
-
-setImmediate(() => {
-  console.log('setImmediate 1');
-  process.nextTick(() => console.log('nextTick inside setImmediate'));
-});
-
-fs.readFile(__filename, () => {
-  console.log('File read callback');
-  setTimeout(() => {
-    console.log('setTimeout inside readFile');
-  }, 0);
-  setImmediate(() => {
-    console.log('setImmediate inside readFile');
-  });
-  process.nextTick(() => console.log('nextTick inside readFile'));
-});
-
-process.nextTick(() => {
-  console.log('nextTick 1');
-});
-
-Promise.resolve().then(() => {
-  console.log('Promise then 1');
-});
-```
-
-输出顺序：
-```
-nextTick 1
-Promise then 1
-setTimeout 1
-setTimeout 2
-nextTick inside setTimeout
-File read callback
-nextTick inside readFile
-setImmediate inside readFile
-setTimeout inside readFile
-setImmediate 1
-nextTick inside setImmediate
-```
-
-解释：首先执行 `process.nextTick` 回调和 `Promise` 回调，紧接着是各个阶段的回调按顺序执行。
-
-### 总结
-
-1. Node.js 的事件循环机制分为多个阶段，每个阶段有特定的回调队列。
-2. 微任务有最高优先级，会在事件循环的每个阶段完成后立即执行。
-3. `process.nextTick` 和 `Promise` 是创建微任务的主要方式。
-4. 最佳实践是在合适的阶段使用合适的机制，以确保代码的高效执行。
-
 ## service worker和 web worker
-
-前端开发中的 Service Worker 和 Web Worker 是两种不同的技术，它们分别具有不同的用途和特点。虽然它们的名字里都有 "Worker" 且都是在后台执行任务的脚本，但它们并不是相同的东西。
 
 ### Web Worker
 
 #### 定义：
-Web Worker 是用于在后台线程运行 JavaScript 代码的一种方式，目的在于避免阻塞主线程（UI线程），从而提高网页的性能和响应速度。
+Web Worker 是用于在后台线程运行 JavaScript 代码的一种方式，**目的在于避免阻塞主线程**（UI线程），从而提高网页的性能和响应速度。
 
 #### 特点：
-1. **线程分离：** 运行在独立的线程中，不会阻塞主线程。
-2. **无 DOM 访问：** 不能直接访问 DOM 和主线程中的 JavaScript 变量。
+1. **线程分离：** **运行在独立的线程**中，**不会阻塞主线程**。
+2. **无 DOM 访问：** **不能直接访问 DOM 和主线程中的 JavaScript 变量**。
 3. **与主线程通信：** 使用 `postMessage` 和 `onmessage` 事件与主线程通信。
 4. **长时间任务：** 适用于执行需要大量计算的长时间任务，而不影响主线程的响应。
-5. **没有网络拦截能力：** 与 Service Worker 不同，Web Worker 不能拦截网络请求。
+5. **没有网络拦截能力：** 与 Service Worker 不同，**Web Worker 不能拦截网络请求**。
 
 #### 示例：
 
@@ -6867,14 +6591,14 @@ function doComplexCalculation(data) {
 ### Service Worker
 
 #### 定义：
-Service Worker 是一种运行在浏览器背后的独立于网页的脚本，主要用于控制和缓存网络请求，从而实现离线访问、推送通知和后台数据同步等功能。
+Service Worker 是一种**运行在浏览器背后的独立于网页的脚本**，主要**用于控制和缓存网络请求**，从而**实现离线访问**、**推送通知**和**后台数据同步**等功能。
 
 #### 特点：
-1. **网络代理：** 可以拦截和处理网络请求，这使得它非常适合做离线缓存（类似应用程序缓存）。需要https环境
-2. **事件驱动：** 工作在事件循环中，通过不同的事件（如 `fetch`、`install`、`activate`）来执行任务。
-3. **无DOM访问：** 同样不能直接访问 DOM，但可以与页面进行通信。
+1. **网络代理：** **可以拦截和处理网络请求**，这使得它非常适合做离线缓存（类似应用程序缓存）。需要https环境
+2. **事件驱动：** **工作在事件循环中**，通过不同的事件（如 `fetch`、`install`、`activate`）来执行任务。
+3. **无DOM访问：** **同样不能直接访问 DOM**，但**可以与页面进行通信**。
 4. **离线支持：** 通过缓存资源，能让网页在离线状态下仍然可以使用。
-5. **长期运行：** 即使关闭浏览器，它仍然可以在后台运行，以处理诸如推送通知等任务。
+5. **长期运行：** 即使关闭浏览器，它仍然**可以在后台运行**，以**处理诸如推送通知等任务**。
 
 #### 示例：
 
@@ -6976,7 +6700,7 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
 
 ### 注意事项
 
-- **DOMContentLoaded 事件**：在 DOM 树完全构建（即不包括样式表、图像等其他资源）后触发，常用于执行一些在 DOM 完成构建后但不需要等待样式或图片加载的操作。
+- **DOMContentLoaded 事件**：在 **DOM 树完全构建**（即**不包括样式表、图像等其他资源**）后触发，常用于执行一些在 DOM 完成构建后但不需要等待样式或图片加载的操作。
 - **Load 事件**：在所有资源（包括样式表、图像、iframe 等）完全加载后才会触发，适合一些需要在整个页面完全构建后执行的脚本。
   
 
@@ -6994,19 +6718,23 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
 
 - **CSSOM 树**则是通过解析 CSS 来生成的。浏览器解析所有的 CSS，包括外部样式表和嵌入式样式，然后构建 CSSOM 树。
 
+****
+
 ### 是否同步？
 
 1. **解析顺序**：
    - DOM 树和 CSSOM 树的解析**并不是完全同步**的。DOM 树的解析开始于**浏览器接收到 HTML 时**，而 CSSOM 的构建需要**等待所有相关的 CSS 样式被下载和解析**。
 
 2. **渲染依赖**：
-   - 页面渲染确实需要完整的 CSSOM，因为需要应用样式才能正确地布局元素并渲染页面。但浏览器通常会尽快地开始呈现页面内容以提高响应速度，所以会尽量并行处理。
+   - **页面渲染确实需要完整的 CSSOM**，因为需要应用样式才能正确地布局元素并渲染页面。但浏览器通常会尽快地开始呈现页面内容以提高响应速度，所以会尽量并行处理。
 
 3. **阻塞渲染**：
-   - 当浏览器遇到 `<link>` 引用的 CSS 样式表时，通常会阻塞 DOM 树的解析，直到该样式表被下载和解析。目前大多数现代浏览器可以进行**流式解析**，但为了确保首次内容绘制不出错，还是会等待 CSSOM 准备好。
+   - 当浏览器遇到 `<link>` 引用的 CSS 样式表时，通常会**阻塞 DOM 树的解析**，**直到该样式表被下载和解析**。目前大多数现代浏览器可以进行**流式解析**，但为了确保首次内容绘制不出错，还是会等待 CSSOM 准备好。
 
 4. **JavaScript 的影响**：
    - 如果 HTML 中包含 `<script>` 标签，且脚本没有 `async` 或 `defer` 属性，它会暂停 DOM 的解析，而完成此脚本的执行。因此，JavaScript 也可能影响 DOM 和 CSSOM 的及时构建。
+
+****
 
 ### 优化建议
 
@@ -7014,51 +6742,53 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
 - **关键 CSS 内联**：为了加快首次渲染，可将关键 CSS 内联到 HTML 中，以便在页面加载时立即可用。
 - **可延迟的 CSS**：对于不重要的 CSS，可以延迟加载，从而减少首次渲染时的阻塞。
 
-总体而言，DOM 树和 CSSOM 树的构建是与页面渲染高度相关的过程。虽然它们不是完全同步进行的，但它们之间的关系密切，会共同决定最终的渲染时机和性能表现。
+总体而言，DOM 树和 CSSOM 树的构建是与页面渲染高度相关的过程。它们不是完全同步进行的
 
 ## DOM、CSS和JS的相互阻塞关系
+
+****
 
 ### 1. DOM和CSS的关系
 
 #### CSS阻塞DOM解析
 
-- **外部CSS文件：** 当浏览器遇到一个外部CSS文件（通过`<link>`标签加载），它会继续进行HTML的解析，但不会进行渲染树的生成。因此，尽管DOM树和CSSOM树可以并行构建，但浏览器在生成渲染树之前需要等待关键CSS文件的加载和解析。这是因为CSS会影响元素的样式和布局。
-- **内嵌CSS：** 如果CSS是内嵌在HTML中的（例如使用`<style>`标签），浏览器会立即解析这个CSS块，然后继续HTML的解析。
+- **外部CSS文件：** 当浏览器遇到一个外部CSS文件（通过`<link>`标签加载），它会**继续进行HTML的解析**，但**不会进行渲染树的生成**。因此，尽管**DOM树和CSSOM树可以并行构建**，**但浏览器在生成渲染树之前需要等待关键CSS文件的加载和解析**。这是**因为CSS会影响元素的样式和布局**。
+- **内嵌CSS：** **如果CSS是内嵌在HTML中**的（例如使用`<style>`标签），浏览器**会立即解析这个CSS块，然后继续HTML的解析**。
 
 ### 2. DOM和JavaScript的关系
 
 #### JavaScript阻塞DOM解析
 
-- **JavaScript的执行：** 当浏览器遇到一个内联`<script>`标签或外部JavaScript文件时，默认情况下它会立即停止HTML的解析，直到JavaScript文件被加载并执行完毕。这可以阻塞DOM解析，特别是当JavaScript需要操作DOM时。
+- **JavaScript的执行：** 当浏览器遇到一个内联`<script>`标签或外部JavaScript文件时，**默认情况下它会立即停止HTML的解析**，**直到JavaScript文件被加载并执行完毕**。这可以阻塞DOM解析，特别是当JavaScript需要操作DOM时。
 - `defer`和`async`属性：
-  - `defer`: 如果在`<script>`标签上使用`defer`属性，浏览器会继续解析DOM，同时异步加载JavaScript文件。JavaScript文件会在DOM解析完成后执行，但执行顺序是按在HTML中出现的顺序。
-  - `async`: 如果在`<script>`标签上使用`async`属性，浏览器会继续解析DOM，同时异步加载JavaScript文件。JavaScript文件一旦加载完毕就立即执行，可能会在DOM解析完成之前执行，执行顺序不固定。
+  - `defer`: 如果在`<script>`标签上使用`defer`属性，浏览器会**继续解析DOM**，同时异步加载JavaScript文件。**JavaScript文件会在DOM解析完成后执行**，但**执行顺序是按在HTML中出现的顺序**。
+  - `async`: 如果在`<script>`标签上使用`async`属性，浏览器会**继续解析DOM**，同时**异步加载JavaScript文件**。JavaScript文件**一旦加载完毕就立即执行**，**可能会在DOM解析完成之前执行**，执行**顺序不固定**。
 
 ### 3. CSS和JavaScript的关系
 
 #### CSS阻塞JavaScript执行
 
-- 当浏览器遇到一个JavaScript文件时，如果上面有未完成的CSS文件加载（例如通过`<link>`标签指向的外部CSS文件），浏览器会等待CSS文件加载和解析完毕后再执行JavaScript。这是因为JavaScript可能依赖于CSS规则来计算元素的布局和样式。
+- 当**浏览器遇到一个JavaScript文件时**，如果**上面有未完成的CSS文件加载**（例如通过`<link>`标签指向的外部CSS文件），浏览器**会等待CSS文件加载和解析完毕后再执行JavaScrip**t。这是**因为JavaScript可能依赖于CSS规则来计算元素的布局和样式**。
 
 ### 优化建议
 
-1. **使用`defer`和`async`属性**：对于JavaScript文件，可以使用这两个属性来避免阻塞HTML的解析。
+1. **使用`defer`和`async`属性**：对于JavaScript文件，可以使用这两个属性来**避免阻塞HTML的解析**。
 2. **最小化关键路径**：减少关键CSS，让浏览器尽快生成渲染树。
-3. **非阻塞资源**：将某些不需要渲染时就加载的资源设为非阻塞，例如将不关键的CSS放到页面底部加载。
-4. **CSS在`<head>`**：将关键CSS文件尽早放在`<head>`部分。
-5. **JavaScript在底部或使用异步加载**：将JavaScript文件放在页面底部，或者使用异步加载技术，以避免阻塞HTML解析和CSS加载。
+3. **非阻塞资源**：**将某些不需要渲染时就加载的资源设为非阻塞**，例**如将不关键的CSS放到页面底部加载**。
+4. **CSS在`<head>`**：将**关键CSS文件**尽早放在`<head>`部分。
+5. **JavaScript在底部或使用异步加载**：将**JavaScript文件放在页面底部**，**或者使用异步加载技术**，以**避免阻塞HTML解析和CSS加载**。
 
 ## 讲讲路由的两种模式,hash和history
 
-你说得对，在 **客户端路由** 中，常用的两种模式是 **Hash 模式** 和 **History 模式**，它们分别利用了 URL 中的不同部分来实现路由功能。
+在 **客户端路由** 中，常用的两种模式是 **Hash 模式** 和 **History 模式**，它们分别利用了 URL 中的不同部分来实现路由功能。
 
 **1. Hash 模式 (#)**
 
-* **原理**: 利用 URL 中 hash 符号（#）后面的片段来表示不同的路由状态。当 # 后面的片段发生变化时，浏览器不会向服务器发送请求，而是会触发 `hashchange` 事件，JavaScript 可以监听该事件并动态更新页面内容。
+* **原理**: 利用 **URL 中 hash 符号（#）后面的片段来表示不同的路由状态**。当 **# 后面的片段发生变化时**，浏览器不会向服务器发送请求，而是会**触发** `hashchange` 事件，**JavaScript 可以监听该事件并动态更新页面内容**。
 
 * **例如**:
 
-   ```
+   ```http
    https://www.example.com/#/home
    https://www.example.com/#/about
    https://www.example.com/#/products/123
@@ -7072,16 +6802,15 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
 * **缺点**:
 
    *  **URL 不美观**:  # 符号的存在使得 URL 看起来不够简洁。
-   *  **不利于 SEO**:  由于 hash 部分不会发送到服务器，搜索引擎无法抓取到不同的路由状态。
-
+   *  **不利于 SEO**:  由于 **hash 部分不会发送到服务器**，**搜索引擎无法抓取到不同的路由状态**。
 
 **2. History 模式 (HTML5 History API)**
 
-* **原理**:  利用 HTML5 History API 中的 `pushState` 和 `replaceState` 方法来操作浏览器历史记录，改变 URL  的同时不会向服务器发送请求。监听 `popstate` 事件，可以捕获到 URL 的变化，从而进行相应的页面更新。
+* **原理**:  利用 **HTML5 History API** 中的 `pushState` 和 `replaceState` 方法来**操作浏览器历史记录**，改变 URL  的同时不会向服务器发送请求。监听 `popstate` 事件，可以捕获到 URL 的变化，从而进行相应的页面更新。
 
 * **例如**:
 
-   ```
+   ```http
    https://www.example.com/home
    https://www.example.com/about
    https://www.example.com/products/123
@@ -7090,12 +6819,12 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
 * **优点**:
 
    *  **URL 美观**:  没有 # 符号，URL 看起来更自然。
-   *  **有利于 SEO**:  URL 的变化会被记录在浏览器历史记录中，搜索引擎可以抓取到不同的路由状态。
+   *  **有利于 SEO**:  **URL 的变化会被记录在浏览器历史记录中**，**搜索引擎可以抓取到不同的路由状态**。
 
 * **缺点**:
 
    * **兼容性不如 Hash 模式**:  需要浏览器支持 HTML5 History API。
-   *  **需要服务器端配合**:  当用户直接访问非首页的路由时，服务器需要返回正确的 HTML 页面，否则会出现 404 错误。
+   *  **需要服务器端配合**:  当**用户直接访问非首页的路由时**，**服务器需要返回正确的 HTML 页面**，**否则会出现 404 错误**。
 
 
 **总结**
@@ -7113,9 +6842,9 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
 -  如果需要兼容旧版浏览器，或者对 SEO 要求不高，可以选择 Hash 模式。
 -  如果追求更好的用户体验和 SEO 效果，可以选择 History 模式，但需要服务器端进行相应的配置。
 
-希望以上信息能够帮助你更好地理解 Hash 模式和 History 模式的区别！
-
 ## history模式的pushstate和replacestate的区别
+
+[浅谈前端路由原理hash和history🎹序言 众所周知， hash 和 history 在前端面试中是很常考的一道题 - 掘金 (juejin.cn)](https://juejin.cn/post/6993840419041706014?searchId=20241013202256E9935941FB4FF3403456)
 
 **1.  `pushState()`**
 
@@ -7263,27 +6992,6 @@ JavaScript 的执行会影响上述过程，主要因为它可能会修改 DOM �
 
 使用时需要根据具体应用场景选择合适的方法，例如，如果不希望用户通过后退按钮返回到当前页面，可以选择 `window.location.replace()`。如果只是要简单的页面跳转，则 `window.location.href` 是最方便的方法。
 
-## 闭包出现的原因
-
-闭包（Closure）是计算机科学中的一个重要概念，尤其在函数式编程和许多现代编程语言中扮演着关键角色。闭包的产生来源于对函数式编程中一些特殊需求的解决，以下是闭包出现的几个主要原因和作用：
-
-1. **状态的封装和持久化**：
-   - 闭包允许将函数与其词法环境（即创建该函数时的变量作用域）绑定在一起。这意味着函数可以访问其创建上下文的变量，即使函数在该上下文之外被调用。这在需要维护状态记忆的情况下非常有用。
-
-2. **变量的私有性和数据隐藏**：
-   - 闭包为创建私有变量提供了一种方式。在闭包内定义的变量对于外部是不可见和不可访问的，只能通过闭包提供的接口访问。这样可以实现数据封装和信息隐藏，增强代码的安全性和模块化。
-
-3. **函数式编程特点的支持**：
-   - 在函数式编程中，函数是一等公民，可以作为参数传递或返回。闭包允许函数捕获并记住其作用域中的变量，即便函数已exit了创建的作用域。这使得更高阶函数的实现成为可能，比如常见的回调函数、装饰器等。
-
-4. **异步编程模型支持**：
-   - 闭包的特性常用于异步编程中，尤其是事件驱动的编程模型下。它使得事件处理函数或回调函数能够访问和操作其创建上下文中的变量，而不会因上下文退出（例如，函数返回）而失去对这些变量的引用。
-
-5. **减少全局变量的使用**：
-   - 通过闭包，可以避免使用过多的全局变量。变量可以被封装在闭包内，减少全局作用域的污染，利于提升代码的可维护性和可读性。
-
-在许多高级编程语言中，比如JavaScript、Python和Swift，闭包都被广泛使用，帮助开发者编写更高效、模块化和安全的代码。通过闭包，程序员能够更灵活地保持和操作函数内部的状态，实现复杂的功能逻辑和异步工作流。
-
 ## js函数传参是传值还是传引用
 
 在JavaScript中，函数参数的传递方式可以分为两种：**传值**（pass by value）和**传引用**（pass by reference），这取决于传入参数的数据类型。
@@ -7338,280 +7046,7 @@ console.log("Outside function:", myObj.property); // 20
 - 对于引用数据类型，JavaScript是**传引用**。
   
 
-了解这两种传参方式及其区别能够帮助你在编写JavaScript代码时预测函数内对参数的修改会如何影响外部变量。这是JavaScript中一个重要的概念，特别是在涉及对象和数组操作时需要尤其注意。
 
-## 你用 localStorage 做过什么缓存
-
-我个人确实使用过 localStorage 来实现一些简单的客户端缓存策略。以下是我曾经使用 localStorage 进行缓存的一些具体场景和实现方式：
-
-### 缓存 API 响应数据：
-
-对于一些不经常变化的数据，我会将 API 的响应缓存到 localStorage 中，以减少不必要的网络请求。
-
-```javascript
-function fetchData(url) {
-  const cachedData = localStorage.getItem(url);
-  if (cachedData) {
-    return Promise.resolve(JSON.parse(cachedData));
-  }
-  
-  return fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      localStorage.setItem(url, JSON.stringify(data));
-      return data;
-    });
-}
-```
-
-### 用户偏好设置：
-
-保存用户的主题选择、语言偏好等设置。
-
-```javascript
-// 保存主题设置
-function setTheme(theme) {
-  localStorage.setItem('userTheme', theme);
-  applyTheme(theme);
-}
-
-// 应用保存的主题
-function applyStoredTheme() {
-  const storedTheme = localStorage.getItem('userTheme');
-  if (storedTheme) {
-    applyTheme(storedTheme);
-  }
-}
-```
-
-### 表单数据的自动保存：
-
-为了防止用户意外关闭页面导致表单数据丢失，我会周期性地将表单数据保存到 localStorage。
-
-```javascript
-function autoSaveForm() {
-  const formData = getFormData();
-  localStorage.setItem('formDraft', JSON.stringify(formData));
-}
-
-// 每30秒自动保存一次
-setInterval(autoSaveForm, 30000);
-
-// 页面加载时恢复表单数据
-function restoreFormData() {
-  const savedData = localStorage.getItem('formDraft');
-  if (savedData) {
-    const formData = JSON.parse(savedData);
-    populateForm(formData);
-  }
-}
-```
-
-### 实现简单的离线功能：
-
-对于一些简单的应用，我会使用 localStorage 来存储关键数据，使得即使在离线状态下也能访问部分功能。
-
-```javascript
-function saveArticleForOffline(article) {
-  const offlineArticles = JSON.parse(localStorage.getItem('offlineArticles') || '[]');
-  offlineArticles.push(article);
-  localStorage.setItem('offlineArticles', JSON.stringify(offlineArticles));
-}
-
-function getOfflineArticles() {
-  return JSON.parse(localStorage.getItem('offlineArticles') || '[]');
-}
-```
-
-### 缓存控制：
-
-为了确保缓存的数据不会过期，我会在存储数据时加入时间戳，并在读取时检查是否过期。
-
-```javascript
-function setWithExpiry(key, value, ttl) {
-  const now = new Date();
-  const item = {
-    value: value,
-    expiry: now.getTime() + ttl,
-  }
-  localStorage.setItem(key, JSON.stringify(item));
-}
-
-function getWithExpiry(key) {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) {
-    return null;
-  }
-  const item = JSON.parse(itemStr);
-  const now = new Date();
-  if (now.getTime() > item.expiry) {
-    localStorage.removeItem(key);
-    return null;
-  }
-  return item.value;
-}
-```
-
-使用 localStorage 进行缓存时，需要注意以下几点：
-
-1. localStorage 的存储容量有限（通常为 5MB 左右）。
-2. localStorage 中存储的数据是明文的，不要存储敏感信息。
-3. localStorage 是同步操作，对大量数据的读写可能会影响性能。
-4. 要考虑数据的时效性，适时清理或更新缓存。
-
-这些是我个人在使用 localStorage 进行缓存时的一些经验和实践。根据具体的应用场景和需求，可能还会有其他更复杂或更优化的使用方式。
-
-## setInterval准确吗
-
-
-
-setInterval 并不是完全准确的，它存在一些固有的限制和不精确性：
-
-1. 最小延迟：
-   浏览器通常有最小的计时器延迟（通常为4毫秒），这意味着即使你设置了更短的间隔，实际执行也可能会被延迟。
-
-2. 单线程执行：
-   JavaScript 是单线程的，如果主线程被长时间运行的任务阻塞，定时器的执行会被延迟。
-
-3. 嵌套定时器限制：
-   为了防止 CPU 过度使用，嵌套的定时器（例如在 setInterval 回调中再次使用 setInterval）可能会被浏览器限制最小间隔为 4ms。
-
-4. 后台标签页：
-   在某些浏览器中，非活动标签页的定时器可能会被限制或暂停以节省资源。
-
-5. 系统负载：
-   系统负载过高时，可能会影响定时器的精确性。
-
-6. 时间漂移：
-   长时间运行可能会导致累积误差，使定时器越来越不准确。
-
-如果需要更精确的定时，可以考虑以下替代方案：
-
-1. 使用 requestAnimationFrame：
-   对于与动画相关的定时任务，这通常是更好的选择。
-
-2. Web Workers：
-   可以在后台线程中运行定时器，减少主线程阻塞的影响。
-
-3. 递归的 setTimeout：
-   虽然不能完全解决问题，但可以减少累积误差。
-
-```javascript
-function moreAccurateInterval(func, interval) {
-  let expected = Date.now() + interval;
-  setTimeout(function step() {
-    func();
-    let drift = Date.now() - expected;
-    expected += interval;
-    setTimeout(step, Math.max(0, interval - drift));
-  }, interval);
-}
-```
-
-4. 使用第三方库：
-   一些专门的计时库可能提供更精确的定时功能。
-
-总的来说，对于大多数web应用来说，setInterval 的精度已经足够。但如果你需要高精度的定时，可能需要考虑其他方案或者在服务器端实现。
-
-
-
-
-
-`setInterval` 是 JavaScript 中用于周期性执行某些代码的函数。尽管它非常方便，但它并不总是非常准确，尤其是当需要精确的时间间隔时。这是因为 `setInterval` 的执行时间受以下几个因素影响：
-
-### 1. JavaScript 运行时的单线程模型
-
-JavaScript 是单线程的，浏览器环境中所有的任务都在一个线程中执行，包括定时器回调、事件处理、渲染等。当主线程被占用时（例如执行长时间的脚本或者处理复杂的 DOM 操作），`setInterval` 的回调函数可能不会按预期时间执行。
-
-### 2. 任务队列和事件循环
-
-每个 `setInterval` 的回调都是一个任务，会被放入任务队列并等待事件循环处理。如果事件循环正在处理其他任务，定时器的回调可能会被延迟，而不是在预定的时间间隔触发。
-
-### 3. 回调执行时间
-
-如果 `setInterval` 的回调函数执行时间较长，超过了设定的间隔时间，那么实际间隔将大于设定的时间。例如，如果你设定了一个 10 毫秒的间隔，而回调实际执行花费了 50 毫秒，那么两次回调之间的实际间隔时间将至少是 50 毫秒。
-
-### 示例
-
-```javascript
-const interval = 1000; // 1秒
-let startTime = Date.now();
-
-const id = setInterval(() => {
-  const currentTime = Date.now();
-  const delta = currentTime - startTime;
-
-  console.log(`Elapsed time: ${delta} ms`);
-
-  if (delta >= 10000) { // 10 秒后停止
-    clearInterval(id);
-  }
-  startTime = currentTime;
-}, interval);
-```
-
-在上述示例中，每次回调的实际时间间隔可能会比设定的 1000 毫秒长。
-
-### 改善方法
-
-虽然 `setInterval` 本身无法完美地解决这些问题，但我们可以使用一些方法来提高定时功能的准确性。
-
-#### 1. 使用 `setTimeout` 校正间隔
-
-通过嵌套使用 `setTimeout`，可以计算下次调用的实际时间，从而更精确地控制调用时间间隔：
-
-```javascript
-const interval = 1000; // 1秒
-let startTime = Date.now();
-
-function scheduleNext() {
-  const currentTime = Date.now();
-  const delta = currentTime - startTime;
-
-  console.log(`Elapsed time: ${delta} ms`);
-
-  startTime = currentTime;
-
-  // 计算实际间隔
-  const nextInterval = interval - (delta % interval);
-  setTimeout(scheduleNext, nextInterval);
-}
-
-setTimeout(scheduleNext, interval);
-```
-
-这种方法可以校正时间偏差，使间隔时间更接近于设定的值。
-
-#### 2. 使用 requestAnimationFrame（适用于动画）
-
-如果你需要在浏览器环境中执行高精度的动画或操作 `CSS` 渲染，可以考虑使用 `requestAnimationFrame`，它会在浏览器每一帧刷新时调用回调函数。
-
-```javascript
-let startTime = null;
-
-function step(timestamp) {
-  if (!startTime) startTime = timestamp;
-  const progress = timestamp - startTime;
-
-  console.log(`Elapsed time: ${progress} ms`);
-
-  if (progress < 10000) { // 10 秒后停止
-    requestAnimationFrame(step);
-  }
-}
-
-requestAnimationFrame(step);
-```
-
-`requestAnimationFrame` 更适合用于动画，因为它会在浏览器的帧刷新周期内调用回调函数，使动画更加平滑、同步和高效。
-
-### 总结
-
-- `setInterval` 并不适用于高精度的任务。
-- 任务队列、事件循环和执行回调函数的时间都会影响 `setInterval` 的准确性。
-- 可以使用嵌套 `setTimeout` 或 `requestAnimationFrame` 来提高时间间隔的准确性。
-
-具体选择哪种方法，取决于你的应用场景和对时间精度的需求。
 
 ## instanceof工作机制
 
@@ -7637,25 +7072,25 @@ requestAnimationFrame(step);
 
 然而，需要注意的是，尽管 `innerText` 提供了一定程度的安全性，但在处理不可信的数据时，最佳实践仍然是对数据进行适当的清理和转义。例如，可以使用 `textContent` 属性，它与 `innerText` 类似，但在处理换行符和其他空白字符方面有所不同。更重要的是，应该使用内容安全策略 (CSP) 并确保所有的数据在展示之前都已经经过了适当的清理和验证。
 
-## PWA
+## Progressive Web Apps
 
-Progressive Web Apps（渐进式网络应用程序，简称 PWA）是一种结合了网页应用和原生应用优势的新型应用模式。
+Progressive Web Apps（渐进式网络应用程序，简称 PWA）是一种**结合了网页应用和原生应用优势**的新型应用模式。
 
 一、特点
 
 1. 可靠性
-- 即使在网络状况不佳或者离线的情况下，PWA 也能正常工作。通过使用 Service Workers 技术，PWA 可以缓存关键资源，当用户再次访问时，即使没有网络连接，也能从缓存中加载页面内容，提供基本的功能。
+- 即使在**网络状况不佳或者离线的情况下**，PWA 也能正常工作。**通过使用 Service Workers** 技术，PWA 可以**缓存关键资源**，当用户再次访问时，**即使没有网络连接**，**也能从缓存中加载页面内容**，提供基本的功能。
 2. 快速响应
-- PWA 加载速度快，能够像原生应用一样迅速响应。它们通常采用优化的加载策略，如预加载关键资源、延迟加载非关键资源等，以减少用户的等待时间。
+- PWA **加载速度快**，能够像原生应用一样迅速响应。它们通常采用优化的加载策略，**如预加载关键资源、延迟加载非关键资源**等，以减少用户的等待时间。
 3. 可安装性
-- 用户可以将 PWA 添加到主屏幕，就像安装原生应用一样。一旦安装，PWA 会有自己的图标，并且在启动时可以提供全屏体验，没有浏览器的地址栏和其他界面元素干扰。
+- 用户**可以将 PWA 添加到主屏幕**，就像安装原生应用一样。一旦安装，PWA 会有自己的图标，并且在启动时可以提供全屏体验，没有浏览器的地址栏和其他界面元素干扰。
 4. 安全性
-- PWA 运行在安全的 HTTPS 环境下，确保用户数据的安全传输和存储。同时，它们也受到浏览器的安全机制保护，防止恶意攻击。
+- PWA **运行在安全的 HTTPS 环境下**，确保用户数据的安全传输和存储。同时，它们也受到浏览器的安全机制保护，防止恶意攻击。
 
 二、技术组成
 
 1. Service Workers
-- 这是 PWA 的核心技术之一。Service Workers 是在后台运行的脚本，可以拦截和处理网络请求，实现离线缓存、推送通知等功能。
+- 这是 PWA 的核心技术之一。**Service Workers 是在后台运行的脚本，可以拦截和处理网络请求，实现离线缓存、推送通知等功能。**
 2. Web App Manifest
 - 这是一个 JSON 文件，用于描述 PWA 的名称、图标、启动 URL 等信息。它使得 PWA 可以被添加到主屏幕，并提供自定义的启动画面和图标。
 3. HTTPS
@@ -7664,78 +7099,11 @@ Progressive Web Apps（渐进式网络应用程序，简称 PWA）是一种结�
 三、优势
 
 1. 跨平台性
-- PWA 可以在各种操作系统和设备上运行，包括桌面电脑、笔记本电脑、平板电脑和智能手机。无论用户使用的是哪种设备，都可以获得一致的体验。
+- PWA **可以在各种操作系统和设备上运行**，包括桌面电脑、笔记本电脑、平板电脑和智能手机。无论用户使用的是哪种设备，都可以获得一致的体验。
 2. 易于开发和维护
-- PWA 是基于网页技术开发的，开发人员可以使用熟悉的 HTML、CSS 和 JavaScript 进行开发。与原生应用相比，PWA 的开发成本更低，维护也更加容易。
-3. 自动更新
+- PWA 是**基于网页技术开发**的，开发人员可以使用熟悉的 HTML、CSS 和 JavaScript 进行开发。与原生应用相比，PWA 的开发成本更低，维护也更加容易。
+3. **自动更新**
 - 当 PWA 有更新时，浏览器会自动下载并更新缓存的资源，用户无需手动安装更新。这使得 PWA 能够始终保持最新的功能和性能。
-
-## 0.1+0.2不等于0.3，为什么怎么解决
-
-在 JavaScript 中，`0.1 + 0.2` 不等于 `0.3` 是因为浮点数在计算机中的表示存在精度问题。JavaScript 使用 IEEE 754 双精度浮点数（64 位）格式来表示数字，这种格式不能精确表示某些十进制小数，因此会产生舍入误差。
-
-### 具体原因
-
-1. **二进制表示的局限**：某些十进制小数无法被精确地转换为二进制小数。例如，十进制的 `0.1` 和 `0.2` 在二进制中是无限循环小数，无法精确表示。
-2. **舍入误差**：当计算机进行浮点运算时，会对这些无法精确表示的数进行舍入，从而产生微小的误差。最终结果浮点数的表示会带有一些不可避免的误差。
-
-#### 例如：
-
-```javascript
-console.log(0.1 + 0.2);  // 输出 0.30000000000000004
-```
-
-### 解决方法
-
-为了使浮点数运算结果更加准确，可以采取以下几种解决方法：
-
-1. **使用整数计算**：
-   通过将度量单位转换为整数来避免浮点运算，从而消除由浮点数精度引起的误差。
-
-```javascript
-console.log((0.1 * 10 + 0.2 * 10) / 10);  // 输出 0.3
-```
-
-2. **使用 `toFixed` 方法**：
-   `toFixed` 方法可以将数字格式化为固定的小数位数，但要注意返回值是字符串，可以将其再转换为数字。
-
-```javascript
-let result = (0.1 + 0.2).toFixed(2);  // 返回字符串 '0.30'
-console.log(parseFloat(result));      // 转换为数字 0.3
-```
-
-3. **使用 `Number.EPSILON` 进行比较**：
-   `Number.EPSILON` 表示 JavaScript 中能够表示的最小的间隔值，可以用其来做比较。
-
-```javascript
-const isEqual = (a, b) => Math.abs(a - b) < Number.EPSILON;
-console.log(isEqual(0.1 + 0.2, 0.3));  // 输出 true
-```
-
-4. **使用专门的库**：
-   有一些 JavaScript 库专门用于处理高精度的数学运算。例如，`decimal.js` 或 `big.js` 可以用于精确的浮点数运算。
-
-```javascript
-// 使用 decimal.js
-const Decimal = require('decimal.js');
-let a = new Decimal(0.1);
-let b = new Decimal(0.2);
-let sum = a.plus(b);
-console.log(sum.toNumber());  // 输出 0.3
-```
-
-```javascript
-// 使用 big.js
-const Big = require('big.js');
-let a = new Big(0.1);
-let b = new Big(0.2);
-let sum = a.plus(b);
-console.log(sum.toNumber());  // 输出 0.3
-```
-
-### 综合来看
-
-在需要高精度运算的情况下，使用整数计算法和专门处理高精度数学运算的库是较为推荐的选择。对于日常的基本运算，可以结合 `toFixed` 和 `Number.EPSILON` 进行比较和格式化，以减少误差带来的影响。
 
 ## 类的static属性
 
@@ -7986,23 +7354,23 @@ will-change属性
 
 ## 前端try catch能捕获异步错误吗
 
-在前端开发中，try catch 并不总是能捕获异步错误。例如，在异步的 Promise 中，如果错误是通过 reject 抛出的，且没有使用 Promise 的 catch 方法或 async/await 中的 try catch 进行处理，那么外层的 try catch 是捕获不到这个错误的。原因是 Promise 对应事件循环中的微任务，当执行异步任务里面的回调时，外层执行栈里面的任务早已执行完，它们的上下文已经完全不同了。
+在前端开发中，**try catch 并不总是能捕获异步错误**。例如，在异步的 Promise 中，如果错误是通过 reject 抛出的，且没有使用 Promise 的 catch 方法或 async/await 中的 try catch 进行处理，那么外层的 try catch 是捕获不到这个错误的。原因是 Promise 对应事件循环中的微任务，当执行异步任务里面的回调时，外层执行栈里面的任务早已执行完，它们的上下文已经完全不同了。
 
 
 
-对于异步的 **setTimeout 函数中的错误**，外层的 try catch 也捕获不到。例如：“try { setTimeout (function () { throw new Error ('error in setTimeout'); // 200ms 后会把异常抛出到全局 },200);} catch (err) { console.error ('catch error', err); // 不会执行 }”。
+对于异步的 **setTimeout 函数中的错误**，外层的 **try catch 也捕获不到**。例如：“try { setTimeout (function () { throw new Error ('error in setTimeout'); // 200ms 后会把异常抛出到全局 },200);} catch (err) { console.error ('catch error', err); // 不会执行 }”。
 
-但是，如果把 try catch 放到异步代码的里面，就有可能捕获到错误。比如在 Promise 中使用 catch 方法可以捕获到错误，从而阻止错误被抛到全局导致程序崩溃。在 async/await 中，能用 try catch 捕获异步错误，因为 async/await 本质上是一个语法糖，它可以将异步操作转换为同步的形式，使得在异步操作中发生的错误可以被 try catch 捕获。
+但是，如果把 try catch 放到异步代码的里面，就有可能捕获到错误。比如在 Promise 中使用 catch 方法可以捕获到错误，从而阻止错误被抛到全局导致程序崩溃。**在 async/await 中，能用 try catch 捕获异步错误**，因为 async/await 本质上是一个语法糖，它可以将异步操作转换为同步的形式，使得在异步操作中发生的错误可以被 try catch 捕获。
 
 总的来说，前端 try catch 在特定情况下可以捕获异步错误，但并非所有异步错误都能被捕获，需要根据具体的异步编程模型选择合适的错误处理方式。
 
 ### window.onerror
 
-捕获不到js加载或者图片加载的这种网络的错误
+**捕获不到**js加载**或者**图片加载的这种网络的错误**
 
 ### addEventlistener error
 
-无法捕获promise和async  await的错误
+**无法捕获promise和async  await的错误**
 
 ```javascript
 window.addEventListener('error', args => {
@@ -8052,8 +7420,6 @@ window.addEventListener('unhandledrejection', e => {
 
 
 
-
-
 ### 对于 async/await 的错误捕获：
 
 使用 `async/await` 时，你可以将异步函数包裹在 `try...catch` 块中来捕获错误：
@@ -8084,5 +7450,3 @@ setTImeout里使用try catch
 3. **错误传播**：如果一个 `async` 函数内部抛出错误，并且没有被内部的 `try...catch` 捕获，那么这个错误会向外传播，直到被外部的 `try...catch` 捕获。
 
 4. **错误处理的重要性**：正确处理异步错误是非常重要的，因为它们可能会导致程序的行为不如预期，或者在用户界面上显示不友好的错误信息。
-
-通过这些方式，你可以有效地在前端代码中捕获和处理异步错误。

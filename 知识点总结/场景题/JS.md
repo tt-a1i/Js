@@ -6413,4 +6413,340 @@ setTimeout(() => {
 - 第一种递归定时器更适合需要逐次操作完成后继续下一次的场景，间隔时间和执行时间加总决定了轮询频率。
 - 第二种独立定时器方式适合需要固定时间段内反复执行的操作，不考虑操作本身的执行时间，从而使得操作具有更严格的时间间隔。
 
-选择使用哪种方式应该依赖于具体的使用场景和对时间间隔的严格性要求。
+选择使用哪种方式应该依赖于具体的使用场景和对时间间隔的严格性要函数覆盖声明输出
+
+### 代码分析
+
+首先，来看完整的代码：
+
+```javascript
+let a = 1;
+
+function foo(a) {
+  return a = a + 1;
+} // 2
+
+var b = foo(a); // 2
+
+function foo(a) {
+  return a = a + 2;
+} // 4
+
+const c = foo(a); // 4
+
+function foo(a) {
+  return a = a + 3;
+}
+
+console.log(a, b, c);
+```
+
+### 关键点
+
+1. **变量声明提升**：`var` 声明的变量会被提升到其作用域的顶部。
+2. **函数声明提升**：函数声明会被提升到其作用域的顶部，并覆盖之前已经提升的函数。
+3. **顺序执行**：代码执行会按照从上到下顺序执行。
+
+### 详细执行流程
+
+1. **提升阶段**：
+
+   - 所有变量声明和函数声明都会提升到顶部。
+   - 变量声明 `var b` 会被提升，但不会被初始化为`undefined`。
+   - 函数声明 `foo` 会被提升，最初定义的 `foo` 会被后来的定义覆盖。因此，最终的 `foo` 会是 `function foo(a) { return a = a + 3; }`。
+
+   提升后的代码块实质上看起来像这样：
+
+   ```javascript
+   let a;
+   var b;
+   const c; // 注意这里 const 变量不会在声明前被初始化为 undefined
+   function foo(a) { return a = a + 3; }
+   ```
+
+   原因
+
+   <img src="./assets/image-20241013173632727.png" alt="image-20241013173632727" style="zoom:33%;" />
+
+   
+
+### 最终结果
+
+所以，输出结果为：
+
+```
+1 4 4
+```
+
+### 小结
+
+由于函数声明会提升并覆盖之前的声明，因此最终的 `foo` 函数是 `function foo(a) { return a = a + 3; }`。这解释了为什么调用 `foo` 的结果都是 `4`。通过理解提升（Hoisting）、变量和函数的声明覆盖，能准确地解读这段代码的执行流程。
+
+## 你用 localStorage 做过什么缓存
+
+我个人确实使用过 localStorage 来实现一些简单的客户端缓存策略。以下是我曾经使用 localStorage 进行缓存的一些具体场景和实现方式：
+
+### 缓存 API 响应数据：
+
+对于一些不经常变化的数据，我会将 API 的响应缓存到 localStorage 中，以减少不必要的网络请求。
+
+```javascript
+function fetchData(url) {
+  const cachedData = localStorage.getItem(url);
+  if (cachedData) {
+    return Promise.resolve(JSON.parse(cachedData));
+  }
+  
+  return fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      localStorage.setItem(url, JSON.stringify(data));
+      return data;
+    });
+}
+```
+
+### 用户偏好设置：
+
+保存用户的主题选择、语言偏好等设置。
+
+```javascript
+// 保存主题设置
+function setTheme(theme) {
+  localStorage.setItem('userTheme', theme);
+  applyTheme(theme);
+}
+
+// 应用保存的主题
+function applyStoredTheme() {
+  const storedTheme = localStorage.getItem('userTheme');
+  if (storedTheme) {
+    applyTheme(storedTheme);
+  }
+}
+```
+
+### 表单数据的自动保存：
+
+为了防止用户意外关闭页面导致表单数据丢失，我会周期性地将表单数据保存到 localStorage。
+
+```javascript
+function autoSaveForm() {
+  const formData = getFormData();
+  localStorage.setItem('formDraft', JSON.stringify(formData));
+}
+
+// 每30秒自动保存一次
+setInterval(autoSaveForm, 30000);
+
+// 页面加载时恢复表单数据
+function restoreFormData() {
+  const savedData = localStorage.getItem('formDraft');
+  if (savedData) {
+    const formData = JSON.parse(savedData);
+    populateForm(formData);
+  }
+}
+```
+
+### 实现简单的离线功能：
+
+对于一些简单的应用，我会使用 localStorage 来存储关键数据，使得即使在离线状态下也能访问部分功能。
+
+```javascript
+function saveArticleForOffline(article) {
+  const offlineArticles = JSON.parse(localStorage.getItem('offlineArticles') || '[]');
+  offlineArticles.push(article);
+  localStorage.setItem('offlineArticles', JSON.stringify(offlineArticles));
+}
+
+function getOfflineArticles() {
+  return JSON.parse(localStorage.getItem('offlineArticles') || '[]');
+}
+```
+
+### 缓存控制：
+
+为了确保缓存的数据不会过期，我会在存储数据时加入时间戳，并在读取时检查是否过期。
+
+```javascript
+function setWithExpiry(key, value, ttl) {
+  const now = new Date();
+  const item = {
+    value: value,
+    expiry: now.getTime() + ttl,
+  }
+  localStorage.setItem(key, JSON.stringify(item));
+}
+
+function getWithExpiry(key) {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
+  }
+  const item = JSON.parse(itemStr);
+  const now = new Date();
+  if (now.getTime() > item.expiry) {
+    localStorage.removeItem(key);
+    return null;
+  }
+  return item.value;
+}
+```
+
+使用 localStorage 进行缓存时，需要注意以下几点：
+
+1. localStorage 的存储容量有限（通常为 5MB 左右）。
+2. localStorage 中存储的数据是明文的，不要存储敏感信息。
+3. localStorage 是同步操作，对大量数据的读写可能会影响性能。
+4. 要考虑数据的时效性，适时清理或更新缓存。
+
+这些是我个人在使用 localStorage 进行缓存时的一些经验和实践。根据具体的应用场景和需求，可能还会有其他更复杂或更优化的使用方式。
+
+## setInterval准确吗
+
+setInterval **并不是完全准确**的，它存在一些固有的限制和不精确性：
+
+1. 最小延迟：
+   浏览器通常有**最小的计时器延迟**（通常为4毫秒），这意味着即使你设置了更短的间隔，实际执行也可能会被延迟。
+
+2. 单线程执行：
+   JavaScript 是单线程的，**如果主线程被长时间运行的任务阻塞**，**定时器的执行会被延迟**。
+
+3. 嵌套定时器限制：
+   **为了防止 CPU 过度使用**，还有旁路攻击,嵌套的定时器（例如在 setInterval 回调中再次使用 setInterval）可能会被浏览器限制最小间隔为 4ms。
+
+4. 后台标签页：
+   在某些浏览器中，**非活动标签页的定时器可能会被限制或暂停以节省资源**。
+
+5. 系统负载：
+   **系统负载过高时**，可能会**影响定时器的精确性**。
+
+6. 时间漂移：
+   **长时间运行可能会导致累积误差**，使定时器越来越不准确。
+
+如果需要更精确的定时，可以考虑以下替代方案：
+
+1. 使用 requestAnimationFrame：
+   对于与动画相关的定时任务，这通常是更好的选择。
+
+2. Web Workers：
+   可以在后台线程中运行定时器，减少主线程阻塞的影响。
+
+3. 递归的 setTimeout：
+   虽然不能完全解决问题，但可以减少累积误差。
+
+```javascript
+function moreAccurateInterval(func, interval) {
+  let expected = Date.now() + interval;
+  setTimeout(function step() {
+    func();
+    let drift = Date.now() - expected;
+    expected += interval;
+    setTimeout(step, Math.max(0, interval - drift));
+  }, interval);
+}
+```
+
+4. 使用第三方库：
+   一些专门的计时库可能提供更精确的定时功能。
+
+
+
+
+
+`setInterval` 是 JavaScript 中用于周期性执行某些代码的函数。尽管它非常方便，但它并不总是非常准确，尤其是当需要精确的时间间隔时。这是因为 `setInterval` 的执行时间受以下几个因素影响：
+
+### 1. JavaScript 运行时的单线程模型
+
+JavaScript 是单线程的，浏览器环境中所有的任务都在一个线程中执行，包括定时器回调、事件处理、渲染等。当主线程被占用时（例如执行长时间的脚本或者处理复杂的 DOM 操作），`setInterval` 的回调函数可能不会按预期时间执行。
+
+### 2. 任务队列和事件循环
+
+每个 `setInterval` 的回调都是一个任务，会被放入任务队列并等待事件循环处理。如果事件循环正在处理其他任务，定时器的回调可能会被延迟，而不是在预定的时间间隔触发。
+
+### 3. 回调执行时间
+
+如果 `setInterval` 的回调函数执行时间较长，超过了设定的间隔时间，那么实际间隔将大于设定的时间。例如，如果你设定了一个 10 毫秒的间隔，而回调实际执行花费了 50 毫秒，那么两次回调之间的实际间隔时间将至少是 50 毫秒。
+
+### 示例
+
+```javascript
+const interval = 1000; // 1秒
+let startTime = Date.now();
+
+const id = setInterval(() => {
+  const currentTime = Date.now();
+  const delta = currentTime - startTime;
+
+  console.log(`Elapsed time: ${delta} ms`);
+
+  if (delta >= 10000) { // 10 秒后停止
+    clearInterval(id);
+  }
+  startTime = currentTime;
+}, interval);
+```
+
+在上述示例中，每次回调的实际时间间隔可能会比设定的 1000 毫秒长。
+
+### 改善方法
+
+虽然 `setInterval` 本身无法完美地解决这些问题，但我们可以使用一些方法来提高定时功能的准确性。
+
+#### 1. 使用 `setTimeout` 校正间隔
+
+通过嵌套使用 `setTimeout`，可以计算下次调用的实际时间，从而更精确地控制调用时间间隔：
+
+```javascript
+const interval = 1000; // 1秒
+let startTime = Date.now();
+
+function scheduleNext() {
+  const currentTime = Date.now();
+  const delta = currentTime - startTime;
+
+  console.log(`Elapsed time: ${delta} ms`);
+
+  startTime = currentTime;
+
+  // 计算实际间隔
+  const nextInterval = interval - (delta % interval);
+  setTimeout(scheduleNext, nextInterval);
+}
+
+setTimeout(scheduleNext, interval);
+```
+
+这种方法可以校正时间偏差，使间隔时间更接近于设定的值。
+
+#### 2. 使用 requestAnimationFrame（适用于动画）
+
+如果你需要在浏览器环境中执行高精度的动画或操作 `CSS` 渲染，可以考虑使用 `requestAnimationFrame`，它会在浏览器每一帧刷新时调用回调函数。
+
+```javascript
+let startTime = null;
+
+function step(timestamp) {
+  if (!startTime) startTime = timestamp;
+  const progress = timestamp - startTime;
+
+  console.log(`Elapsed time: ${progress} ms`);
+
+  if (progress < 10000) { // 10 秒后停止
+    requestAnimationFrame(step);
+  }
+}
+
+requestAnimationFrame(step);
+```
+
+`requestAnimationFrame` 更适合用于动画，因为它会在浏览器的帧刷新周期内调用回调函数，使动画更加平滑、同步和高效。
+
+### 总结
+
+- `setInterval` 并不适用于高精度的任务。
+- 任务队列、事件循环和执行回调函数的时间都会影响 `setInterval` 的准确性。
+- 可以使用嵌套 `setTimeout` 或 `requestAnimationFrame` 来提高时间间隔的准确性。
+
+具体选择哪种方法，取决于你的应用场景和对时间精度的需求。
