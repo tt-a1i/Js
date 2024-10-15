@@ -1,7 +1,6 @@
 // 定义一个会抛出异常的函数
-let p;
 function throwError() {
-	return p = new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		// 模拟异步操作
 		setTimeout(() => {
 			// 抛出异常
@@ -24,13 +23,10 @@ throwError()
 	})
 	.catch((error) => {
 		// 捕获第一个 .then 中的异常
-		console.error("第一个 .catch 捕获:", error.message);
-		console.log(p)
-	
+		console.error("第一个 .catch 捕获:", error.message);	
 	})
 	.then(() => {
 		console.log("这是第三个 .then 调用");
-		console.log(p)
 		// 返回一个值
 		return "第三个 then 的结果";
 	})
@@ -38,11 +34,12 @@ throwError()
 		// 捕获第二个 .then 中的异常
 		console.error("第二个 .catch 捕获:", error.message);
 	})
-	.then((result) => {
-		console.log(result);
-		console.log(p)
-	})
-	.catch((error) => {
-		// 捕获任何在链中发生的异常
-		console.error("最终 .catch 捕获:", error.message);
-	});
+	.then((res) => console.log('333', res))
+	// .then((result) => {
+	// 	console.log(result);
+	// 	console.log(p)
+	// })
+	// .catch((error) => {
+	// 	// 捕获任何在链中发生的异常
+	// 	console.error("最终 .catch 捕获:", error.message);
+	// });

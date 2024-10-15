@@ -1,20 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
-  <style>
-    .trangle{
-      width: 0;
-      height: 0;
-      border-left: 100px solid red;
-      border-right: 50px solid transparent;
-      border-bottom: 50px solid transparent;
-    }
-  </style>
-</head>
-<body>
-  <div class="trangle"></div>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title></title>
+		<style>
+			.triangle1 {
+				width: 0;
+				height: 0;
+				border-left: 50px solid transparent;
+				border-right: 50px solid transparent;
+				border-bottom: 100px solid red;
+			}
+			.triangle2 {
+				width: 0;
+				height: 0;
+				border-left: 50px solid transparent;
+				border-right: 50px solid transparent;
+				border-top: 100px solid red;
+			}
+			.triangle3 {
+				width: 0;
+				height: 0;
+				border-top: 50px solid transparent;
+				border-bottom: 50px solid transparent;
+				border-right: 100px solid red;
+			}
+			.triangle4 {
+				width: 0;
+				height: 0;
+				border-top: 50px solid transparent;
+				border-bottom: 50px solid transparent;
+				border-left: 100px solid red;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- <div class="triangle1"></div>
+		<br />
+		<div class="triangle2"></div>
+		<br />
+		<div class="triangle3"></div>
+		<br />
+		<div class="triangle4"></div> -->
+
+		<script>
+			console.log(1);
+			setTimeout(() => {
+				console.log(2);
+			}, 0);
+			new Promise((resolve, reject) => {
+				console.log(3);
+				resolve();
+			}).then((res) => console.log(4));
+			let p = document.createElement("p"); // 创建一个 p 元素节点
+			p.innerHTML = "12345"; // 设置 p 元素的文本内容
+			document.body.appendChild(p);
+		</script>
+	</body>
 </html>
