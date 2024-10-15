@@ -8,8 +8,8 @@ const p = new Promise(reject => {
     //then只接收1个回调,后续的自动忽略
     //这里没有接收res,如果改为(res) => console.log(res),就输出res了
     .then(
-        () => console.log(),
-        () => console.log()
+        () => console.log(1),
+        () => console.log(2)
     )
 //promise 在resolve后加入到队列还没执行, 所以输出pending
 console.log('one', p)
