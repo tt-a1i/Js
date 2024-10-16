@@ -1,23 +1,25 @@
-function quickSort(arr, low = 0, high = arr.length - 1) {
-	if (low < high) {
-		let pivotIdx = partition(arr, low, high);
-		quickSort(arr, low, pivotIdx - 1);
-		quickSort(arr, pivotIdx + 1, high);
-	}
-	return arr;
+Function.prototype.myApply = function(context, args){
+	context = context || window
+	const unique = Symbol()
+	context[unique] = this
+	const result = context[unique](...(args || []))
+	delete context[unique]
+	return result
 }
-function partition(arr, low, high) {
-	let pivot = arr[high];
-	let i = low - 1;
-	for (let j = low; j < high; j++) {
-		if (arr[j] <= pivot) {
-            i++
-            [arr[i], arr[j]] = [arr[j], arr[i]]
-		}
-	}
-    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]]
-    return i + 1
+function hello(name1, name2) {
+	console.log(this.greet + ` ${name1} ${name2}`);
 }
-let arr = [1,3,4,2,6,9,6]
-console.log(quickSort(arr));
+hello.myApply({ greet: "hello" }, ["tom", "jack"]);
 
+Function.prototype.myCall = function(context, ...args){
+	context = context || window
+	const unique = Symbol()
+	context[unique] = this
+	const result = context[unique](...args)
+	delete context[unique]
+	return result
+}
+hello.myCall({greet: 'hello'}, 'tom', 'jack')
+
+
+// Function.prototype.myBind = function(context, )
