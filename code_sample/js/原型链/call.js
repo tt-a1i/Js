@@ -2,17 +2,13 @@
  *手写call
  *call是参数列表，一次性传入参数，立即执行
  */
-Function.prototype.myCall = function(context, ...args) {
-    context = context || window;
-
-    const unique = Symbol('unique');
-    context[unique] = this;
-
-    const result = context[unique](...args);
-
-    delete context[unique];
-
-    return result;
+ Function.prototype.myCall = function(context, ...args){
+	context = context || globalThis
+	const unique = Symbol()
+	context[unique] = this
+	const result = context[unique](...args)
+	delete context[unique]
+	return result
 }
 
 function greet(greeting, punctuation) {
