@@ -42,7 +42,7 @@ const request = (i) => () =>
 	});
 
 const requests = Array.from({ length: 10 }, (_, i) => request(i));
-limitConcurrency(requests, 3).then((results) => {
+limitConcurrency(requests, 2).then((results) => {
 	console.log("All requests completed");
 	console.log(results);
 });
