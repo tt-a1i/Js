@@ -22,7 +22,20 @@ const nestedObject = {
     }
 };
 // 使用 Proxy 监听嵌套对象
-const proxiedObject = new Proxy(nestedObject, handler);
+const proxiedObject = new Proxy(nestedObject, {
+    get(target, property, receiver) {
+        const value = Reflect.get(target, property, receiver);
+        //如果属性值是对象，则为其创建一个新的 Proxy
+        if (typeof value === 'object' && value !== null) {
+            return new Proxy(value, handler);
+        }
+        return value;
+    },
+    set(target, property, value, receiver) {
+        console.log(`Setting property "${property}" to "${value}"`);
+        return Reflect.set(target, property, value, receiver);
+    }
+});
 
 // 测试
 console.log(proxiedObject.a); // 输出: 1
