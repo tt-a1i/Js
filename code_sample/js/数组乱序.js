@@ -28,6 +28,7 @@ function shuffleArray2(array) {
 }
 
 // 示例
+//sort的时间复杂度是O(n Log n)
 const originalArray2 = [1, 2, 3, 4, 5];
 const shuffledArray2 = shuffleArray2(originalArray);
 
