@@ -2,9 +2,14 @@ import { asyncOnce } from './util.js';
 
 // 模拟 API 请求（真实的网络请求）
 function fetchData(param) {
-  return fetch(`https://jsonplaceholder.typicode.com/todos/1`)  // 模拟一个简单的API请求
-      .then((response) => response.json())
-      .then((data) => `Fetched data: ${JSON.stringify(data)}`);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      fetch(`https://jsonplaceholder.typicode.com/todos/1`)  // 模拟一个简单的API请求
+        .then((response) => response.json())
+        .then((data) => resolve(`Fetched data: ${JSON.stringify(data)}`))
+        .catch((err) => reject(err));
+    }, 2000); // 延迟 1000ms（1秒）
+  });
 }
 
 // 使用 asyncOnce 包装 fetchData

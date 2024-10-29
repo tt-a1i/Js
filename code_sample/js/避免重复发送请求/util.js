@@ -14,6 +14,7 @@ function asyncOnce(cb) {
             state.resolve.push(resolve)
             state.reject.push(reject)
             if(state.isPending) return
+            state.isPending = true
             cb(...args)
                 .then((res) => {
                     state.resolve.forEach((resolve) => resolve(res))

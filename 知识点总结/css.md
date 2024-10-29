@@ -2450,8 +2450,6 @@ HTML5 的语义化标签极大地提升了网页的结构化和可读性，对 S
 
 ## 图片懒加载
 
-图片懒加载（Lazy Loading）是一种优化网页性能的技术，其核心思想是在用户需要时才加载图片，而不是在页面加载时立即加载所有图片。这样做可以降低网页初始加载时间，提高用户体验，特别是在拥有大量图片的网页上。以下是懒加载的详细介绍和实现方法：
-
 ### 优势
 
 1. **提升性能**：减少初始页面加载时间和数据传输量。
@@ -2469,13 +2467,7 @@ HTML5 的语义化标签极大地提升了网页的结构化和可读性，对 S
 
 这个属性对于兼容支持的浏览器来说，最为简单且高效。
 
-#### 2. JavaScript 自定义实现
-
-对于不支持原生懒加载属性的浏览器，或者需要更复杂的懒加载逻辑（如动画效果），可以使用 JavaScript 来实现。
-
-##### 使用 `Intersection Observer` API
-
-`Intersection Observer` 是一个高效的观察视口内元素变化的 API，非常适合实现懒加载。
+#### 2. Intersection Observer结合data-src
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -2507,8 +2499,6 @@ data-src是自定义属性
 ```html
 <img data-src="image.jpg" alt="Lazy Loaded Image">
 ```
-
-
 
 这段代码实现了图片的懒加载功能，使用了 Intersection Observer API。让我们逐步解析这段代码：
 
@@ -2577,9 +2567,13 @@ lazyImages.forEach(img => {
 
 实际的图片 URL 放在 `data-src` 属性中，而不是 `src` 属性。这样可以防止图片在页面加载时就立即下载。
 
-##### 使用滚动事件（不推荐）
+#### 使用滚动事件结合getBoundingClientRect
 
-这一方法较为原始且性能不佳，但若为了兼容性需要可以考虑。在页面滚动时检查图片是否进入视口。建议仅在不支持 `Intersection Observer` 时使用。
+这一方法较为原始且性能不佳，但若为了兼容性需要可以考虑。
+
+getBoundingClientRect().top < window.innerHeight说明图片顶部在视口底部之上
+
+getBoundingClientRect().bottom > 0说明图片底部在视口顶部之下
 
 ```javascript
 function lazyLoad() {
@@ -2631,19 +2625,7 @@ window.addEventListener('DOMContentLoaded', lazyLoad);
 1. 性能：每次调用 `getBoundingClientRect()` 都会触发浏览器的重排（reflow），如果频繁调用可能会影响性能。
 2. 兼容性：虽然 `getBoundingClientRect()` 和 `window.innerHeight` 有很好的浏览器支持，但在非常老的浏览器中可能会有问题。
 
-在现代web开发中，通常推荐使用 Intersection Observer API 来处理元素可见性检测，因为它更高效且不会引起性能问题。但是，对于需要精确控制或者在不支持 Intersection Observer 的环境中，这种方法仍然是一个有效的选择。
-
-### 注意事项
-
-- **兼容性**：使用 `Intersection Observer` 前可以检查浏览器兼容性，如果不支持，考虑降级处理。
-- **用户体验**：尽量为懒加载图片设置占位符或默认图片以避免加载时的空白。
-- **SEO考虑**：合理使用懒加载，确保所有重要图片能够被搜索引擎爬虫获取。
-
-这些方法能够帮助在各类项目中合理地实现图像懒加载，提高网页加载性能和用户体验。
-
 ## 移动端适配
-
-移动端适配是指在不同尺寸和分辨率的移动设备上确保Web内容具有良好的可视性和用户体验。这是Web开发的重要部分，尤其是在如今多种多样的设备和屏幕尺寸的环境中。以下是一些关于移动端适配的关键概念和技术：
 
 ### 响应式设计
 
