@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Image Watermark Example</title>
+	</head>
+	<body>
+		<canvas id="watermarkCanvas" width="600" height="400"></canvas>
+
+		<script>
+			async function addWatermarkToImage(imageUrl, watermarkText) {
+				const canvas = document.getElementById("watermarkCanvas");
+				const ctx = canvas.getContext("2d");
+
+				const image = new Image();
+				image.src = imageUrl;
+
+				image.onload = () => {
+					// 绘制原始图像
+					ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+					// 设置水印样式
+					ctx.font = "30px Arial";
+					ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+					ctx.textAlign = "center";
+					ctx.textBaseline = "middle";
+
+					// 计算水印位置
+					const centerX = canvas.width / 2;
+					const centerY = canvas.height / 2;
+
+					// 绘制水印文本
+					ctx.fillText(watermarkText, centerX, centerY);
+				};
+			}
+			// 在页面加载完成后添加水印
+			document.addEventListener("DOMContentLoaded", () => {
+				addWatermarkToImage(
+					"https://avatars.githubusercontent.com/u/7463131",
+					"WATERMARK"
+				);
+			});
+		</script>
+	</body>
+</html>

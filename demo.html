@@ -3,30 +3,62 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
+		<title>Click Through Example</title>
 		<style>
-			.container {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 100vh;
+			.overlay {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				z-index: 1000;
 			}
-			.item {
-				background-color: red;
-				margin: 5px;
-				width: 100px;
-				height: 100px;
-				flex: 1;
+
+			.content {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: white;
+				padding: 20px;
+				border-radius: 5px;
 			}
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<div class="item">1</div>
-			<div class="item">2</div>
-			<div class="item">3</div>
-			<div class="item">4</div>
-			<div class="item">5</div>
+		<button id="showOverlay">Show Overlay</button>
+		<div class="overlay" id="overlay">
+			<div class="content">
+				<p>This is the overlay content.</p>
+			</div>
 		</div>
+
+		<script>
+			document
+				.getElementById("showOverlay")
+				.addEventListener("click", function () {
+					// 阻止点击事件传递到下面的元素
+					document.body.style.pointerEvents = "none";
+
+					setTimeout(() => {
+						// 显示弹出层
+						document.getElementById("overlay").style.display = "block";
+
+						// 恢复点击事件
+						document.body.style.pointerEvents = "auto";
+					}, 300);
+				});
+
+			document
+				.getElementById("overlay")
+				.addEventListener("click", function (event) {
+					if (event.target === this) {
+						// 关闭弹出层
+						this.style.display = "none";
+					}
+				});
+		</script>
 	</body>
 </html>

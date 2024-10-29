@@ -2184,3 +2184,208 @@ body {
 ### 4. 服务器端渲染（SSR）
 
 如果你使用的是服务器端渲染（如 Next.js、Nuxt.js 等），可以在服务器端动态生成包含灰度样式的页面。
+
+## 水印
+
+### 1. 使用 CSS 实现 HTML 水印
+如果你需要在网页的背景上添加一个简单的文本水印，可以使用 CSS 来实现。
+
+#### 示例代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watermark Example</title>
+  <style>
+    body {
+      position: relative;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* 使水印不影响鼠标事件 */
+      z-index: -1; /* 确保水印在内容之下 */
+      opacity: 0.5; /* 设置透明度 */
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><text x="50%" y="50%" font-size="100px" fill="rgba(0,0,0,0.5)" dominant-baseline="middle" text-anchor="middle">WATERMARK</text></svg>') no-repeat center center;
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark"></div>
+  <h1>页面内容</h1>
+  <p>这是一个带有水印的示例页面。</p>
+</body>
+</html>
+```
+
+### 解释
+
+1. **HTML 结构**：
+   - 创建一个 `div` 元素，类名为 `watermark`，用于放置水印。
+   - 页面的其他内容正常放置。
+
+2. **CSS 样式**：
+   - `body` 设置为相对定位，并确保内容区域有足够的高度。
+   - `.watermark` 设置为绝对定位，覆盖整个页面。
+   - `pointer-events: none` 使水印不影响鼠标事件。
+   - `z-index: -1` 确保水印在内容之下。
+   - `opacity: 0.5` 设置水印的透明度。
+   - `background` 使用内联 SVG 图像来创建水印文本。
+
+### 2. 使用 JavaScript 动态添加水印
+#### 示例代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Watermark Example</title>
+  <style>
+    .watermark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 100px;
+      color: rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <h1>页面内容</h1>
+  <p>这是一个带有动态水印的示例页面。</p>
+
+  <script>
+    function addWatermark(text) {
+      const watermark = document.createElement('div');
+      watermark.className = 'watermark';
+      watermark.textContent = text;
+      document.body.appendChild(watermark);
+    }
+
+    // 在页面加载完成后添加水印
+    document.addEventListener('DOMContentLoaded', () => {
+      addWatermark('WATERMARK');
+    });
+  </script>
+</body>
+</html>
+```
+
+### 解释
+
+1. **HTML 结构**：
+   - 页面的其他内容正常放置。
+
+2. **CSS 样式**：
+   - `.watermark` 设置为绝对定位，覆盖整个页面。
+   - `pointer-events: none` 使水印不影响鼠标事件。
+   - `z-index: -1` 确保水印在内容之下。
+   - `opacity: 0.5` 设置水印的透明度。
+   - `display: flex` 和 `align-items: center`、`justify-content: center` 使水印文本居中显示。
+   - `font-size` 和 `color` 设置水印文本的样式。
+
+3. **JavaScript 代码**：
+   - 定义 `addWatermark` 函数，用于创建并添加水印元素到页面上。
+   - 在 `DOMContentLoaded` 事件触发时调用 `addWatermark` 函数，添加水印。
+
+### 3. 在图片上添加水印
+#### 使用 Canvas API 的示例
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Watermark Example</title>
+</head>
+<body>
+  <canvas id="watermarkCanvas" width="600" height="400"></canvas>
+
+  <script>
+    async function addWatermarkToImage(imageUrl, watermarkText) {
+      const canvas = document.getElementById('watermarkCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const image = new Image();
+      image.src = imageUrl;
+
+      image.onload = () => {
+        // 绘制原始图像
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        // 设置水印样式
+        ctx.font = '30px Arial';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // 计算水印位置
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        // 绘制水印文本
+        ctx.fillText(watermarkText, centerX, centerY);
+      };
+    }
+
+    // 在页面加载完成后添加水印
+    document.addEventListener('DOMContentLoaded', () => {
+      addWatermarkToImage('https://via.placeholder.com/600x400', 'WATERMARK');
+    });
+  </script>
+</body>
+</html>
+```
+
+### 解释
+
+1. **HTML 结构**：
+   - 创建一个 `canvas` 元素，用于绘制图像和水印。
+
+2. **JavaScript 代码**：
+   - 定义 `addWatermarkToImage` 函数，接受图像 URL 和水印文本作为参数。
+   - 创建一个新的 `Image` 对象，并设置其 `src` 属性。
+   - 在图像加载完成后，使用 `drawImage` 方法绘制原始图像。
+   - 设置水印文本的样式（字体、颜色、对齐方式等）。
+   - 计算水印文本的位置，并使用 `fillText` 方法绘制水印文本。
+   - 在 `DOMContentLoaded` 事件触发时调用 `addWatermarkToImage` 函数，添加水印。
+
+### 总结
+
+- **CSS**：适用于简单的文本水印，可以直接在页面背景上添加。
+- **JavaScript**：适用于更复杂的水印效果，可以根据需要动态添加。
+- **Canvas API**：适用于在图片上添加水印，可以绘制图像和文本。
+
+## 点击穿透
+
+#### 使用 `pointer-events: none` 和 `pointer-events: auto`
+
+你可以通过设置 `pointer-events: none` 来阻止点击事件在延迟期间传递到下面的元素，然后在延迟结束后恢复 `pointer-events: auto`。
+
+### 使用 `touch-action: none`
+
+在移动端，可以使用 `touch-action: none` 来阻止默认的触摸行为，从而防止点击穿透。
+
+事件完成后恢复`tocch-action: auto`
