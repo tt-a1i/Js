@@ -1,13 +1,22 @@
-var a = 0;
-console.log(a, window.a);
-if (1) {
-	console.log(a, window.a);
-	a = 1;
-	console.log(a, window.a);
-	function a() {}
-	console.log(a, window.a);
-	a = 21;
-	console.log(a, window.a);
-	console.log("里面", a);
+class EventEmitter{
+	constructor(){
+		this.events = {}
+	}
+	on(event, listener){
+		this.events[event] ??= []
+		this.events[event].push(listener)
+	}
+	off(event, listener){
+		this.events[event] = this.events[event].filter(item => item !== listener)
+	}
+	emit(event, ...args){
+		this.events[event].forEach(f => f(...args))
+	}
+	once(event, listener){
+		const onceListener = (...args) => {
+			listener(...args)
+			this.off(event, onceListener)
+		}
+		this.on(event, onceListener)
+	}
 }
-console.log("外部", a);
