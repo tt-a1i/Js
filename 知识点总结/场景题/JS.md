@@ -14,7 +14,7 @@
 
 2. **函数表达式（Function Expression）**：
 
-   函数表达式将函数作为表达式的一部分，通常赋值给一个变量。与函数声明不同，函数表达式不会被提升，需要在定义之后才能使用。
+   函数表达式将函数作为表达式的一部分，通常赋值给一个变量。与函数声明不同，**函数表达式不会被提升**，需要在**定义之后才能使用**。
 
    ```javascript
    const multiply = function(a, b) {
@@ -40,6 +40,28 @@
 
    需要注意，使用 `Function` 构造函数生成的函数是在全局作用域内执行，因此它不能访问定义它的上下文中的局部变量。这种方式也被认为是不安全的，因为它类似于 `eval`，可能导致安全和性能问题。
 
+   `Function` 构造函数创建的函数**在其自身的全局作用域中执行**，**而不是在当前作用域中执行**。
+
+   所以只能访问到挂在window下的变量
+
+   demo
+
+   ```javascript
+   // Demo to experiment with Function constructor
+   const divide = new Function('a', 'b', 'return a / b');
+   
+   console.log(divide(6, 3)); // Output: 2
+   
+   // Attempt to access a local variable
+   var a = 10;
+   const multiply = new Function('b', 'return a * b');
+   try {
+   	console.log(multiply(2)); // Error: a is not defined
+   } catch (e) {
+   	console.error(e.message); // Output: a is not defined
+   }
+   ```
+
 5. **匿名函数（Anonymous Function）**：
 
    匿名函数是一种定义时没有命名的函数，通常以函数表达式的形式存在。这类函数尤其常见于事件处理器、回调函数和立即调用的函数表达式（IIFE）。
@@ -53,23 +75,21 @@
 
 ### 函数生成背后的机制
 
-- **解析和执行**：JavaScript 引擎解析代码时，会构建函数对象。函数声明被提升到作用域顶部，可在声明之前使用；而函数表达式只有在解析到赋值语句之后才可用。
+- **解析和执行**：JavaScript **引擎解析代码时**，会**构建函数对象**。**函数声明被提升到作用域顶部**，可在声明之前使用；而**函数表达式只有在解析到赋值语句之后才可用**。
 
-- **闭包（Closure）**：JavaScript 函数根据其创建的上下文形成闭包，这意味着函数可以“记住”其定义时的词法环境。
+- **闭包（Closure）**：JavaScript **函数根据其创建的上下文形成闭包**，这意味着函数可以**“记住”其定义时的词法环境**。
 
-- **上下文和作用域**：每个函数都有自己的执行上下文和作用域链。在调用函数时，JavaScript 创建一个新的执行上下文，管理函数的参数、变量和外部引用。
-
-通过这些多样化的创建方式，JavaScript 函数可以灵活地用于各种编程模式，包括面向过程、函数式编程和面向对象编程。
+- **上下文和作用域**：每个函数都**有自己的执行上下文和作用域链**。在**调用函数时**，JavaScript **创建一个新的执行上下文**，**管理函数的参数、变量和外部引用**。
 
 ## JavaScript 函数是对象吗
 
-是的，在 JavaScript 中，函数是一种特殊类型的对象。因为函数是对象，所以它们可以拥有属性和方法，并且可以像对象一样被操作。这种特性使 JavaScript 的函数非常灵活。
+在 JavaScript 中，函数是一种特殊类型的对象。因为函数是对象，所以它们可以拥有属性和方法，并且可以像对象一样被操作。
 
 ### 函数作为对象的特性
 
 1. **属性和方法**：
 
-   - 函数可以有自己的属性。例如，你可以给函数添加新的属性，或者使用内建属性如 `name` 和 `length`，分别表示函数的名字和参数的个数。
+   - 函数**可以有自己的属性**。例如，你可以给函数添加新的属性，或者使用内建属性如 `name` 和 `length`，分别表示函数的名字和参数的个数。
    - 函数也有一些内置方法，比如 `call()`、`apply()` 和 `bind()`，这些方法允许控制函数执行的上下文（`this` 值）和参数。
 
 2. **可以赋值给变量**：
@@ -90,8 +110,6 @@
 
    - 函数可以用作构造函数来创建新的对象实例，使用 `new` 关键字调用函数即可。这是原型继承的基础。
 
-总之，在 JavaScript 中，函数作为对象的特性为编写灵活和强大的代码提供了很多可能性，包括函数式编程模式和面向对象编程风格的实现。
-
 ## 函数与对象之间的关系是什么？请解释原型链
 
 在 JavaScript 中，函数与对象之间的关系主要体现在以下几个方面：
@@ -100,7 +118,7 @@
 
 2. **构造函数**：函数可以被用作构造函数来创建对象。当以 `new` 关键字调用一个函数时，该函数就成为一个构造函数，创建并返回一个新的对象实例。
 
-3. **原型(prototype)**：每个函数在创建时，JavaScript 引擎会为其自动添加一个 `prototype` 属性，这个属性指向一个对象，即该构造函数的原型对象。新的对象实例会继承这个原型对象中的属性和方法。
+3. **原型(prototype)**：每个函数在创建时，JavaScript 引擎会为其自动添加一个 `prototype` 属性，这个属性指向一个对象，即该构造函数的原型对象。**新的对象实例会继承这个原型对象中的属性和方法**。
 
 ### 原型链
 
@@ -296,7 +314,7 @@ console.log(MyClass.prototype.greet); // function reference to greet
 
 ## for in 会遍历到原型链上的方法吗
 
-是的，`for...in`循环会遍历对象自身的可枚举属性以及其原型链上的可枚举属性。这意味着在使用`for...in`循环的时候，不仅会遍历对象自身的属性，还会遍历所有继承自其原型链的可枚举属性。
+是的，`for...in`循环**会遍历对象自身的可枚举属性以及其原型链上的可枚举属性**。这意味着在使用`for...in`循环的时候，不仅会遍历对象自身的属性，还会遍历所有继承自其原型链的可枚举属性。
 
 ### 示例：
 
@@ -357,11 +375,7 @@ parentMethod
 
    - 遍历原型链上的属性，有时可能会引入不必要的属性，特别是在大型应用中，因此建议谨慎使用`for...in`循环。对于只需遍历对象自身属性的情境，`Object.keys()`或`Object.entries()`加上`forEach`循环可能是更好的选择。
 
-因此，理解`for...in`如何工作，以及如何控制其行为非常重要，特别是在需要严格处理仅对象自身属性的情况下。
-
 ## new Function创建函数和普通创建函数的区别？
-
-在 JavaScript 中，通过 `new Function` 构造器创建函数和通过普通的函数声明或函数表达式创建函数有一些关键区别。以下是主要的区别：
 
 ### 1. 创建方式
 
@@ -369,20 +383,16 @@ parentMethod
 
   - 语法：`new Function(arg1, arg2, ..., body)`
 
-  - 它创建一个匿名函数，当你用 `new Function` 创建函数时，你传入的参数字符串是函数的参数列表，最后一个参数字符串是函数体。
-
-  - 例子：
+  - 它创建一个匿名函数，当你用 `new Function` 创建函数时，你**传入的参数字符串是函数的参数列表**，**最后一个参数字符串是函数体**。
 
     ```javascript
     const sum = new Function('a', 'b', 'return a + b');
     console.log(sum(2, 3)); // 输出 5
     ```
-
+  
 - **普通函数声明或表达式**：
 
   - 语法有两种：`function name(params) { ... }`，或 `const name = function(params) { ... }`，以及箭头函数 `const name = (params) => { ... }`
-
-  - 例子：
 
     ```javascript
     function sum(a, b) {
@@ -395,11 +405,9 @@ parentMethod
 
 - **`new Function` 构造器**：
 
-  - 使用 `new Function` 创建的函数不在当前的词法作用域内，它们是在全局作用域内被创建的。
+  - 使用 `new Function` 创建的函数**不在当前的词法作用域内**，它们是在全局作用域内被创建的。
 
-  - 这意味着 `new Function` 创建的函数无法访问外部环境中的局部变量，只能访问全局变量和传入给它的参数。
-
-  - 例子：
+  - 这意味着 `new Function` 创建的函数**无法访问外部环境中的局部变量**，**只能访问全局变量**和**传入给它的参数**。
 
     ```javascript
     const a = 10;
@@ -410,12 +418,10 @@ parentMethod
     const fn = createFunction();
     console.log(fn()); // 抛出 ReferenceError: b is not defined
     ```
-
+  
 - **普通函数声明或表达式**：
 
-  - 函数是在当前词法作用域内创建的，因此可以访问声明它们时所在作用域的变量。
-
-  - 例子：
+  - 函数是**在当前词法作用域内创建的**，因此**可以访问声明它们时所在作用域的变量**。
 
     ```javascript
     const a = 10;
@@ -432,10 +438,10 @@ parentMethod
 ### 3. 性能和安全
 
 - **性能**：
-  - 使用 `new Function` 对性能有一些负面影响，因为它需要在运行时解析字符串并生成函数。
+  - 使用 `new Function` 对性能有一些负面影响，因为它**需要在运行时解析字符串并生成函数**。
 
 - **安全**：
-  - 使用 `new Function` 可能引入安全隐患，因为它直接执行字符串形式的代码，这就像 `eval` 那样，容易受到代码注入攻击，尤其是在处理不受信任的输入时。
+  - 使用 `new Function` 可能引入安全隐患，因为它**直接执行字符串形式的代码**，这就像 `eval` 那样，**容易受到代码注入攻击**，尤其是在处理不受信任的输入时。
 
 ### 总结
 
@@ -445,17 +451,16 @@ parentMethod
 
 ## JSX和JS的区别
 
-JSX 和 JavaScript (JS) 是在 React 开发中常常被提及的两个概念，它们在用途和特性上有一些明显的区别。
-
 ### JSX
 
 1. **定义**：
-   - JSX（JavaScript XML）是一种 JavaScript 的语法扩展。
-
+   
+   - JSX（JavaScript XML）是一种 JavaScript 的**语法扩展**。
+   
 2. **特性**：
    - **类 XML/HTML 的语法**：JSX 看起来很像 HTML 或 XML。这使得在 JavaScript 文件中编写用户界面布局变得直观。
-   - **更加直观的 UI 构建**：用 JSX 可以直接在 JavaScript 中描述 UI 组件树，使得 UI 与逻辑紧密结合。
-   - **转译阶段**：JSX 并不是原生支持的 JavaScript 代码。它需要通过 Babel 等工具转译成标准的 JavaScript 代码。这是因为浏览器不能直接理解 JSX 语法。
+   - **更加直观的 UI 构建**：用 JSX 可以直接在 JavaScript 中**描述 UI 组件树**，使得 UI 与逻辑紧密结合。
+   - **转译阶段**：JSX 并不是原生支持的 JavaScript 代码。它**需要通过 Babel 等工具转译成标准的 JavaScript 代码**。这是因为浏览器不能直接理解 JSX 语法。
    - **表达式**：在 JSX 中可以嵌入 JavaScript 表达式，通过大括号 `{}` 包裹。
    - **组件树**：在 React 中，JSX 被用来描述组件树，利用类似 HTML 的语法定义 React 组件结构。
 
@@ -494,49 +499,17 @@ JSX 和 JavaScript (JS) 是在 React 开发中常常被提及的两个概念，�
 
 - **语法**：JSX 引入了类 HTML/XML 的结构到 JavaScript 中，而 JavaScript 本身则不具备这种结构。
 
-理解这两者的差别以及 JSX 在 React 框架中的独特作用，可以帮助更有效编写和维护 React 应用程序。
-
 ## babel处理JSX的原理
 
-Babel 是一个广泛使用的 JavaScript 编译器，它的主要功能之一是将 JSX 代码转译为纯 JavaScript，以便浏览器能够理解和执行。理解 Babel 如何处理 JSX 的过程可以帮助我们更好地理解 React 应用程序的工作原理。
-
-### Babel 处理 JSX 的原理
-
-1. **输入 JSX**：
-   - 开发者在 React 项目中使用 JSX 来编写组件，它包含类似 HTML 的语法嵌入在 JavaScript 代码中。
-   - 例如：
-     ```jsx
-     const element = <h1>Hello, world!</h1>;
-     ```
-
-2. **转译为 `React.createElement` 调用**：
-   - Babel 通过插件（通常是 `@babel/preset-react`）将 JSX 转换为 JavaScript 函数调用。默认情况下，这些函数调用是 `React.createElement`。
-   - 上面示例的 JSX 代码被转换为：
-     ```js
-     const element = React.createElement('h1', null, 'Hello, world!');
-     ```
-   - `React.createElement` 是 React 提供的一个 API，用于创建虚拟 DOM 元素。它接收三个参数：
-     1. 元素类型：`'h1'` 表示 HTML 标签名。
-     2. 属性（或 props）：`null` 表示没有传递任何属性。
-     3. 子元素：`'Hello, world!'` 是这个元素的文本内容，也可以是其他子元素。
-
-3. **生成更高版本 JavaScript**：
-   - 随着 React 17 的推出，React 团队还引入了一种新的 JSX 转译 pragma，不再需要显式地引入 `React` 来使用 JSX。这种新方式通过 JSX 自动导入函数来促进代码的进行阶段性优化。这可以在 Babel 配置中通过选项来设置。
-   - 例如，在 React 17 及以后通过 Babel 的新配置，`React.createElement` 调用会被优化为：
-     ```js
-     import { jsx as _jsx } from 'react/jsx-runtime';
-     const element = _jsx('h1', { children: 'Hello, world!' });
-     ```
-
-4. **将转换后的代码插入产物**：
-   - 完成对 JSX 的转译后，Babel 将生成的 JavaScript 插入到最终编译产物中。这些代码可以被现代浏览器直接理解和执行，懒获取和创建虚拟 DOM 节点。
-
-5. **执行 React 机制**：
-   - 转译为 JavaScript 的代码在浏览器中执行时，React 会根据 `React.createElement` （或新的 `_jsx`）调用生成虚拟 DOM 树，并通过它来进行页面的更新或 UI 的交互。
-
-### 小结
-
-通过 Babel 将 JSX 语法转译成 `React.createElement` 调用后，整个 React 应用的编写变得高效、直观。它使得开发者可以用更加贴近 HTML 的 JSX 语法构建以组件为单位的 UI 结构，同时确保代码可以在现代浏览器中高效运行。Babel 在这种转译流程中起到了关键作用，使得开发体验和实际代码执行效果都得到了优化。
+1. **解析（Parsing）**：
+   - Babel 首先使用一个解析器（如 `@babel/parser`）**将输入的 JSX 代码解析成抽象语法树**（Abstract Syntax Tree，AST）。AST 是一种树状结构，表示代码的语法结构。
+   - 例如，JSX 代码 `<div>Hello, world!</div>` 会被解析成一个 AST 节点，表示一个包含文本内容的 `<div>` 元素。
+2. **转换（Transforming）**：
+   - Babel 使用插件（如 `@babel/preset-react`）来**遍历和修改 AST**。对于 JSX 代码，`@babel/preset-react` 插件会将 JSX 表达式转换为 `React.createElement` 调用。
+   - 例如，`<div>Hello, world!</div>` 会被转换为 `React.createElement("div", null, "Hello, world!")`。
+3. **生成（Generating）**：
+   - 最后，Babel 使用生成器（如 `@babel/generator`）**将修改后的 AST 转换回 JavaScript 代码**。
+   - 生成的代码将是标准的 JavaScript，可以在任何支持 ES5 的环境中运行。
 
 ## HTML解析过程中它里面的什么操作脚本文件会阻塞DOM的树的渲染
 
@@ -558,64 +531,53 @@ Babel 是一个广泛使用的 JavaScript 编译器，它的主要功能之一�
 
 ## typeof底层原理、instanceof原理
 
-在 JavaScript 中，`typeof` 和 `instanceof` 是两种用于检查数据类型的操作符。它们在底层是如何工作的，可以从标准和实现的角度来理解。
-
 ### `typeof`
 
-`typeof` 是一个操作符，用于返回一个字符串，表示未定义或基本类型的数值类型或对象的类型。其基本工作原理如下：
+它的底层原理是通过**检查值的内部标签来确定其类型**。以下是 `typeof` 操作符返回的可能值：
 
-1. **基本数据类型**：对于基本数据类型，`typeof` 返回以下字符串：
-   - `typeof undefined` 返回 `"undefined"`
-   - `typeof 'string'` 返回 `"string"`
-   - `typeof 42` 返回 `"number"`
-   - `typeof true` 返回 `"boolean"`
-   - `typeof Symbol()` 返回 `"symbol"`
-   - `typeof BigInt(12345678901234567890n)` 返回 `"bigint"`
+- `"undefined"`: 如果值未定义。
+- `"boolean"`: 如果值是布尔类型。
+- `"number"`: 如果值是数字类型。
+- `"string"`: 如果值是字符串类型。
+- `"object"`: 如果值是对象类型或 `null`。
+- `"function"`: 如果值是函数类型。
+- `"symbol"`: 如果值是符号类型。
+- `"bigint"`: 如果值是大整数类型。
+  - `BigInt` 可以表示任意精度的整数，但不能表示任意精度的浮点数
 
-2. **特殊情况**：对于 `null`，`typeof` 返回 `"object"`。这是历史遗留问题，是因为在 JavaScript 初期的实现中，使用了固定大小的标签存储对象类型，而 `null` 被认为是零标签对象。
-
-3. **函数**：对于函数，`typeof` 返回 `"function"`。
-
-4. **对象**：对于其他对象，`typeof` 一律返回 `"object"`。这包括对象字面量、数组、日期对象等。
-
-底层实现上，`typeof` 并不深入查看对象的结构，仅依据类型标记进行基本的判断。
+**特殊情况**：对于 `null`，`typeof` 返回 `"object"`。这是历史遗留问题，是因为在 JavaScript 初期的实现中，使用了固定大小的标签存储对象类型，而 `null` 被认为是零标签对象。
 
 ### `instanceof`
 
-`instanceof` 操作符用于测试一个对象在其原型链中是否存在某个构造函数的 `prototype` 属性。其工作原理如下：
+用于检查一个对象是否是某个构造函数的实例。它的底层原理是通过检查对象的原型链来确定的。
 
-1. **语法**：`object instanceof Constructor` 语法用于判断对象的原型链中是否有 `Constructor.prototype`。
+具体来说，`instanceof` 操作符会检查对象的原型链，看是否有一个原型与构造函数的 `prototype` 属性相同。如果找到匹配的原型，则返回 `true`，否则返回 `false`。
 
-2. **基本原理**：
-   - 当 `instanceof` 被用在表达式中，首先会获取构造函数的 `prototype` 属性。
-   - 然后，顺着对象的原型链（通过 `Object.getPrototypeOf` 或 `__proto__`），对比每一层对象的原型是否等于 `Constructor.prototype`。
-   - 如果匹配成功，则返回 `true`，否则继续向上查找直到原型链的末端。
-   - 如果到达 `null` 仍未匹配到，则返回 `false`。
+**基本原理**：
 
-3. **特殊情况**：如果用于检测非对象类型，比如基本数据类型数字、字符串等，`instanceof` 会返回 `false`，因为这些类型没有原型链。
+- 当 `instanceof` 被用在表达式中，首先会获取构造函数的 `prototype` 属性。
+- 然后，顺着对象的原型链（通过 `Object.getPrototypeOf` 或 `__proto__`），对比每一层对象的原型是否等于 `Constructor.prototype`。
+- 如果匹配成功，则返回 `true`，否则继续向上查找直到原型链的末端。
+- 如果到达 `null` 仍未匹配到，则返回 `false`。
 
-在 JavaScript 引擎中，`instanceof` 操作主要依赖对象和构造函数原型之间的环状数据结构比较，确保对象是由特定构造函数创建，这样可以有效支持面向对象的编程风格在动态类型语言的应用。
-
-总结以上：`typeof` 主要用于基本类型的检测，而 `instanceof` 更适用于对象所属类的检测。这两者在 JavaScript 编程中发挥不同但关键的作用。
+**特殊情况**：如果用于检测非对象类型，比如基本数据类型数字、字符串等，`instanceof` 会返回 `false`，因为这些类型没有原型链。
 
 ## 前端性能分析有哪些指标
 
-前端性能直接影响用户体验和交互效率。为了确保前端应用的高效性，前端性能分析需要关注多个关键指标。以下是一些常见且重要的前端性能分析指标：
-
 ### 1. 首屏时间（First Contentful Paint, FCP）
-- **含义**：用户首次看到页面内容的时间。
+- **含义**：用户**首次看到页面内容的时间**。
 - **衡量**：从页面开始加载到页面内容元素（如文本、图片）首次出现在屏幕上的时间。
 
 ### 2. 首字节时间（Time to First Byte, TTFB）
-- **含义**：浏览器在发送请求后，从服务器接收第一个字节的时间。
+- **含义**：浏览器在发送请求后，从**服务器接收第一个字节的时间**。
 - **衡量**：从浏览器请求发出到接收第一个字节响应的时间。
 
 ### 3. 首次绘制（First Paint, FP）
-- **含义**：浏览器在屏幕上绘制任何像素的时间点。
+- **含义**：**浏览器在屏幕上绘制任何像素的时间点**。
 - **衡量**：从导航开始到浏览器首次在屏幕上绘制任何视觉变化的时间。
 
 ### 4. 交互时间（Time to Interactive, TTI）
-- **含义**：页面变得完全可交互的时间点。
+- **含义**：**页面变得完全可交互的时间点**。
 - **衡量**：从导航开始到页面可可靠地响应用户输入的时间。
 
 ### 5. 完全加载时间（Load Time）
@@ -623,15 +585,15 @@ Babel 是一个广泛使用的 JavaScript 编译器，它的主要功能之一�
 - **衡量**：从导航开始到页面中的所有资源加载完毕的时间。
 
 ### 6. 首次意义性绘制时间（Largest Contentful Paint, LCP）
-- **含义**：页面主内容展示所需的加载时间。
+- **含义**：**页面主内容展示所需的加载时间**。
 - **衡量**：从页面开始加载到最大的内容元素（如大型图像或块级文本）的渲染时间。
 
 ### 7. 持续阻塞时间（Total Blocking Time, TBT）
-- **含义**：从 FCP（首次内容绘制）到 TTI（可交互）的时间之间，阻塞主线程的时间总和。
+- **含义**：从 FCP**（首次内容绘制）到 TTI（可交互）的时间之间，阻塞主线程的时间总和**。
 - **衡量**：这段时间中超过 50 毫秒的所有长任务的时间总和。
 
 ### 8. 累积布局偏移（Cumulative Layout Shift, CLS）
-- **含义**：页面加载期间视觉内容的稳定性。
+- **含义**：页面**加载期间视觉内容的稳定性**。
 - **衡量**：在页面加载过程中，任何未预期页面布局变化的总和。
 
 ### 9. JavaScript 执行时间
@@ -686,18 +648,16 @@ Babel 是一个广泛使用的 JavaScript 编译器，它的主要功能之一�
 
 ## js的变长数组在内存里是怎么做的
 
-JavaScript 的数组是动态数组，即变长数组，其内存管理和实现与静态数组不同。尽管其行为与其他编程语言中的数组类似，但实际的底层实现和内存管理存在差异。
-
 ### 内存管理和变长数组实现
 
 JavaScript 数组在底层通常由动态数组或哈希表实现，取决于浏览器的 JavaScript 引擎（例如，Google Chrome 的 V8 引擎、Mozilla Firefox 的 SpiderMonkey 引擎等）。以下是变长数组内存管理的一般思路：
 
 1. **初始分配和扩展策略**
    - 数组在首次创建时，JavaScript 引擎通常为其分配一个初始容量。这可能是某个固定值，或者根据初始元素的数量设定。
-   - 当数组的元素数量超过当前分配的容量时，JavaScript 引擎通常会以某种增长因子来扩展数组的容量。常见的策略是容量翻倍，这样可以减少频繁的内存重新分配。
+   - 当数组的**元素数量超过当前分配的容量时**，JavaScript 引擎通常会以某种增长因子来扩展数组的容量。**常见的策略是容量翻倍**，这样可以减少频繁的内存重新分配。
 
 2. **内存重新分配**
-   - 当需要扩展数组容量时，JavaScript 引擎会分配一块新的、更大的内存区域，并将现有元素复制到新区域中。旧的内存区域则可能会被释放或留下备用。
+   - 当需要**扩展数组容量时**，JavaScript 引擎会**分配一块新的、更大的内存区域，并将现有元素复制到新区域中**。旧的内存区域则可能会被释放或留下备用。
    - 这种方式保证了数组的连续性，但会涉及一定的内存复制操作。
 
 3. **稀疏数组和哈希表**
@@ -735,8 +695,6 @@ for (let i = 0; i < 100; i++) {
 总结而言，JavaScript 的变长数组在内存中的处理涉及动态分配、扩展策略和优化存储。尽管不同的引擎实现细节可能有所不同，但总体思路一致：通过动态分配和优化策略，提供高效且灵活的数组实现。
 
 ## 前端性能优化方式
-
-前端性能优化是一项关键任务，可以显著提高用户体验和页面加载速度。以下是一些常用的前端性能优化方式，涵盖了从代码、资源管理到服务器配置等多个方面：
 
 ### 1. 代码优化
 
@@ -838,30 +796,15 @@ for (let i = 0; i < 100; i++) {
 npx cssnano src/styles.css dist/styles.min.css
 ```
 
-通过合理使用上述优化策略，可以显著提高前端性能，改善用户体验。在进行优化时，记得根据具体项目需求和用户情况进行相应调整。
-
 ## try...catch可以捕获promise的异常吗
 
-`try...catch` 语句在 JavaScript 中可以捕获同步代码中的异常，但对于异步操作（例如 Promise）的异常处理，需要特殊的处理方式。以下是一些在不同场景下如何捕获 Promise 异常的方法。
+不能
 
-### 1. 捕获同步代码中的异常
-
-这是 `try...catch` 最常见的用法，用于捕获同步代码中的异常。
-
-```javascript
-try {
-  // 同步代码
-  let result = someFunction();
-} catch (error) {
-  console.error("Error caught:", error);
-}
-```
-
-### 2. 捕获异步操作中的异常
+###  捕获异步操作中的异常
 
 对于异步代码，例如 Promise，`try...catch` 需要与 `async`/`await` 关键字结合使用：
 
-#### 2.1 使用 async/await 捕获 Promise 异常
+#### 使用 async/await 捕获 Promise 异常
 
 通过将异步操作放在 `async` 函数中，可以使用 `try...catch` 捕获其中的异常。
 
@@ -875,7 +818,7 @@ async function asyncFunction() {
 }
 ```
 
-#### 2.2 使用 .catch() 方法捕获 Promise 异常
+####  使用 .catch() 方法捕获 Promise 异常
 
 对于不使用`async`/`await` 的场景，可以使用 Promise 本身提供的 `.catch()` 方法来捕获异常。
 
@@ -889,91 +832,45 @@ someAsyncFunction()
   });
 ```
 
-### 3. 示例代码比较与说明
+## 中null和undefined的区别
 
-#### 示例1：使用 `try...catch` 与 `async/await`
+#### `undefined`
 
-```javascript
-async function getData() {
-  try {
-    let response = await fetch('https://api.example.com/data');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    let data = await response.json();
-    console.log(data);
-  } catch (error) {
-    console.error("Error caught in async/await:", error);
-  }
-}
+- **类型**：`undefined` 是一个原始数据类型。
+- **含义**：表示变量已被声明但尚未被赋值。
+- **默认值**：当函数没有返回值时，默认返回 `undefined`。当对象属性不存在时，默认值也是 `undefined`。
+- **自动赋值**：声明但未初始化的变量会自动被赋予 `undefined`。
 
-getData();
-```
+#### `null`
 
-#### 示例2：使用 `.catch()`
+- **类型**：`null` 也是一个原始数据类型。
+- **含义**：表示一个有意为之的空值或不存在的对象。
+- **显式赋值**：通常由程序员显式地赋值给变量，表示该变量没有值或不应该有值。
 
-```javascript
-fetch('https://api.example.com/data')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log(data);
-  })
-  .catch(error => {
-    console.error("Error caught in .catch():", error);
-  });
-```
+#### 相等性比较
 
-### 4. 兼容性考虑
+- `null == undefined` 返回 `true`，因为它们在松散相等（`==`）比较中被视为相等。
+- `null === undefined` 返回 `false`，因为它们在严格相等（`===`）比较中被视为不同的值。
 
-- `async`/`await` 需要在现代浏览器或者支持相关特性的环境（如 Node.js > 7.6.0）中使用。
-- `.catch()` 是 Promise 的方法，适用于所有支持 Promise 的环境。
+## null和空对象的区别
 
-### 总结
+在内存层面理解，在**声明为一个空对象的时候**，照样会在**堆内存中开辟一个内存空间**，**声明为null的时候**，这个**引用会指向一个0x0的内存位置**，**不会在堆内存中创建一个内存空间**。
 
-- `try...catch` 可以直接捕获同步代码中的异常。
-- 对于异步操作中的异常，使用 `async`/`await` 结合 `try...catch`。
-- Alternatively, `.catch()` 方法也是捕获 Promise 异常的经典方式。
-
-这两种方式可以确保你能够正确处理异步操作中的异常，具体选择视具体场景和代码风格偏好而定。
-
-## js中none和undefined的区别
-
-\- **null表示&quot;没有对象&quot;，即该处不应该有值。**典型用法是：
-\- （1） 作为函数的参数，表示该函数的参数不是对象。
-\- （2） 作为对象原型链的终点。
-\- **undefined表示&quot;缺少值&quot;，就是此处应该有一个值，但是还没有定义。**典型用法是：
-\- （1）变量被声明了，但没有赋值时，就等于undefined。
-\- （2) 调用函数时，应该提供的参数没有提供，该参数等于undefined。
-\- （3）对象没有赋值的属性，该属性的值为undefined。
-\- （4）函数没有返回值时，默认返回undefined。
-
-
-
-## none和空对象的区别
-
-\- 在内存层面理解，在声明为一个空对象的时候，照样会在堆内存中开辟一个内存空间，声明为null的时候，这个引用会指向一个0x0的内存位置，不会在堆内存中创建一个内存空间。
-\- 在转换为布尔值的时候，空对象会转换为true，而null会转换为false
+在**转换为布尔值的时候**，**空对象会转换为true**，而**null会转换为false**
 
 ## 解析html时遇到script脚本会怎么处理
-
-当浏览器遇到 HTML 中的 `<script>` 标签时，会采取特定的步骤来处理和执行脚本。这一过程涉及到多个步骤，具体行为可能因浏览器和 JavaScript 引擎的不同而有所差异，但总体流程如下：
 
 ### 基本文档解析过程
 
 1. **暂停解析**：
-   当浏览器解析 HTML 文档并遇到 `<script>` 标签时，它会暂停进一步解析当前的 HTML 文档，直到脚本执行完毕。这是为了确保脚本能够及时修改 DOM 结构。
+   当浏览器解析 HTML 文档并遇到 `<script>` 标签时，它会**暂停进一步解析当前的 HTML 文档**，**直到脚本执行完毕**。这是**为了确保脚本能够及时修改 DOM 结构**。
 
 2. **下载脚本内容**：
-   - 若 `<script>` 标签包含 `src` 属性，则浏览器需要先下载外部脚本文件。
-   - 若 `<script>` 标签没有 `src` 属性，而是内联脚本代码，则直接解析和执行其中包含的 JavaScript 代码。
+   - 若 `<script>` 标签**包含** `src` 属性，则浏览器需要**先下载外部脚本文件**。
+   - 若 `<script>` 标签**没有** `src` 属性，而是**内联脚本代码**，则**直接解析和执行其中包含的 JavaScript 代码**。
 
 3. **执行脚本**：
-   下载完成或遇到内联 JavaScript 时，浏览器会将代码传递给 JavaScript 引擎（如 V8、SpiderMonkey 等）并立即执行。
+   **下载完成或遇到内联 JavaScript** 时，**浏览器会将代码传递给 JavaScript 引擎**（如 V8、SpiderMonkey 等）并**立即执行**。
 
 ### 处理顺序和封锁行为
 
@@ -1020,120 +917,78 @@ fetch('https://api.example.com/data')
    script.src = 'dynamic.js';
    document.body.appendChild(script);
    ```
-   - 这种方式加载的脚本通常异步执行，不会封阻文档解析。
+   - **这种方式加载的脚本通常异步执行，不会封阻文档解析**。
 
 ### 特别注意点
 
 1. **文档解析暂停**：
    若脚本执行耗时长或依赖外部资源时，会直接影响用户体验。
-
 2. **DOM Ready 和脚本顺序**：
    同步脚本在 DOM 构建前执行，`defer` 确保顺序而 `async` 则随时执行。
 
-3. **兼容性和性能优化**：
-   - 使用 `defer` 和 `async` 来优化页面加载速度。
-   - 动态脚本加载确保模块化和减少初始加载时间。
-
 ## script标签中不用defer或async，想不阻塞DOM的解析该怎么做
 
-如果你希望在 `<script>` 标签中不使用 `defer` 或 `async` 属性，但仍然避免阻塞 DOM 的解析，可以考虑使用动态脚本加载。这种方法将 `<script>` 标签动态插入到 DOM 中，从而不影响初始 DOM 的解析过程。这是一个相对灵活和高效的方法。
+### 1. 将脚本放在文档底部
+将 `<script>` 标签放在文档的底部，即 `</body>` 标签之前。这样可以确保在脚本执行之前，大部分的 DOM 已经被解析和渲染。
 
-### 动态脚本加载
-
-通过 JavaScript 动态创建和加载脚本，这样可以确保脚本在 DOM 完全解析后才被加载和执行。以下是具体实现步骤：
-
-#### 步骤 1：动态创建 `<script>` 元素
-
-```javascript
-// 创建一个新的 <script> 元素
-const script = document.createElement('script');
-
-// 设置脚本的 src 属性
-script.src = 'path/to/your/script.js';
-
-// 可选：设置其他属性，如 async
-// script.async = true; // 设置为 true 表示异步加载，false 表示同步加载
-
-// 将 <script> 元素插入到 DOM 中
-document.body.appendChild(script);
-```
-
-#### 示例代码
-
-假设你有一个外部脚本文件 `example.js`，你想在 DOM 完全解析后加载它，可以使用如下代码：
+### 2. 使用 `DOMContentLoaded` 事件
+在脚本中监听 `DOMContentLoaded` 事件，确保脚本在 DOM 完全加载后再执行。
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Script Loading</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 <body>
-  <h1>Hello, World!</h1>
-
-  <!-- 在页面的末尾添加一段内联 JavaScript 用于动态加载 -->
-  <script>
-    // 在 DOMContentLoaded 事件触发时加载脚本，这样确保在 DOM 完全解析后加载
-    document.addEventListener('DOMContentLoaded', function() {
-      const script = document.createElement('script');
-      script.src = 'example.js';  // 外部脚本的 URL
-
-      // 可选：设置其他属性，例如 async
-      // script.async = true;
-
-      // 将脚本添加到 body 的末尾
-      document.body.appendChild(script);
-    });
-  </script>
+    <!-- 页面内容 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 你的脚本逻辑
+            console.log('DOM fully loaded and parsed');
+        });
+    </script>
 </body>
 </html>
 ```
 
-### 使用即时执行函数 (IIFE)
-
-有时候你可能只需要执行一些简单的 JavaScript 代码，而不是加载外部脚本。在这种情况下，可以结合即时执行函数（IIFE）来确保代码在 DOM 完全解析后执行。
+### 3. 动态创建脚本元素
+通过 JavaScript 动态创建并插入 `<script>` 元素，这样可以控制脚本的加载时机，不会阻塞 DOM 解析。
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IIFE Example</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 <body>
-  <h1>Hello, World!</h1>
+    <!-- 页面内容 -->
+    <script>
+        function loadScript(url) {
+            const script = document.createElement('script');
+            script.src = url;
+            document.body.appendChild(script);
+        }
 
-  <script>
-    // 使用 IIFE 确保代码在 DOM 完全解析后执行
-    (function() {
-      document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM has been fully loaded and parsed.');
-        // 你的脚本逻辑可以放在这里
-      });
-    })();
-  </script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScript('script.js');
+        });
+    </script>
 </body>
 </html>
 ```
 
-### 优化性能与用户体验
+### 4. 使用 `window.onload` 事件
+虽然 `window.onload` 事件会在所有资源（包括图片、样式表等）加载完成后才触发，但它可以确保脚本在页面完全加载后再执行。
 
-1. **将动态脚本加载移动到页面底部**：
-   在实际开发中，通常会将动态脚本加载的逻辑放置在页面底部（即 `</body>` 标签前）。这样可以确保页面主要内容已加载和显示，提升用户体验。
-
-2. **结合多个脚本**：
-   若要加载多个脚本，可以在 `DOMContentLoaded` 事件中依次创建和插入多个 `<script>` 标签，或者使用脚本加载库（如 `require.js` 或 `webpack` 等）来管理依赖和加载顺序。
-
-### 总结
-
-通过动态加载脚本，你可以有效避免 `<script>` 标签在文档中直接阻塞 DOM 解析的问题，确保网页性能和用户体验的优化。这种方式特别适用于网页初始加载性能要求高的项目。
+### 5. 使用 `requestAnimationFrame`
+`requestAnimationFrame` 可以确保脚本在下一个重绘周期之前执行，不会阻塞 DOM 解析。
 
 ## script标签中带defer或async属性一般会在什么情况下使用
-
-在现代 Web 开发中，`defer` 和 `async` 属性被广泛用于优化网页的加载性能和用户体验。这两个属性用于控制脚本加载和执行的方式，具体使用场景和效果如下：
 
 ### `defer` 属性
 
@@ -1268,66 +1123,6 @@ document.querySelector('#parentElement').addEventListener('click', function(even
 在这个例子中，我们只在父元素上绑定了一次点击事件处理器，通过检查 `event.target` 来确定实际触发事件的元素，而不需要在每个按钮上单独绑定事件处理器。
 
 综上，事件委托是一种强大的技术，能够提高网页的性能并简化代码管理，非常适合处理诸如动态元素和大型 DOM 树等场景。
-
-## 怎么优化首屏加载速度
-
-优化首屏加载速度是提升用户体验的重要环节，它可以显著降低用户感知的等待时间，使网站在访问时表现得更快速和响应迅速。以下是一些优化首屏加载速度的技术和策略：
-
-### 1. **优化资源加载**
-
-- **懒加载 (Lazy Loading)**: 对非首屏资源（如图片和视频）实现懒加载，使浏览器只在需要时才加载这些资源。
-  
-- **预加载 (Preloading)**: 预加载关键资源，比如字体和 CSS 文件，确保它们在页面渲染之前就已被加载。
-
-- **按需加载**: 使用代码拆分技术（例如通过 Webpack 等工具）来按需加载 JavaScript 模块，只加载当前视图所必须的模块。
-
-### 2. **优化网络传输**
-
-- **压缩资源**: 启用 Gzip 或 Brotli 压缩以减小 CSS、JS 和 HTML 文件大小。
-  
-- **缩减重定向**: 尽量减少 URL 重定向，确保用户直接到达最终页面。
-
-- **利用内容分发网络 (CDN)**: 使用 CDN 来分发静态资源，它可以将资源存储到离用户更近的节点，从而加快资源加载速度。
-
-### 3. **优化 CSS 和 JavaScript**
-
-- **内联关键 CSS**: 将渲染关键的 CSS 内联到 HTML 中，以减少 CSS 文件的加载时间。
-
-- **异步加载非关键 CSS**: 通过 `media="print"` 等延迟加载样式表，或者使用 `loadCSS` 等工具异步加载非关键 CSS。
-
-- **延迟非关键 JS**: 将不影响首屏显示的 JavaScript 文件延迟加载或设为异步 (`async`)。
-
-### 4. **减少 HTTP 请求数量**
-
-- **合并文件**: 将多个 CSS 和 JavaScript 文件合并，以减少 HTTP 请求次数。
-
-- **利用浏览器缓存**: 通过设置适当的缓存头，确保资源能在下一次访问时从缓存中加载。
-
-### 5. **优化图像**
-
-- **图像压缩**: 使用工具（如 ImageOptim、TinyPNG）压缩图像文件，以减小文件大小。
-
-- **使用现代格式**: 尽量使用新型图像格式（如 WebP）来代替传统的 JPEG 和 PNG，以获得更好的压缩性能。
-
-- **响应式图像**: 使用 `srcset` 和 `sizes` 属性，为不同屏幕密度设备提供合适尺寸的图像。
-
-### 6. **提高 HTML 渲染速度**
-
-- **减少 DOM 元素数量**: 简化 DOM 结构以加快浏览器解析速度。
-
-- **避免使用阻塞渲染的插件**: 如大的广告脚本或第三方插件，这些往往会阻塞浏览器的渲染过程。
-
-### 7. **使用服务端渲染 (SSR)**
-
-- **服务端渲染**: 将页面在服务器上渲染为完整的 HTML 然后发送给客户端，这样可以减少浏览器首次内容渲染的等待时间。
-
-### 8. **测试和监测**
-
-- **测速工具**: 使用 Lighthouse、GTmetrix 或 WebPageTest 等工具对页面进行性能分析和瓶颈检测。
-
-- **分析接入点**: 通过分析用户的网络接入点和设备，优化服务器的配置和资源分发策略。
-
-通过全面应用以上这些策略，可以显著提高网页的首屏加载速度，提供更好的用户体验。
 
 ## map和foreach的区别
 
@@ -2428,16 +2223,24 @@ safeFetchData().then(data => console.log(data));
 
 ## for in 和 for of区别
 
-`for...in` 和 `for...of` 是 JavaScript 中用于迭代不同类型集合的两种循环形式，它们之间存在一些重要的区别。
-
 ### `for...in` 循环
 
-`for...in` 用于遍历对象的可枚举属性。它适用于对象，当你需要迭代一个对象的所有属性（包括继承的可枚举属性）时使用。
+`for...in` 用于**遍历对象的可枚举属性**。它适用于对象，当你需要迭代一个对象的所有属性（包括继承的可枚举属性）时使用。
+
+#### 对象的键（属性）是使用哈希表（或称为哈希映射）来存储的
+
+- 哈希表的本质是无序的。哈希表通过哈希函数将键映射到数组中的索引位置，这个过程是基于哈希函数的计算结果，而不是键的自然顺序。
+- 因此，哈希表中的键值对在存储时是没有固定顺序的
+
+#### map不是也用哈希表吗,为什么map是有序的
+
+- 虽然 `Map` 对象使用哈希表来存储键值对，但它还维护了一个额外的数据结构（如链表或数组）来记录插入顺序。
+- 这个额外的数据结构使得 `Map` 对象能够在遍历时按照插入顺序返回键值对
 
 #### 特点：
-1. **对象迭代**：主要用于遍历对象的所有可枚举属性，包括从原型链继承的属性。
-2. **返回键**：`for...in` 循环返回的是对象的键（字符串或 Symbol），而不是值。
-3. **适用于对象**：虽然可以用来遍历数组的索引，但不推荐这样使用，因为数组是有序的，而 `for...in` 无法保证顺序。
+1. **对象迭代**：主要用于**遍历对象的所有可枚举属性**，**包括从原型链继承的属性**。
+2. **返回键**：`for...in` 循环**返回的是对象的键**（字符串或 Symbol），而不是值。
+3. **适用于对象**：虽然可以用来遍历数组的索引，但不推荐这样使用，因为数组是有序的，而 `for...in` **无法保证顺序**。
 
 #### 示例：
 ```javascript
@@ -2451,7 +2254,7 @@ for (let key in obj) {
 
 ### `for...of` 循环
 
-`for...of` 用于遍历可迭代对象（包括数组、字符串、Maps、Sets等）。它不能被用来遍历普通对象，因为普通对象不是可迭代的。
+`for...of` 用于**遍历可迭代对象**（包括数组、字符串、Maps、Sets等）。它**不能被用来遍历普通对象**，因为普通对象不是可迭代的。
 
 #### 特点：
 1. **可迭代对象**：主要用于遍历 iterable 对象（如 `Array`、`String`、`Set`、`Map`、`TypedArray`）。
