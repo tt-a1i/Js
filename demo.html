@@ -1,68 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Tooltip Example</title>
-		<style>
-			/* 基础样式 */
-			body {
-				font-family: Arial, sans-serif;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 100vh;
-				margin: 0;
-			}
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<button id="fetchButton">Fetch Data</button>
+	<div id="results"></div>
+	<script>
+		document.getElementById('fetchButton').addEventListener('click', async () => {
+			const urls = [
+				'url1',
+				'url2',
+				'url3',
+				'url4',
+				'url5'
+			];
+			const results = document.getElementById('results');
+			results.innerHTML = '';
 
-			/* Tooltip 容器 */
-			.tooltip {
-				position: relative;
-				display: inline-block;
-				cursor: pointer;
-			}
+			const promises = urls.map(url => fetch(url).then(response => response.text()));
 
-			/* Tooltip 文本 */
-			.tooltip .tooltiptext {
-				visibility: hidden;
-				width: 120px;
-				background-color: #333;
-				color: #fff;
-				text-align: center;
-				border-radius: 5px;
-				padding: 5px;
-				position: absolute;
-				z-index: 1;
-				bottom: 125%; /* 相对于父元素的位置 */
-				left: 50%;
-				margin-left: -60px; /* 居中 */
-				opacity: 0;
-				transition: opacity 0.3s;
+			for (let i = 0; i < promises.length; i++) {
+				const data = await promises[i];
+				const div = document.createElement('div');
+				div.textContent = `Response ${i + 1}: ${data}`;
+				results.appendChild(div);
 			}
-
-			/* Tooltip 箭头 */
-			.tooltip .tooltiptext::after {
-				content: "";
-				position: absolute;
-				top: 100%;
-				left: 50%;
-				margin-left: -5px;
-				border-width: 5px;
-				border-style: solid;
-				border-color: #333 transparent transparent transparent;
-			}
-
-			/* 显示 Tooltip */
-			.tooltip:hover .tooltiptext {
-				visibility: visible;
-				opacity: 1;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="tooltip">
-			Hover over me
-			<span class="tooltiptext">Tooltip text</span>
-		</div>
-	</body>
+		});
+	</script>
+</body>
 </html>
