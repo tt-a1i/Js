@@ -3,12 +3,13 @@ function fetchWithTimeout(url, options = {}, timeout = 5000){
     //模拟超时
     const fetchPromise = new Promise((resolve, reject) => {
         setTimeout(() => {
+            clearTimeout(timer)
             resolve({data: 'success'})
         }, 5000)
     })
-
+    let timer = null
     const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
+        timer = setTimeout(() => {
             reject('request timeout')
         }, timeout)
         

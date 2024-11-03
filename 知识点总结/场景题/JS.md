@@ -7016,3 +7016,147 @@ export default {
   - 访问 [WebPageTest](https://www.webpagetest.org/)。
   - 输入页面 URL，选择测试配置。
   - 运行测试，查看测试结果，分析页面加载时间。
+
+## iframe通信方法
+
+`iframe` 通信是指在网页中嵌入一个 `iframe`，并通过某种方式与 `iframe` 中的内容进行通信。常见的 `iframe` 通信方法包括以下几种：
+
+### 1. `window.postMessage`
+
+`window.postMessage` 是一种安全的跨文档通信方法，允许不同源的文档之间进行通信。
+
+#### 父页面发送消息到 `iframe`：
+
+```javascript
+// 父页面
+const iframe = document.getElementById('myIframe');
+iframe.contentWindow.postMessage('Hello from parent', '*');
+```
+
+#### `iframe` 接收消息：
+
+```javascript
+// iframe 页面
+window.addEventListener('message', function(event) {
+    console.log('Received message:', event.data);
+    // 检查消息来源是否可信
+    if (event.origin !== 'http://example.com') return;
+    // 处理消息
+    // ...
+});
+```
+
+#### `iframe` 发送消息到父页面：
+
+```javascript
+// iframe 页面
+window.parent.postMessage('Hello from iframe', '*');
+```
+
+#### 父页面接收消息：
+
+```javascript
+// 父页面
+window.addEventListener('message', function(event) {
+    console.log('Received message:', event.data);
+    // 检查消息来源是否可信
+    if (event.origin !== 'http://example.com') return;
+    // 处理消息
+    // ...
+});
+```
+
+### 2. `document.domain`
+
+如果 `iframe` 和父页面在同一个域下，可以通过设置 `document.domain` 来实现通信。
+
+#### 父页面和 `iframe` 页面：
+
+```javascript
+// 父页面和 iframe 页面
+document.domain = 'example.com';
+```
+
+#### 父页面访问 `iframe` 中的内容：
+
+```javascript
+// 父页面
+const iframe = document.getElementById('myIframe');
+const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+console.log(iframeDocument.body.innerHTML);
+```
+
+#### `iframe` 访问父页面的内容：
+
+```javascript
+// iframe 页面
+console.log(window.parent.document.body.innerHTML);
+```
+
+### 3. `window.name`
+
+`window.name` 属性可以在不同页面之间传递数据，但这种方法不太常用，且有一定的局限性。
+
+#### 父页面设置 `window.name`：
+
+```javascript
+// 父页面
+window.name = 'Hello from parent';
+```
+
+#### `iframe` 读取 `window.name`：
+
+```javascript
+// iframe 页面
+console.log(window.name); // 输出 "Hello from parent"
+```
+
+### 4. `location.hash`
+
+通过修改 `location.hash` 可以在父页面和 `iframe` 之间传递数据。
+
+#### 父页面修改 `location.hash`：
+
+```javascript
+// 父页面
+window.location.hash = 'message=Hello from parent';
+```
+
+#### `iframe` 读取 `location.hash`：
+
+```javascript
+// iframe 页面
+window.addEventListener('hashchange', function() {
+    const message = window.location.hash.substring(1); // 去掉 '#'
+    console.log('Received message:', message);
+});
+```
+
+### 5. `window.frames`
+
+通过 `window.frames` 可以访问 `iframe` 中的内容。
+
+#### 父页面访问 `iframe`：
+
+```javascript
+// 父页面
+const iframe = window.frames['myIframe'];
+console.log(iframe.document.body.innerHTML);
+```
+
+#### `iframe` 访问父页面：
+
+```javascript
+// iframe 页面
+console.log(window.parent.document.body.innerHTML);
+```
+
+### 总结
+
+- **`window.postMessage`**：最常用且安全的跨文档通信方法。
+- **`document.domain`**：适用于同域下的通信。
+- **`window.name`**：不太常用，有一定的局限性。
+- **`location.hash`**：通过修改 URL 的 `hash` 部分传递数据。
+- **`window.frames`**：访问 `iframe` 中的内容。
+
+根据具体需求和场景选择合适的通信方法。通常情况下，`window.postMessage` 是最推荐的方法，因为它安全且功能强大。
