@@ -1,20 +1,6 @@
-function fetchWithTimeout(url, options = {}, timeout = 5000) {
-	//const fetchPromise = fetch(url, options)
-	const fetchPromise = new Promise((resolve, reject) => {
-		setTimeout(() => {
-            clearTimeout(timer)
-			resolve({ data: "success" });
-		}, 5000);
-	});
-    let timer = null
-	const timeoutPromise = new Promise((_, reject) => {
-		timer = setTimeout(() => {
-			reject("request timeout");
-		}, timeout);
-	});
-
-	return Promise.race([fetchPromise, timeoutPromise]);
-}
-fetchWithTimeout("http://example.com/data", {}, 4000)
-	.then((res) => console.log(`request success: ${JSON.stringify(res)}`))
-	.catch((err) => console.log(`request failed: ${err}`));
+Object.prototype.a = 1;
+Function.prototype.b = 2;
+function test() {}
+var t = new test();
+console.log(t.a);//1
+console.log(t.b);//2
