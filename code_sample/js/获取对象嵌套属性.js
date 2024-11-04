@@ -13,7 +13,7 @@ function getNestedProperty(obj, path, defaultValue = undefined) {
     }, obj);
 }
 
-// 使用示例
+// 使用示例 
 const data = {
     user: {
         profile: {
