@@ -26,6 +26,15 @@ function calculatePathSums(node) {
     return result.map(item => item.reduce((acc, cur) => acc + cur, 0))
 }
 
+/*
+     5
+    / \
+   4   8
+  /   / \
+ 11  13  4
+  \     / \
+   7   5   1
+*/
 const root = new TreeNode(5,
     new TreeNode(4, new TreeNode(11, null, new TreeNode(7))),
     new TreeNode(8, new TreeNode(13), new TreeNode(4, new TreeNode(5), new TreeNode(1)))
