@@ -7160,3 +7160,193 @@ console.log(window.parent.document.body.innerHTML);
 - **`window.frames`**：访问 `iframe` 中的内容。
 
 根据具体需求和场景选择合适的通信方法。通常情况下，`window.postMessage` 是最推荐的方法，因为它安全且功能强大。
+
+## 获取对象所有属性
+
+- **`Object.keys`**：获取对象自身的所有可枚举属性。
+- **`Object.getOwnPropertyNames`**：获取对象自身的所有属性（包括不可枚举属性）。
+- **`Object.getOwnPropertySymbols`**：获取对象自身的所有符号属性。
+- **`Reflect.ownKeys`**：获取对象自身的所有属性（包括可枚举属性、不可枚举属性和符号属性）。
+
+### 1. `Object.keys`
+`Object.keys` 返回一个包含对象自身所有可枚举属性的数组。
+
+```javascript
+const obj = {
+    a: 1,
+    b: 2,
+    c: 3
+};
+
+const keys = Object.keys(obj);
+console.log(keys); // 输出: ['a', 'b', 'c']
+```
+
+### 2. `Object.getOwnPropertyNames`
+`Object.getOwnPropertyNames` 返回一个包含对象自身所有属性（包括不可枚举属性）的数组。
+
+```javascript
+const obj = {
+    a: 1,
+    b: 2
+};
+
+Object.defineProperty(obj, 'c', {
+    value: 3,
+    enumerable: false // 不可枚举
+});
+
+const allKeys = Object.getOwnPropertyNames(obj);
+console.log(allKeys); // 输出: ['a', 'b', 'c']
+```
+
+### 3. `Object.getOwnPropertySymbols`
+`Object.getOwnPropertySymbols` 返回一个包含对象自身所有符号属性的数组。
+
+```javascript
+const sym1 = Symbol('sym1');
+const sym2 = Symbol('sym2');
+
+const obj = {
+    [sym1]: 1,
+    [sym2]: 2
+};
+
+const symbols = Object.getOwnPropertySymbols(obj);
+console.log(symbols); // 输出: [Symbol(sym1), Symbol(sym2)]
+```
+
+### 4. `Reflect.ownKeys`
+`Reflect.ownKeys` 返回一个包含对象自身所有属性（包括可枚举属性、不可枚举属性和符号属性）的数组。
+
+```javascript
+const sym1 = Symbol('sym1');
+const sym2 = Symbol('sym2');
+
+const obj = {
+    a: 1,
+    b: 2,
+    [sym1]: 3
+};
+
+Object.defineProperty(obj, 'c', {
+    value: 4,
+    enumerable: false // 不可枚举
+});
+
+obj[sym2] = 5;
+
+const allKeys = Reflect.ownKeys(obj);
+console.log(allKeys); // 输出: ['a', 'b', 'c', Symbol(sym1), Symbol(sym2)]
+```
+
+## localstorage能不能存储对象和数组，怎么存储
+
+- **存储对象和数组**：使用 `JSON.stringify` 将对象和数组转换为字符串，然后使用 `localStorage.setItem` 存储。
+- **读取对象和数组**：使用 `localStorage.getItem` 读取字符串，然后使用 `JSON.parse` 将字符串转换回对象和数组。
+
+## 求数组交集
+
+求两个数组的交集是一个常见的编程任务。在 JavaScript 中，有多种方法可以实现这一功能。以下是几种常见的方法：
+
+### 方法一：使用 `filter` 和 `includes`
+
+```javascript
+function getIntersection(arr1, arr2) {
+    return arr1.filter(item => arr2.includes(item));
+}
+
+const array1 = [1, 2, 3, 4, 5];
+const array2 = [3, 4, 5, 6, 7];
+
+const intersection = getIntersection(array1, array2);
+console.log(intersection); // 输出: [3, 4, 5]
+```
+
+### 方法二：使用 `Set`
+
+使用 `Set` 可以提高查找效率，特别是在数组较大的情况下。
+
+```javascript
+function getIntersection(arr1, arr2) {
+    const set1 = new Set(arr1);
+    const set2 = new Set(arr2);
+    const intersection = new Set([...set1].filter(x => set2.has(x)));
+    return Array.from(intersection);
+}
+
+const array1 = [1, 2, 3, 4, 5];
+const array2 = [3, 4, 5, 6, 7];
+
+const intersection = getIntersection(array1, array2);
+console.log(intersection); // 输出: [3, 4, 5]
+```
+
+### 方法三：使用 `reduce` 和 `includes`
+
+```javascript
+function getIntersection(arr1, arr2) {
+    return arr1.reduce((acc, item) => {
+        if (arr2.includes(item) && !acc.includes(item)) {
+            acc.push(item);
+        }
+        return acc;
+    }, []);
+}
+
+const array1 = [1, 2, 3, 4, 5];
+const array2 = [3, 4, 5, 6, 7];
+
+const intersection = getIntersection(array1, array2);
+console.log(intersection); // 输出: [3, 4, 5]
+```
+
+### 方法四：使用 `Set` 和 `filter`
+
+另一种使用 `Set` 的方法，结合 `filter` 来提高效率。
+
+```javascript
+function getIntersection(arr1, arr2) {
+    const set2 = new Set(arr2);
+    return arr1.filter(item => set2.has(item));
+}
+
+const array1 = [1, 2, 3, 4, 5];
+const array2 = [3, 4, 5, 6, 7];
+
+const intersection = getIntersection(array1, array2);
+console.log(intersection); // 输出: [3, 4, 5]
+```
+
+### 方法五：使用 `for` 循环和 `Set`
+
+对于非常大的数组，使用 `for` 循环和 `Set` 可以进一步优化性能。
+
+```javascript
+function getIntersection(arr1, arr2) {
+    const set1 = new Set(arr1);
+    const intersection = [];
+    for (const item of arr2) {
+        if (set1.has(item)) {
+            intersection.push(item);
+        }
+    }
+    return intersection;
+}
+
+const array1 = [1, 2, 3, 4, 5];
+const array2 = [3, 4, 5, 6, 7];
+
+const intersection = getIntersection(array1, array2);
+console.log(intersection); // 输出: [3, 4, 5]
+```
+
+### 总结
+
+- **`filter` 和 `includes`**：简单直接，但效率较低，适用于较小的数组。
+- **`Set`**：使用 `Set` 可以提高查找效率，特别是在数组较大的情况下。
+- **`reduce` 和 `includes`**：结合 `reduce` 和 `includes`，适用于需要更多控制的场景。
+- **`for` 循环和 `Set`**：适用于非常大的数组，进一步优化性能。
+
+选择哪种方法取决于你的具体需求和数组的大小。对于大多数情况，使用 `Set` 是一个高效且简洁的选择。
+
