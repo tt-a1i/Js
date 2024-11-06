@@ -7,28 +7,35 @@
     <style>
         .container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px; /* 用于增加间距，可选 */
+            /*justify-content: flex-end;*/
         }
-
-        .container .item {
-            flex: 1 1 calc(33.33% - 10px);
-            height: 100px; /* 示例高度 */
+        .left-box {
             background-color: lightblue;
+            width: 200px;
+            height: 100px;
+            margin-right: 10px;
+        }
+        .right-box {
+            background-color: lightgreen;
+            width: 200px;
+            height: 100px;
+            margin-left: auto;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="item">1</div>
-        <div class="item">2</div>
-        <div class="item">3</div>
-        <div class="item">4</div>
-        <div class="item">5</div>
-        <div class="item">6</div>
-        <div class="item">7</div>
-        <div class="item">8</div>
-        <div class="item">9</div>
-    </div>
+<div class="container">
+    <div class="left-box">Left Box</div>
+    <div class="right-box">Right Box</div>
+</div>
+
+<button onclick="toggleLeftBox()">Toggle Left Box</button>
+
+<script>
+    function toggleLeftBox() {
+        const leftBox = document.querySelector('.left-box');
+        leftBox.style.display = leftBox.style.display === 'none' ? '' : 'none';
+    }
+</script>
 </body>
 </html>

@@ -7348,5 +7348,94 @@ console.log(intersection); // 输出: [3, 4, 5]
 - **`reduce` 和 `includes`**：结合 `reduce` 和 `includes`，适用于需要更多控制的场景。
 - **`for` 循环和 `Set`**：适用于非常大的数组，进一步优化性能。
 
-选择哪种方法取决于你的具体需求和数组的大小。对于大多数情况，使用 `Set` 是一个高效且简洁的选择。
+## 如何判断一个对象是不是promise实例
+
+判断一个对象是否是 Promise 实例有几种方法。以下是几种常见的方法：
+
+### 1. 使用 `instanceof` 操作符
+
+最直接的方法是使用 `instanceof` 操作符来检查对象是否是 `Promise` 的实例。
+
+```javascript
+const obj = new Promise((resolve, reject) => {});
+
+if (obj instanceof Promise) {
+  console.log('obj is a Promise instance');
+} else {
+  console.log('obj is not a Promise instance');
+}
+```
+
+### 2. 检查 `then` 和 `catch` 方法
+
+虽然 `instanceof` 是最直接的方法，但有时你可能需要在更广泛的环境中判断一个对象是否像一个 Promise。可以通过检查对象是否有 `then` 和 `catch` 方法来实现这一点。
+
+```javascript
+function isPromise(obj) {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.then === 'function' &&
+    typeof obj.catch === 'function'
+  );
+}
+
+const obj = new Promise((resolve, reject) => {});
+
+if (isPromise(obj)) {
+  console.log('obj is a Promise-like object');
+} else {
+  console.log('obj is not a Promise-like object');
+}
+```
+
+### 3. 使用 `Promise.resolve` 的 `then` 方法
+
+`Promise.resolve` 可以将任何值转换为一个 Promise。如果传入的是一个 Promise，它会原样返回。因此，可以通过调用 `then` 方法来判断。
+
+```javascript
+function isPromise(obj) {
+  try {
+    Promise.resolve(obj).then(() => true);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+const obj = new Promise((resolve, reject) => {});
+
+if (isPromise(obj)) {
+  console.log('obj is a Promise-like object');
+} else {
+  console.log('obj is not a Promise-like object');
+}
+```
+
+### 4. 使用 `Symbol.toStringTag`
+
+ES6 引入了 `Symbol.toStringTag`，可以用来标识对象的类型。Promise 对象的 `toStringTag` 是 `'Promise'`。
+
+```javascript
+function isPromise(obj) {
+  return obj && obj[Symbol.toStringTag] === 'Promise';
+}
+
+const obj = new Promise((resolve, reject) => {});
+
+if (isPromise(obj)) {
+  console.log('obj is a Promise instance');
+} else {
+  console.log('obj is not a Promise instance');
+}
+```
+
+### 总结
+
+- **`instanceof` 操作符**：最直接和可靠的方法，适用于大多数情况。
+- **检查 `then` 和 `catch` 方法**：适用于更广泛的环境，可以判断 Promise-like 对象。
+- **使用 `Promise.resolve` 的 `then` 方法**：通过尝试将对象转换为 Promise 来判断。
+- **使用 `Symbol.toStringTag`**：适用于 ES6 环境，通过检查对象的 `toStringTag` 属性来判断。
+
+
 
