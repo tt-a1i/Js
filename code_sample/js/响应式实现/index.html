@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VUE响应式原理</title>
-</head>
-<body>
-    <button id="btn">click</button>
-    <div id="app"></div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>VUE响应式原理</title>
+	</head>
+	<body>
+		<button id="btn">click</button>
+		<div id="app"></div>
 
-    <script type="module">
-        import {reactive, effect, ref} from './index.js'
-        const app = document.getElementById('app')
-        const btn = document.getElementById('btn')
+		<script type="module">
+			import { reactive, effect, ref } from "./index.js";
+			const app = document.getElementById("app");
+			const btn = document.getElementById("btn");
 
-        const state = reactive({count: 0})
+			const state = reactive({ count: 0 });
 
-        effect(() => {
-            app.textContent = state.count
-        })
+			effect(() => {
+				app.textContent = state.count;
+			});
 
-        btn.addEventListener('click', () => {
-            state.count++
-            console.log('state.count===>', state.count);
-        })
-    </script>
-</body>
+			btn.addEventListener("click", () => {
+				state.count++;
+				console.log("state.count===>", state.count);
+			});
+		</script>
+	</body>
 </html>

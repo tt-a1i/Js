@@ -1,41 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flexbox Layout</title>
-    <style>
-        .container {
-            display: flex;
-            /*justify-content: flex-end;*/
-        }
-        .left-box {
-            background-color: lightblue;
-            width: 200px;
-            height: 100px;
-            margin-right: 10px;
-        }
-        .right-box {
-            background-color: lightgreen;
-            width: 200px;
-            height: 100px;
-            margin-left: auto;
-        }
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
 </head>
 <body>
-<div class="container">
-    <div class="left-box">Left Box</div>
-    <div class="right-box">Right Box</div>
-</div>
+	<button id="btn">click</button>
+	<div id="app"></div>
+	<script type="module">
+		import {reactive, effect} from './demo.js'
+		const btn = document.getElementById('btn')
+		const app = document.getElementById('app')
 
-<button onclick="toggleLeftBox()">Toggle Left Box</button>
+		const state = reactive({count: 0})
 
-<script>
-    function toggleLeftBox() {
-        const leftBox = document.querySelector('.left-box');
-        leftBox.style.display = leftBox.style.display === 'none' ? '' : 'none';
-    }
-</script>
+		effect(() => {
+			app.textContent = state.count
+		})
+
+		btn.addEventListener('click', () => {
+			state.count++
+		})
+	</script>
 </body>
 </html>
