@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Element Visibility Demo</title>
+<style>
+  body, html {
+    height: 2000px; /* 使页面足够长，可以滚动 */
+    margin: 0;
+    padding: 0;
+  }
+  #testElement {
+    width: 200px;
+    height: 200px;
+    margin: 50px;
+    background-color: red;
+    position: absolute;
+    top: 50%; /* 初始位置在页面中间 */
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+</head>
+<body>
+
+<div id="testElement"></div>
+
+<script>
+// 函数：检查元素是否至少50%在视口中可见
+function isElementAtLeastHalfVisible(element) {
+    const rect = element.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+
+    // 垂直方向上至少50%可见
+    const verticalVisible = (
+        (rect.top >= 0 && rect.bottom <= windowHeight) ? (rect.bottom - rect.top) / element.offsetHeight >= 0.5 :
+        (rect.top < 0 && rect.bottom > 0) ? (rect.bottom) / element.offsetHeight >= 0.5 :
+        (rect.bottom > windowHeight && rect.top < windowHeight) ? (windowHeight - rect.top) / element.offsetHeight >= 0.5 :
+        false
+    );
+
+    // 水平方向上至少50%可见
+    const horizontalVisible = (
+        (rect.left >= 0 && rect.right <= windowWidth) ? (rect.right - rect.left) / element.offsetWidth >= 0.5 :
+        (rect.left < 0 && rect.right > 0) ? (rect.right) / element.offsetWidth >= 0.5 :
+        (rect.right > windowWidth && rect.left < windowWidth) ? (windowWidth - rect.left) / element.offsetWidth >= 0.5 :
+        false
+    );
+
+    return verticalVisible && horizontalVisible;
+}
+
+// 监听滚动事件和窗口大小变化事件
+window.addEventListener('scroll', checkVisibility);
+window.addEventListener('resize', checkVisibility);
+
+function checkVisibility() {
+    const element = document.getElementById('testElement');
+    if (isElementAtLeastHalfVisible(element)) {
+        console.log('元素至少50%在可视区域内');
+        element.style.backgroundColor = 'green'; // 改变背景色以示可见
+    } else {
+        console.log('元素不在可视区域内');
+        element.style.backgroundColor = 'red'; // 恢复背景色
+    }
+}
+
+// 初始检查
+checkVisibility();
+</script>
+
+</body>
+</html>

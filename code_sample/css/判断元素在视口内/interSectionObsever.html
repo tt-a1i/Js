@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>判断元素是否50%在可视区域内</title>
+		<style>
+			body{
+				height: 3000px;
+			}
+			.box { 
+				height: 500px;
+				margin: 50px 0;
+				background-color: lightblue;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 24px;
+			}
+			.box.in-view {
+				background-color: lightgreen;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box">Box 1</div>
+		<script>
+			// 目标元素的可视比例需超过 50%
+			const options = {
+				threshold: 0.5,
+			};
+
+			// 创建 IntersectionObserver 实例
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add("in-view"); // 添加 in-view 样式
+						console.log('元素50%在视口内')
+					} else {
+						entry.target.classList.remove("in-view"); // 移除 in-view 样式
+						console.log('元素不在视口内')
+					}
+				});
+			}, options);
+
+			// 观察所有 .box 元素
+			document.querySelectorAll(".box").forEach((box) => {
+				observer.observe(box);
+			});
+		</script>
+	</body>
+</html>
