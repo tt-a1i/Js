@@ -1,3 +1,4 @@
+//其元素顺序与传入的 promise 一致，而非按照兑现的时间顺序排列,保持预测性和一致性
 function myPromiseAll(promises){
     //首先确保是可迭代对象
     if(!promises[Symbol.iterator]){

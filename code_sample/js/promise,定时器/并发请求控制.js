@@ -9,10 +9,11 @@ function limitConcurrency(requests, limit){
 			}
 			while(activeCount < limit && currIdx < requests.length){
 				activeCount++
+				let idx = currIdx
 				const request = requests[currIdx++]
 				request()
-					.then(res => results.push(res))
-					.catch(err => results.push(err))
+					.then(res => results[idx] = res)
+					.catch(err => results[idx] = err)
 					.finally(() => {
 						activeCount--
 						next()

@@ -7580,6 +7580,173 @@ original.b.c = 100;
 console.log(copied.b.c); // 输出: 2 (未受影响)
 ```
 
+## iframe通信方法
+
+iframe通信是指在父页面和嵌入的iframe子页面之间进行数据交换和方法调用的过程。根据页面是否同源（即协议、域名和端口是否相同），通信方式有所不同。以下是几种常见的iframe通信方法：
+
+### 1. 同源通信
+
+#### 1.1 父页面调用子页面的方法
+当父页面和子页面同源时，可以通过直接访问iframe的`contentWindow`对象来调用子页面的方法。
+
+**父页面代码：**
+```html
+<!-- 父页面 -->
+<iframe id="myIframe" src="child.html"></iframe>
+<script>
+    window.onload = function() {
+        var iframe = document.getElementById('myIframe');
+        iframe.onload = function() {
+            var data = 'Hello from parent';
+            iframe.contentWindow.childMethod(data); // 调用子页面的方法
+        };
+    };
+</script>
+```
+
+**子页面代码：**
+```html
+<!-- 子页面 -->
+<script>
+    function childMethod(data) {
+        console.log(data); // 输出: Hello from parent
+    }
+</script>
+```
+
+#### 1.2 子页面调用父页面的方法
+子页面可以通过`window.parent`或`window.top`对象来调用父页面的方法。
+
+**子页面代码：**
+```html
+<!-- 子页面 -->
+<script>
+    window.onload = function() {
+        var data = 'Hello from child';
+        window.parent.parentMethod(data); // 调用父页面的方法
+    };
+</script>
+```
+
+**父页面代码：**
+```html
+<!-- 父页面 -->
+<script>
+    function parentMethod(data) {
+        console.log(data); // 输出: Hello from child
+    }
+</script>
+```
+
+### 2. 跨域通信
+
+#### 2.1 使用 `postMessage` 和 `message` 事件
+`postMessage` 方法允许不同源的窗口之间进行通信。父页面和子页面可以通过 `postMessage` 发送消息，并通过监听 `message` 事件来接收消息。
+
+**父页面代码：**
+```html
+<!-- 父页面 -->
+<iframe id="myIframe" src="http://example.com/child.html"></iframe>
+<script>
+    window.onload = function() {
+        var iframe = document.getElementById('myIframe');
+        iframe.onload = function() {
+            var data = 'Hello from parent';
+            iframe.contentWindow.postMessage(data, 'http://example.com'); // 发送消息
+        };
+
+        window.addEventListener('message', function(event) {
+            if (event.origin !== 'http://example.com') return; // 安全检查
+            console.log('Received from child:', event.data); // 输出: Received from child: Hello from child
+        });
+    };
+</script>
+```
+
+**子页面代码：**
+```html
+<!-- 子页面 -->
+<script>
+    window.onload = function() {
+        var data = 'Hello from child';
+        window.parent.postMessage(data, 'http://parentdomain.com'); // 发送消息
+    };
+
+    window.addEventListener('message', function(event) {
+        if (event.origin !== 'http://parentdomain.com') return; // 安全检查
+        console.log('Received from parent:', event.data); // 输出: Received from parent: Hello from parent
+    });
+</script>
+```
+
+### 3. 通过URL传参
+
+#### 3.1 父页面向子页面传递参数
+父页面可以通过在iframe的`src`属性中附加查询参数来向子页面传递数据。
+
+**父页面代码：**
+```html
+<!-- 父页面 -->
+<iframe id="myIframe" src="child.html?id=123&name=John"></iframe>
+```
+
+**子页面代码：**
+```html
+<!-- 子页面 -->
+<script>
+    function getQueryParams(url) {
+        var params = {};
+        var parser = document.createElement('a');
+        parser.href = url;
+        var query = parser.search.substring(1);
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            params[pair[0]] = decodeURIComponent(pair[1]);
+        }
+        return params;
+    }
+
+    window.onload = function() {
+        var params = getQueryParams(window.location.href);
+        console.log(params.id); // 输出: 123
+        console.log(params.name); // 输出: John
+    };
+</script>
+```
+
+### 4. 使用全局变量
+
+#### 4.1 子页面向父页面传递数据
+子页面可以通过设置全局变量的方式向父页面传递数据，但这只适用于同源的情况。
+
+**子页面代码：**
+```html
+<!-- 子页面 -->
+<script>
+    window.parent.sharedData = 'Hello from child';
+</script>
+```
+
+**父页面代码：**
+```html
+<!-- 父页面 -->
+<iframe id="myIframe" src="child.html"></iframe>
+<script>
+    window.onload = function() {
+        var iframe = document.getElementById('myIframe');
+        iframe.onload = function() {
+            console.log(window.sharedData); // 输出: Hello from child
+        };
+    };
+</script>
+```
+
 ### 总结
 
-在深拷贝中处理函数时，通常选择忽略函数或使用 `bind` 创建一个新的函数实例。忽略函数是最常见和最安全的做法，因为它避免了可能的复杂性和潜在的问题。如果你确实需要拷贝函数，请谨慎处理，确保不会丢失重要的上下文信息。
+- **同源通信**：可以通过直接访问`contentWindow`对象来调用方法或访问DOM。
+- **跨域通信**：使用`postMessage`和`message`事件来实现安全的跨域通信。
+- **通过URL传参**：父页面可以通过在iframe的`src`属性中附加查询参数来向子页面传递数据。
+- **使用全局变量**：子页面可以通过设置父页面的全局变量来传递数据，但仅限于同源情况。
+
+这些方法各有优缺点，选择合适的通信方式取决于具体的应用场景和需求。
