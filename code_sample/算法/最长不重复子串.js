@@ -3,7 +3,7 @@ function lengthOfLongestSubstring(str) {
 		maxStr = [];
     for(let c of str){
         if(currStr.includes(c)){
-            maxStr = maxStr.length > currStr ? maxStr : currStr
+            maxStr = maxStr.length > currStr.length ? maxStr : currStr
             while(currStr.includes(c)) currStr = currStr.slice(1)
         }
         currStr.push(c)
