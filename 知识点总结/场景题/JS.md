@@ -1834,10 +1834,6 @@ body {
 
 在线工具如 [Responsinator](http://www.responsinator.com/)，[Am I Responsive?](http://ami.responsivedesign.is/) 和 [BrowserStack](https://www.browserstack.com/) 也能帮助检测和验证响应式设计效果。
 
-### 总结
-
-响应式设计在PC端和移动端遵循很多相同的原则，但考虑PC端相对更复杂的布局和交互需求，要更多利用CSS的灵活性和响应式工具，不断进行测试和优化，确保在各种屏幕和设备上都能提供良好的用户体验。
-
 ## 0.1+0.2=0.3吗，为啥
 
 在 JavaScript 中，`0.1 + 0.2`  并不等于 `0.3`。
@@ -2020,10 +2016,6 @@ JavaScript会影响上面的多个阶段：
 3. **异步加载脚本**：使用`async`或`defer`加载外部JavaScript，避免阻塞DOM解析。
 4. **使用GPU加速**：利用CSS的`transform`、`opacity`等属性进行动画，这些属性可以利用GPU加速渲染。
 
-### 总结
-
-浏览器渲染机制是一个复杂而高效的过程，包括HTML解析、CSS解析、渲染树生成、布局和绘制等多个步骤。通过理解这些步骤和它们的交互方式，开发者可以更好地优化网页性能，提高用户体验。
-
 ## DOM树和CSSOM树是同步渲染的吗？
 
 在浏览器的渲染过程中，DOM 树和 CSSOM 树的构建是**相互依赖但并非完全同步的过程**。让我们深入了解一下它们的构建和与渲染的关系：
@@ -2135,7 +2127,7 @@ window.addEventListener('resize', function(event) {
 
 使用这些方法，你可以在浏览器窗口大小变化时动态调整页面布局或实现其他相应的功能。
 
-## 如果不用trycatch，怎么捕获异常，防止浏览器报错
+## 如果不用try catch，怎么捕获异常，防止浏览器报错
 
 ### 3. 全局错误处理
 
@@ -2158,68 +2150,17 @@ window.addEventListener('resize', function(event) {
   });
   ```
 
-
-
-
-
 ### 1. 使用Promise的`.catch()`
 
 对于异步代码，`Promise`提供了一种内置的方式来捕获错误，那就是使用`.catch()`方法。在Promise链中，如果遇到异常或Rejected状态，`.catch()`会被调用。
-
-```javascript
-function asyncOperation() {
-  return new Promise((resolve, reject) => {
-    // 模拟异步操作
-    setTimeout(() => {
-      reject(new Error("Something went wrong!"));
-    }, 1000);
-  });
-}
-
-asyncOperation().then(result => {
-  console.log(result);
-}).catch(error => {
-  console.error("Caught by .catch():", error);
-});
-```
 
 ### 2. 使用`async/await`结合`.catch()`
 
 尽管`async/await`通常与`try...catch`一起使用，但也可以使用`.catch()`来处理异常。
 
-```javascript
-async function fetchData() {
-  let data = await fetch('https://jsonplaceholder.typicode.com/posts/1');
-  return data.json();
-}
-
-fetchData()
-  .then(data => console.log(data))
-  .catch(error => console.error("Caught by .catch():", error));
-```
-
 ### 4. 使用库或框架
 
 可以使用一些流行的JavaScript库或框架，它们可能内置了更复杂的错误处理机制。例如，RxJS能够处理流中的错误，以及Sentry、LogRocket等专门的日志记录和错误监控服务。
-
-### 5. 封装异步函数
-
-通过编写一个辅助函数来处理异步操作中的错误：
-
-```javascript
-function handleErrors(asyncFunc) {
-  return function (...args) {
-    return asyncFunc(...args).catch(error => {
-      console.error("Error handled by wrapper:", error);
-    });
-  };
-}
-
-const safeFetchData = handleErrors(fetchData);
-safeFetchData().then(data => console.log(data));
-```
-
-尽管`try...catch`是同步和异步代码常用的错误处理机制，但通过上述方法，开发者可以以不同的方式捕获和处理错误。选择适合特定项目和代码风格的方案至关重要。
 
 ## for in 和 for of区别
 
@@ -2286,7 +2227,7 @@ for (let value of array) {
 
 ## 原型链在js中做些什么
 
-在JavaScript中，原型链（prototype chain）是实现继承和共享属性的一种机制。它在JavaScript的对象模型中扮演着关键角色，使得对象能够访问和共享其他对象的属性和方法。以下是原型链在JavaScript中的一些主要作用：
+在JavaScript中，原型链（prototype chain）是**实现继承和共享属性的一种机制**。它在JavaScript的对象模型中扮演着关键角色，**使得对象能够访问和共享其他对象的属性和方法**。以下是原型链在JavaScript中的一些主要作用：
 
 1. **属性和方法的继承**：
    - JavaScript使用原型链来实现对象之间的继承。每个对象都有一个指向其原型对象的内部链接（可以通过`__proto__`属性访问，尽管这并不是标准的而仅用于调试），这个原型对象可能还有自己的原型，形成一个原型链。
@@ -2312,17 +2253,7 @@ for (let value of array) {
 
 1. **语法简洁**：
    - 箭头函数的定义方式更加简洁，尤其对于小型函数而言，省去了`function`关键字和`return`语句（如果函数体只有一个表达式）。
-   - 例如，常规函数：
-     ```javascript
-     const add = function(a, b) {
-       return a + b;
-     };
-     ```
-     等价于箭头函数：
-     ```javascript
-     const add = (a, b) => a + b;
-     ```
-
+   
 2. **自动绑定`this`**：
    - 箭头函数不会创建自己的`this`上下文，而是继承自定义作用域链中的父上下文。这对于需要在回调函数中使用`this`的情境特别有用，因为它避免了需要显式地绑定`this`。
    - 例如，在事件处理和定时器回调中可以简化代码。
@@ -2358,125 +2289,157 @@ for (let value of array) {
      const concatenate = (...args) => args.join('');
      ```
 
-需要注意的是，箭头函数并不适合所有用途，尤其是不能用作构造函数（即不能使用`new`关键字实例化）和需要动态`this`上下文的场景。在这些情况下，常规的函数定义方式可能更加合适。总体而言，箭头函数简化了许多常见用例，且提高了代码的书写效率和可读性。
+需要注意的是，箭头函数并不适合所有用途，尤其是**不能用作构造函数**（即不能使用`new`关键字实例化）和需要动态`this`上下文的场景。在这些情况下，常规的函数定义方式可能更加合适。总体而言，箭头函数简化了许多常见用例，且提高了代码的书写效率和可读性。
 
 ## function作为构造函数和class的区别
 
-在JavaScript中，`function`和`class`都可以用作创建对象的构造模板，但它们的使用方式和特性有所不同。以下是`function`作为构造函数和`class`的区别：
+在 JavaScript 中，`function` 作为构造函数和 `class` 的主要区别在于语法、继承、以及原型链的处理方式。虽然两者都可以用来创建对象，并提供了相似的功能，但 `class` 是**更现代的写法，语法更简洁**，并且更**贴近面向对象编程的概念**。以下是它们的主要区别：
 
-### 1. 语法上的区别
+### 1. 语法
+使用 `class` 定义对象的结构更简洁和清晰，并且在 ES6 中被引入，以便于面向对象编程的表达。
 
-- **构造函数（Function Constructor）**：
-  - 使用`function`关键字定义，可以用来创建对象。
-  - 需要通过`new`关键字实例化。
-  - 使用这种方式创建的对象，其方法定义在`prototype`上。
+- 使用 `function` 构造函数：
+
   ```javascript
   function Person(name, age) {
-    this.name = name;
-    this.age = age;
-  }
-  Person.prototype.greet = function() {
-    console.log(`Hello, my name is ${this.name}`);
-  };
-  const person1 = new Person('Alice', 30);
-  ```
-
-- **类（Class）**：
-  - 引入于ES6，使用`class`关键字定义。
-  - 类方法自动添加在`prototype`上。
-  - 使用`constructor`方法定义初始化工作，相当于构造函数。
-  ```javascript
-  class Person {
-    constructor(name, age) {
       this.name = name;
       this.age = age;
-    }
-    greet() {
+  }
+
+  Person.prototype.sayHello = function() {
       console.log(`Hello, my name is ${this.name}`);
-    }
-  }
-  const person1 = new Person('Alice', 30);
-  ```
-
-### 2. 定义方法的方式
-
-- **构造函数**：
-  - 方法需要手动添加到构造函数的原型对象上以确保各实例共享这些方法。
-  - 容易导致代码不集中，方法定义分散。
-
-- **类（Class）**：
-  - 类体内部直接定义方法，这些方法自动在`prototype`对象上共享。
-  - 代码更加集中化，可读性更好。
-
-### 3. 继承机制
-
-- **构造函数**：
-  - 通过`prototype`链手动实现继承，通常需要使用`Object.create`或其他手动设置原型的方法。
-  ```javascript
-  function Animal(name) {
-    this.name = name;
-  }
-  Animal.prototype.speak = function() {
-    console.log(`${this.name} makes a noise.`);
   };
-  
-  function Dog(name) {
-    Animal.call(this, name); // Call parent constructor
-  }
-  Dog.prototype = Object.create(Animal.prototype);
-  Dog.prototype.constructor = Dog;
+
+  const person1 = new Person("Alice", 25);
+  person1.sayHello();
   ```
 
-- **类（Class）**：
-  - 使用`extends`关键字实现继承，并使用`super`来调用父类的构造函数和方法。
+- 使用 `class`：
+
   ```javascript
-  class Animal {
-    constructor(name) {
+  class Person {
+      constructor(name, age) {
+          this.name = name;
+          this.age = age;
+      }
+  
+      sayHello() {
+          console.log(`Hello, my name is ${this.name}`);
+      }
+  }
+  
+  const person1 = new Person("Alice", 25);
+  person1.sayHello();
+  ```
+
+### 2. 继承
+`class` 使用 `extends` 关键字实现继承，比 `function` 构造函数的继承方式更加简洁。
+
+- 使用 `function` 构造函数继承：
+
+  ```javascript
+  function Person(name) {
       this.name = name;
-    }
-    speak() {
-      console.log(`${this.name} makes a noise.`);
-    }
+  }
+
+  Person.prototype.sayHello = function() {
+      console.log(`Hello, my name is ${this.name}`);
+  };
+
+  function Student(name, grade) {
+      Person.call(this, name); // 调用父类构造函数
+      this.grade = grade;
+  }
+
+  Student.prototype = Object.create(Person.prototype); // 继承父类的原型
+  Student.prototype.constructor = Student;
+
+  Student.prototype.study = function() {
+      console.log(`${this.name} is studying.`);
+  };
+
+  const student1 = new Student("Bob", "A");
+  student1.sayHello();
+  student1.study();
+  ```
+
+- 使用 `class` 实现继承：
+
+  ```javascript
+  class Person {
+      constructor(name) {
+          this.name = name;
+      }
+  
+      sayHello() {
+          console.log(`Hello, my name is ${this.name}`);
+      }
   }
   
-  class Dog extends Animal {
-    speak() {
-      console.log(`${this.name} barks.`);
-    }
+  class Student extends Person {
+      constructor(name, grade) {
+          super(name); // 调用父类构造函数
+          this.grade = grade;
+      }
+  
+      study() {
+          console.log(`${this.name} is studying.`);
+      }
   }
+  
+  const student1 = new Student("Bob", "A");
+  student1.sayHello();
+  student1.study();
   ```
 
-### 4. 静态方法和属性
+### 3. `class` 的语法限制
+- `class` 声明不会被提升（hoisting）。这意味着在定义 `class` 之前不能使用它，而 `function` 构造函数可以在定义前调用。
+- `class` 中的所有方法（包括构造函数）都是不可枚举的，而 `function` 的原型方法默认是可枚举的。
+- `class` 的方法会自动使用严格模式（`use strict`），而 `function` 构造函数中可以选择是否使用严格模式。
 
-- **构造函数**：
-  - 静态成员需要手动添加到构造函数本身上。
-  ```javascript
-  function Utility() {}
-  Utility.someStaticMethod = function() {
-    console.log('This is a static method.');
-  };
-  ```
+### 4. `class` 是语法糖
+`class` 只是一个语法糖，实际上仍然使用原型链来实现继承机制。本质上，`class` 是对 `function` 构造函数的封装，使得代码更加易读，语法更加符合面向对象编程的习惯。
 
-- **类（Class）**：
-  - 使用`static`关键字轻松定义静态方法和属性。
+### 5. 静态方法和私有字段
+`class` 支持定义静态方法和私有字段，构造函数则需要手动实现类似功能。
+
+- 静态方法：
+
   ```javascript
-  class Utility {
-    static someStaticMethod() {
-      console.log('This is a static method.');
-    }
+  class Person {
+      static species = "Homo sapiens";
+      static describeSpecies() {
+          console.log("Humans belong to the species:", Person.species);
+      }
   }
+
+  Person.describeSpecies();
   ```
 
-### 5. 编程模式
+- 私有字段（用 `#` 定义）：
 
-- **构造函数**：
-  - 更接近于JavaScript传统的原型继承模式，灵活但普遍被认为较为复杂。
+  ```javascript
+  class Person {
+      #age;
+      constructor(name, age) {
+          this.name = name;
+          this.#age = age;
+      }
+  
+      getAge() {
+          return this.#age;
+      }
+  }
+  
+  const person = new Person("Alice", 25);
+  console.log(person.getAge()); // 25
+  console.log(person.#age); // Error: 私有字段不可直接访问
+  ```
 
-- **类（Class）**：
-  - 更符合面向对象语言的经典语法，使新手更容易理解。
-  - 提供了更结构化、现代化的面向对象编程体验。
-
-总体而言，`class`语法在现代JavaScript中提供了一种更优雅和可读的方式来定义对象和继承，尤其是对于来自其他面向对象语言的开发者而言。尽管功能方面大多数情况下可以使用`function`实现相同的效果，但`class`使得代码更加简洁和易于管理。
+### 总结
+- `class` 提供更简洁和现代的语法，适合面向对象编程。
+- `function` 构造函数提供了相同功能，但在继承和代码可读性方面略显复杂。
+- `class` 支持静态方法和私有字段，且自动严格模式。
 
 ## class的静态属性能不能被赋值
 
@@ -4874,10 +4837,10 @@ console.log(instance.someProperty); // 输出: 'value'
 
 ## 当 HTML 数据量过大时，浏览器是如何渲染的？是逐步解析还是等全部数据接收完再解析
 
-当浏览器加载一个包含大量数据的 HTML 文档时，它并不是等到所有数据都接收完毕后才开始解析和渲染。相反，现代浏览器通常采取逐步解析和渲染的方式。以下是浏览器处理大型 HTML 文档的基本流程：
+当浏览器加载一个包含大量数据的 HTML 文档时，它并不是等到所有数据都接收完毕后才开始解析和渲染。相反，现代浏览器通常采取**逐步解析**和渲染的方式。以下是浏览器处理大型 HTML 文档的基本流程：
 
 1. **流式解析**：
-   - 浏览器下载 HTML 文档时，会一边接收字节数据，一边进行解析。这种方式被称为流式（或增量）解析。
+   - 浏览器下载 HTML 文档时，会**一边接收字节数据，一边进行解析**。这种方式被称为流式（或增量）解析。
    - 由于 HTML 被视为流，这意味着浏览器可以在接收文档的同时逐步构建 DOM 树。
 
 2. **增量构建和渲染**：
