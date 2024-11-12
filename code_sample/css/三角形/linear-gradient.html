@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Triangle with Clip Path</title>
+		<style>
+			.triangle {
+				width: 100px;
+				height: 100px;
+                /*创建一个45度的线性渐变，前50%为红色，后50%为透明。*/
+				background: linear-gradient(45deg, red 50%, transparent 50%);
+                /*确保渐变背景覆盖整个元素*/
+				background-size: 100% 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="triangle"></div>
+	</body>
+</html>

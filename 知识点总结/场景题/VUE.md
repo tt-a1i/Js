@@ -1267,3 +1267,118 @@ Vue组件化的整体实现原理包括以下几个方面：
 - **本地复制**：如果你需要基于 `prop` 的值进行一些操作，可以在子组件的数据属性中创建一个本地副本，然后基于这个副本来做任何需要的操作。
 - **事件**：如果子组件需要更新父组件中的数据，可以通过自定义事件 `$emit` 来通知父组件进行相应的更新。
 - **计算属性/方法**：利用计算属性或方法来根据 `props` 计算出新的值，但不改变原始 `props`
+
+## vue3他的script标签和style标签是如何解析成JS和css的
+
+在Vue 3中，单文件组件（Single File Components，SFC）的 `<script>` 和 `<style>` 标签是通过Vue的构建工具（如Vite或Webpack）进行解析和处理的。下面详细介绍这两个标签是如何被解析成JavaScript和CSS的。
+
+### `<script>` 标签
+
+#### 解析过程
+
+1. **提取脚本内容**：
+   - 构建工具（如Vite或Webpack）首先会读取 `<script>` 标签中的内容。
+   - 如果 `<script>` 标签中包含 `setup` 属性，表示这是一个组合式API的脚本块，构建工具会对其进行特殊处理。
+
+2. **编译和转换**：
+   - 构建工具会使用Babel或其他转译器将现代JavaScript语法转换为兼容性更好的代码。
+   - 对于组合式API（即包含 `setup` 属性的脚本块），Vue会进行额外的编译，将其转换为渲染函数和响应式系统的一部分。
+
+3. **模块化处理**：
+   - 构建工具会将每个 `<script>` 块视为一个独立的模块，并处理模块依赖关系。
+   - 例如，如果你在 `<script>` 标签中导入了其他模块（如 `import { ref } from 'vue'`），构建工具会解析这些导入语句并正确处理模块依赖。
+
+4. **生成最终的JavaScript代码**：
+   - 最终，构建工具会将所有处理后的JavaScript代码打包成一个或多个文件，供浏览器加载和执行。
+
+#### 示例
+
+```vue
+<script setup>
+import { ref } from 'vue';
+
+const message = ref('Hello, Vue 3!');
+</script>
+
+<template>
+  <div>{{ message }}</div>
+</template>
+```
+
+### `<style>` 标标签
+
+#### 解析过程
+
+1. **提取样式内容**：
+   - 构建工具会读取 `<style>` 标签中的CSS内容。
+   - 如果 `<style>` 标签包含 `scoped` 属性，表示这些样式仅应用于当前组件。
+
+2. **预处理器支持**：
+   - 构建工具支持多种CSS预处理器（如Sass、Less、Stylus等）。如果 `<style>` 标签包含 `lang` 属性（如 `lang="scss"`），构建工具会使用相应的预处理器编译CSS。
+
+3. **作用域处理**：
+   - 对于带有 `scoped` 属性的样式，构建工具会生成唯一的类名前缀，并将这些前缀应用到组件的HTML元素上，以确保样式的局部性。
+   - 例如，`<style scoped>` 会生成类似 `.data-v-12345678 .my-class` 的CSS选择器。
+
+4. **生成最终的CSS代码**：
+   - 构建工具会将所有处理后的CSS代码打包成一个或多个文件，供浏览器加载和应用。
+
+#### 示例
+
+```vue
+<style scoped lang="scss">
+$primary-color: #42b983;
+
+.container {
+  background-color: $primary-color;
+  padding: 20px;
+  border-radius: 5px;
+}
+</style>
+
+<template>
+  <div class="container">
+    <h1>Hello, Vue 3!</h1>
+  </div>
+</template>
+```
+
+### 构建工具的角色
+
+#### Vite
+
+- **Vite** 是 Vue 3 推荐的构建工具，它基于ES模块进行按需编译，启动速度快。
+- Vite 使用 `@vitejs/plugin-vue` 插件来处理Vue SFC文件，包括 `<script>` 和 `<style>` 标签的解析和编译。
+
+##### Vite的处理流程
+
+1. **解析SFC**：
+   - Vite 使用 `@vitejs/plugin-vue` 插件解析 `.vue` 文件，提取 `<script>`、`<style>` 和 `<template>` 部分。
+   - `<script>` 部分会被编译成普通的JavaScript模块。
+   - `<style>` 部分会被编译成CSS模块，如果有 `scoped` 属性，会生成作用域样式。
+   - `<template>` 部分会被编译成渲染函数。
+
+2. **编译和打包**：
+   - Vite 使用ES模块进行按需编译，只有在请求时才会编译和加载相应的模块。
+   - 最终生成的JavaScript和CSS文件会被打包成一个或多个文件，供浏览器加载和执行。
+
+#### Webpack
+
+- **Webpack** 是一个广泛使用的模块打包工具，通过配置 `vue-loader` 插件来处理Vue SFC文件。
+- `vue-loader` 会解析 `<script>` 和 `<style>` 标签，并使用相应的加载器（如 `babel-loader` 和 `sass-loader`）进行编译和转换。
+
+##### Webpack的处理流程
+
+1. **解析SFC**：
+   - Webpack 使用 `vue-loader` 插件解析 `.vue` 文件，提取 `<script>`、`<style>` 和 `<template>` 部分。
+   - `<script>` 部分会被编译成普通的JavaScript模块。
+   - `<style>` 部分会被编译成CSS模块，如果有 `scoped` 属性，会生成作用域样式。
+   - `<template>` 部分会被编译成渲染函数。
+
+2. **编译和打包**：
+   - Webpack 使用配置的加载器（如 `babel-loader`、`sass-loader`）对提取的内容进行编译。
+   - 最终生成的JavaScript和CSS文件会被打包成一个或多个文件，供浏览器加载和执行。
+
+### 总结
+
+Vue 3 的单文件组件通过构建工具（如Vite或Webpack）将 `<script>` 和 `<style>` 标签中的内容解析和编译成最终的JavaScript和CSS代码。构建工具负责处理模块依赖、预处理器支持、作用域样式等，确保生成的代码能够在浏览器中正确运行。

@@ -2529,3 +2529,102 @@ Puppeteer 是一个 Node 库，它提供了一个高级的 API 来控制 Chrome 
 ### 7. 非侵入式骨架屏自动生成方案
 这种方案通过 npm 包的形式提供，支持命令行和 Node 调用，可以灵活配置页面地址、输出路径等参数，并以 Base64 图片或 HTML+样式代码的形式输出骨架屏，以最小的性能影响实现骨架屏功能。
 
+## 父级盒子bottom-top 8px和子级盒子bottom-top16px，父级和子级之间间隔是多少？
+
+在CSS中，当父级盒子和子级盒子都设置了垂直方向的外边距（`margin-top` 和 `margin-bottom`）时，它们之间的外边距会发生合并（margin collapsing）。外边距合并是指相邻的两个或多个外边距会合并成一个单一的外边距，合并后的外边距的值是这些外边距中最大的一个。
+
+### 具体情况分析
+
+假设父级盒子和子级盒子的垂直外边距设置如下：
+
+- **父级盒子**：
+  - `margin-top: 8px`
+  - `margin-bottom: 8px`
+
+- **子级盒子**：
+  - `margin-top: 16px`
+  - `margin-bottom: 16px`
+
+### 外边距合并规则
+
+1. **父级和子级之间的上外边距**：
+   - 父级盒子的 `margin-top` 是 8px。
+   - 子级盒子的 `margin-top` 是 16px。
+   - 由于父级和子级之间的上外边距会发生合并，合并后的外边距是 16px（取最大值）。
+
+2. **父级和子级之间的下外边距**：
+   - 父级盒子的 `margin-bottom` 是 8px。
+   - 子级盒子的 `margin-bottom` 是 16px。
+   - 由于父级和子级之间的下外边距会发生合并，合并后的外边距是 16px（取最大值）。
+
+### 结论
+
+- **父级和子级之间的上间隔**：16px
+- **父级和子级之间的下间隔**：16px
+
+因此，父级和子级之间的总间隔是 16px（上间隔） + 16px（下间隔） = 32px。
+
+### 示例代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Margin Collapsing Example</title>
+    <style>
+        .parent {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            background-color: lightblue;
+            padding: 10px;
+        }
+        .child {
+            margin-top: 16px;
+            margin-bottom: 16px;
+            background-color: lightcoral;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="parent">
+        Parent Box
+        <div class="child">
+            Child Box
+        </div>
+    </div>
+</body>
+</html>
+```
+
+在这个示例中，父级盒子和子级盒子之间的上间隔和下间隔都是 16px，总间隔是 32px。
+
+### 防止外边距合并
+
+如果你不希望外边距发生合并，可以采取以下措施：
+
+1. **给父级盒子添加 `border` 或 `padding`**：
+   ```css
+   .parent {
+       padding-top: 1px; /* 或者 border-top: 1px solid transparent; */
+   }
+   ```
+
+2. **给父级盒子设置 `overflow: hidden`**：
+   ```css
+   .parent {
+       overflow: hidden;
+   }
+   ```
+
+3. **使用 `display: flex` 或 `display: grid`**：
+   ```css
+   .parent {
+       display: flex;
+       flex-direction: column;
+   }
+   ```
+
+通过这些方法，可以防止外边距合并，确保父级和子级之间的间隔符合预期。
