@@ -52,7 +52,7 @@ DOM 树描述了文档的内容。<html>元素是第一个标签也是文档树�
 
 ### 预加载扫描器
 
-浏览器构建 DOM 树时，这个过程占用了主线程。同时，***预加载扫描器***会解析可用的内容并请求高优先级的资源，如 CSS、JavaScript 和 web 字体。多亏了预加载扫描器，我们不必等到解析器找到对外部资源的引用时才去请求。它将在后台检索资源，而当主 HTML 解析器解析到要请求的资源时，它们可能已经下载中了，或者已经被下载。预加载扫描器提供的优化减少了阻塞。
+浏览器构建 DOM 树时，这个过程占用了主线程。同时，***预加载扫描器***会**解析可用的内容并请求高优先级的资源**，如 CSS、JavaScript 和 web 字体。多亏了预加载扫描器，我们不必等到解析器找到对外部资源的引用时才去请求。它将在后台检索资源，而当主 HTML 解析器解析到要请求的资源时，它们可能已经下载中了，或者已经被下载。预加载扫描器提供的优化减少了阻塞。
 
 ### 构建CSSOM树
 
@@ -74,7 +74,7 @@ DOM 树描述了文档的内容。<html>元素是第一个标签也是文档树�
 
 ### 布局
 
-第四步是在渲染树上运行布局以计算每个节点的几何体。*布局*是确定呈现树中所有节点的尺寸和位置，以及确定页面上每个对象的大小和位置的过程。*重排*是后续过程中对页面的任意部分或整个文档的大小和位置的重新计算。
+第四步是**在渲染树上运行布局以计算每个节点的几何体**。***布局*是确定呈现树中所有节点的尺寸和位置**，以及确定页面上每个对象的大小和位置的过程。*重排*是后续过程中对页面的任意部分或整个文档的大小和位置的重新计算。
 
 渲染树构建完毕后，浏览器就开始布局。渲染树标识了哪些节点会显示（即使不可见）及其计算样式，但不标识每个节点的尺寸或位置。为了确定每个对象的确切大小和位置，浏览器会从渲染树的根开始遍历。
 
@@ -84,13 +84,13 @@ DOM 树描述了文档的内容。<html>元素是第一个标签也是文档树�
 
 ### 绘制
 
-关键渲染路径中的最后一步是将各个节点绘制到屏幕上，其中第一次的绘制被称为[首次有意义的绘制](https://developer.mozilla.org/zh-CN/docs/Glossary/First_meaningful_paint)。在绘制或光栅化阶段，浏览器将在布局阶段计算的每个盒子转换为屏幕上的实际像素。绘制涉及将元素的每个可见部分绘制到屏幕上，包括文本、颜色、边框、阴影以及按钮和图像等替换元素。浏览器需要以超快的速度执行这个过程。
+**关键渲染路径中的最后一步是将各个节点绘制到屏幕上**，其中第一次的绘制被称为[首次有意义的绘制](https://developer.mozilla.org/zh-CN/docs/Glossary/First_meaningful_paint)。在绘制或光栅化阶段，浏览器将在布局阶段计算的每个盒子转换为屏幕上的实际像素。绘制涉及将元素的每个可见部分绘制到屏幕上，包括文本、颜色、边框、阴影以及按钮和图像等替换元素。浏览器需要以超快的速度执行这个过程。
 
-为了确保平滑滚动和动画效果，包括计算样式、回流和绘制等占用主线程的所有操作，必须在不超过 16.67 毫秒的时间内完成。在 2048 x 1536 分辨率下，iPad 需要将超过 314.5 万个像素绘制到屏幕上。这是非常多的像素，必须要非常快速地绘制出来。为了确保重绘能够比初始绘制更快地完成，绘制到屏幕的操作通常被分解成几个图层。如果发生这种情况，浏览器则需要进行合成。
+为了确保平滑滚动和动画效果，包括计算样式、回流和绘制等占用主线程的所有操作，必须在不超过 16.67 毫秒的时间内完成。在 2048 x 1536 分辨率下，iPad 需要将超过 314.5 万个像素绘制到屏幕上。这是非常多的像素，必须要非常快速地绘制出来。为了确保重绘能够比初始绘制更快地完成，**绘制到屏幕的操作通常被分解成几个图层**。**如果发生这种情况**，**浏览器则需要进行合成**。
 
-绘制可以将布局树中的元素分解为多个层。将内容提升到 GPU 上的层（而不是 CPU 上的主线程）可以提高绘制和重新绘制性能。有一些特定的属性和元素可以实例化一个层，包括 [video](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/video) 和 [canvas](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/canvas)，任何 CSS 属性为 [`opacity`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/opacity) 、3D [`transform`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform)、[`will-change`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/will-change) 的元素，还有一些其他元素。这些节点将与子节点一起绘制到它们自己的层上，除非子节点由于上述一个（或多个）原因需要自己的层。
+**绘制可以将布局树中的元素分解为多个层**。将**内容提升到 GPU 上的层**（而不是 CPU 上的主线程）可以提高绘制和重新绘制性能。有一些特定的属性和元素可以实例化一个层，包括 [video](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/video) 和 [canvas](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/canvas)，任何 CSS 属性为 [`opacity`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/opacity) 、3D [`transform`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/transform)、[`will-change`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/will-change) 的元素，还有一些其他元素。这些节点将与子节点一起绘制到它们自己的层上，除非子节点由于上述一个（或多个）原因需要自己的层。
 
-分层确实可以提高性能，但在内存管理方面成本较高，因此不应作为 Web 性能优化策略的过度使用。
+**分层确实可以提高性能**，但在**内存管理方面成本较高**，因此不应作为 Web 性能优化策略的过度使用。
 
 ### 合成
 
@@ -100,7 +100,7 @@ DOM 树描述了文档的内容。<html>元素是第一个标签也是文档树�
 
 ### 交互
 
-一旦主线程绘制页面完成，你会认为我们已经“准备好了”，但事实并非如此。如果加载包括正确延迟加载的 JavaScript，并且仅在 [`onload`](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/load_event) 事件触发后执行，那么主线程可能会忙于执行脚本，无法用于滚动、触摸和其他交互操作。
+一旦**主线程绘制页面完成**，你会认为我们已经“准备好了”，但事实并非如此。如果加载包括正确延迟加载的 JavaScript，并且仅在 [`onload`](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/load_event) 事件触发后执行，那么主线程可能会忙于执行脚本，无法用于滚动、触摸和其他交互操作。
 
 [可交互时间（TTI）](https://developer.mozilla.org/zh-CN/docs/Glossary/Time_to_interactive)是测量从第一个请求导致 DNS 查询和 SSL 连接到页面可交互时所用的时间——可交互是在[首次内容绘制](https://developer.mozilla.org/zh-CN/docs/Glossary/First_contentful_paint)之后页面在 50ms 内响应用户的交互。如果主线程正在解析、编译和执行 JavaScript，则无法及时（小于 50ms）响应用户交互。
 
