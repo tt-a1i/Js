@@ -1,3 +1,4 @@
+//缺点: 无法取消已经发起的 fetch 请求
 function fetchWithTimeout(url, options = {}, timeout = 5000) {
 	//const fetchPromise = fetch(url, options);
 	//模拟超时

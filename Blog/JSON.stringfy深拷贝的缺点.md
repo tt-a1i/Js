@@ -49,6 +49,6 @@ console.log(parsed);
 2. undefined被直接忽略
 3. NaN被转换为null
 4. Infinity被转换为null
-5. Synbol被直接忽略
+5. Symbol被直接忽略
 6. 日期对象会被转为普通字符串
 7. 循环引用会直接报错
