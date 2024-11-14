@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Draw 0.5px Line with CSS</title>
+		<style>
+			.line-container {
+				position: relative;
+				width: 200px;
+				height: 200px;
+				border: 1px solid black;
+			}
+
+			.line-container::before {
+				content: "";
+				position: absolute;
+				top: 100px;
+				left: 50px;
+				width: 100px;
+				height: 0.5px; /* 0.5像素高 */
+				background-color: black;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="line-container"></div>
+	</body>
+</html>
