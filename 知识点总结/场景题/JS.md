@@ -7713,3 +7713,115 @@ iframe通信是指在父页面和嵌入的iframe子页面之间进行数据交�
 - **使用全局变量**：子页面可以通过设置父页面的全局变量来传递数据，但仅限于同源情况。
 
 这些方法各有优缺点，选择合适的通信方式取决于具体的应用场景和需求。
+
+## js变量放在栈和堆是由谁决定的，什么时候决定的
+
+在 JavaScript 中，变量的存储位置（栈或堆）是由 JavaScript 引擎自动管理的，程序员不需要显式地指定。了解这些机制有助于更好地理解内存管理和性能优化。以下是详细的解释：
+
+### 栈（Stack）
+
+- **特点**:
+  - 固定大小的数据结构。
+  - 存储基本数据类型（如 `number`, `string`, `boolean`, `null`, `undefined`）和函数引用。
+  - 数据存取速度快，因为遵循后进先出（LIFO）原则。
+  - 每个函数调用都会创建一个新的栈帧，函数执行完毕后栈帧会被销毁。
+
+- **何时使用**:
+  - 当变量是基本数据类型时。
+  - 当变量是局部变量且生命周期较短时。
+
+### 堆（Heap）
+
+- **特点**:
+  - 动态分配内存空间。
+  - 存储复杂数据类型（如对象、数组、函数等）。
+  - 数据存取速度相对较慢。
+  - 内存由垃圾回收器自动管理，释放不再使用的内存。
+
+- **何时使用**:
+  - 当变量是对象、数组或其他复杂数据类型时。
+  - 当变量的生命周期较长时。
+
+### 决定因素
+
+1. **数据类型**:
+   - **基本数据类型**（`number`, `string`, `boolean`, `null`, `undefined`）通常存储在栈上。
+   - **复杂数据类型**（对象、数组、函数）通常存储在堆上。
+
+2. **变量声明**:
+   - 局部变量（在函数内部声明的变量）通常存储在栈上。
+   - 全局变量和函数本身也存储在全局上下文中，具体实现可能因引擎而异。
+
+3. **引用**:
+   - 对象和数组在堆上存储，但在栈上存储的是指向堆中实际数据的指针。
+
+### 示例代码
+
+```javascript
+// 基本数据类型存储在栈上
+let num = 42; // 栈上存储数字 42
+let str = "Hello"; // 栈上存储字符串 "Hello"
+
+// 复杂数据类型存储在堆上
+let obj = { name: "Alice" }; // 对象存储在堆上，obj 在栈上存储指向堆的指针
+let arr = [1, 2, 3]; // 数组存储在堆上，arr 在栈上存储指向堆的指针
+
+function exampleFunction() {
+  let localVar = "Local"; // localVar 存储在栈上的当前函数栈帧中
+  let localObj = { key: "value" }; // localObj 存储在堆上，localObj 在栈上存储指向堆的指针
+}
+
+exampleFunction(); // 调用函数时创建新的栈帧，函数执行完毕后栈帧被销毁
+```
+
+### 总结
+
+- **JavaScript 引擎**负责决定变量存储在栈还是堆上。
+- **基本数据类型**通常存储在栈上，因为它们占用的空间较小且访问速度快。
+- **复杂数据类型**存储在堆上，因为它们占用的空间较大且需要动态管理。
+- **函数调用**时会在栈上创建新的栈帧，函数执行完毕后栈帧会被销毁。
+
+## 为什么一个 const 数组可以调用 push
+
+- **引用不变性**: 当你使用 `const` 声明一个数组时，实际上是在声明一个对数组对象的引用。这个引用是固定的，不能指向其他对象，但数组对象本身是可以被修改的。
+- **方法操作**: 数组的方法（如 `push`, `pop`, `shift`, `unshift`, `splice` 等）都是直接在原数组上进行操作，不会创建新的数组对象。
+- **内存管理**: 修改数组内容而不是重新创建数组对象更高效，因为不需要分配额外的内存空间。
+
+## 如何禁止push
+
+1. **浅层冻结**:
+   - `Object.freeze()` 只会对对象的第一层进行冻结。如果数组包含嵌套的对象或数组，这些嵌套的对象或数组仍然是可变的。
+   - 如果需要深层冻结，可以递归地应用 `Object.freeze()`。
+2. **不可扩展对象**:
+   - 使用 `Object.preventExtensions()` 可以防止添加新属性，但允许修改和删除现有属性。
+   - 使用 `Object.seal()` 可以防止添加和删除属性，但允许修改现有属性。
+3. proxy
+
+```javascript
+const originalArray = [1, 2, 3];
+
+const handler = {
+  get(target, prop, receiver) {
+    if (prop === 'push') {
+      return function() {
+        throw new Error('Cannot call push on this array');
+      };
+    }
+    return Reflect.get(target, prop, receiver);
+  }
+};
+
+const proxyArray = new Proxy(originalArray, handler);
+
+// 示例使用
+console.log(proxyArray); // 输出: [1, 2, 3]
+
+try {
+  proxyArray.push(4); // 这会报错: Cannot call push on this array
+} catch (error) {
+  console.error(error.message);
+}
+
+console.log(proxyArray); // 输出: [1, 2, 3]
+```
+
