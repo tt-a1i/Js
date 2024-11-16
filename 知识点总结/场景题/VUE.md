@@ -1382,3 +1382,97 @@ $primary-color: #42b983;
 ### 总结
 
 Vue 3 的单文件组件通过构建工具（如Vite或Webpack）将 `<script>` 和 `<style>` 标签中的内容解析和编译成最终的JavaScript和CSS代码。构建工具负责处理模块依赖、预处理器支持、作用域样式等，确保生成的代码能够在浏览器中正确运行。
+
+## vue实例怎么完成渲染
+
+### 1. 创建 Vue 实例
+
+Vue 实例的创建是通过调用 `new Vue(options)` 来完成的。在这个过程中，开发者可以向 Vue 实例传递一个配置对象，该对象可以包含数据 (`data`)、方法 (`methods`)、生命周期钩子 (`lifecycle hooks`)、计算属性 (`computed`)、监视器 (`watch`) 以及其他选项。
+
+```javascript
+const app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  }
+});
+```
+
+### 2. 解析模板
+
+Vue 会解析模板，将模板中的指令和插值表达式转换成渲染函数。模板可以是一个字符串，也可以是一个定义在 HTML 中的 `<template>` 标签。Vue 的编译器会将模板解析成一个抽象语法树（AST），然后根据 AST 生成渲染函数。
+
+### 3. 生成虚拟 DOM
+
+解析模板后，Vue 会生成一个虚拟 DOM 树。虚拟 DOM 是一个轻量级的 JavaScript 对象，描述了真实 DOM 结构。虚拟 DOM 的作用是提高渲染性能，通过比较新旧虚拟 DOM 树来高效地更新真实 DOM。
+
+```javascript
+const vnode = {
+  tag: 'div',
+  children: [
+    {
+      text: 'Hello Vue!'
+    }
+  ]
+};
+```
+
+### 4. 挂载实例
+
+当 Vue 实例创建完成后，会调用 `mount` 方法将虚拟 DOM 挂载到指定的 DOM 元素上。挂载过程会将虚拟 DOM 转化为真实的 DOM，并将其插入到页面中。
+
+```javascript
+app.$mount('#app');
+```
+
+### 5. 执行渲染函数
+
+Vue 会执行生成的渲染函数，生成新的虚拟 DOM 树。渲染函数是一个 JavaScript 函数，用于根据组件的状态生成虚拟 DOM。
+
+```javascript
+function render(h) {
+  return h('div', this.message);
+}
+```
+
+### 6. 比较和更新 DOM
+
+当 Vue 实例的数据发生变化时，Vue 会重新执行渲染函数，生成新的虚拟 DOM 树，并与旧的虚拟 DOM 树进行比较（这一步称为“diff”算法）。根据比较结果，Vue 只更新发生变化的部分，从而提高渲染性能。
+
+### 7. 客户端激活（SSR 场景）
+
+在服务端渲染（SSR）场景中，客户端需要执行一个激活步骤。在激活过程中，Vue 会创建一个与服务端完全相同的应用实例，然后将每个组件与它应该控制的 DOM 节点相匹配，并添加 DOM 事件监听器。
+
+```javascript
+const app = createSSRApp({
+  data: () => ({ count: 1 }),
+  template: `<button @click="count++">{{ count }}</button>`
+});
+```
+
+### 8. 事件处理和数据绑定
+
+Vue 实例会监听数据的变化，并在数据变化时自动更新视图。Vue 使用响应式系统来实现这一点，通过数据劫持（`Object.defineProperty` 或 `Proxy`）来监控数据的变化。当数据发生变化时，Vue 会触发相应的更新操作，确保视图与数据保持一致。
+
+### 9. 生命周期钩子
+
+在整个渲染过程中，Vue 实例会触发多个生命周期钩子，允许开发者在特定的时间点执行自定义逻辑。常见的生命周期钩子包括 `beforeCreate`、`created`、`beforeMount`、`mounted`、`beforeUpdate`、`updated`、`beforeDestroy` 和 `destroyed`。
+
+```javascript
+const app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  },
+  created() {
+    console.log('Component is created');
+  },
+  mounted() {
+    console.log('Component is mounted');
+  }
+});
+```
+
+### 10. 优化与调试
+
+为了提高渲染性能，Vue 提供了一些优化技巧，例如使用 `key` 属性来帮助 Vue 识别哪些元素发生了变化，使用 `v-once` 指令来渲染静态内容，以及使用 `v-if` 和 `v-for` 的优先级来优化列表渲染。此外，Vue Devtools 是一个非常有用的工具，可以帮助开发者调试和优化 Vue 应用。

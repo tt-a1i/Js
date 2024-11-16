@@ -2678,3 +2678,14 @@ Puppeteer 是一个 Node 库，它提供了一个高级的 API 来控制 Chrome 
 
 - `rgba`：只影响元素的背景颜色，不会影响元素的内容（如文本、子元素等）。
 - `opacity`：影响元素及其所有子元素的整体透明度，包括文本、背景、边框等。
+
+## 使用display: flex会使css的什么属性失效
+
+使用 `display: flex` 会使一些 CSS 属性在子元素上失效或表现不同。具体来说，以下属性可能会受到影响：
+
+1. **float**: 在 Flex 容器中的子元素上设置 `float` 不会产生预期的效果。
+2. **clear**: 类似地，`clear` 属性也不会影响 Flex 子元素的布局。
+3. **vertical-align**: 这个属性对 Flex 子元素不起作用，因为 Flex 布局有自己的方式来控制垂直对齐。
+4. **width/height 自动计算**: 当设置了 `flex` 属性时，Flex 子元素的宽度和高度可能不再完全按照常规盒模型自动计算。
+
+这些变化是为了让 Flexbox 能够更好地控制子元素的排列和空间分配。如果你需要调整这些行为，可以通过其他 Flex 盒模型相关的属性（如 `align-items`, `justify-content`, `flex-grow`, `flex-shrink` 等）来进行控制。

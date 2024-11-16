@@ -5381,3 +5381,155 @@ Vue 3 通过 `Proxy` 和 `WeakMap` 组合实现响应式数据跟踪。`WeakMap`
 
 - 使用 `WeakMap` 可以确保对象被垃圾回收后，Vue 的响应式系统不会继续跟踪不再需要的依赖，节省内存。
 - `Proxy` 提供更细粒度的操作拦截，不再像 Vue 2 中依赖 `Object.defineProperty` 的限制，性能和灵活性更高。
+
+## Vue2中重写数组方法的具体实现方式是什么？
+
+在Vue2中，重写数组方法的具体实现方式主要通过以下步骤来实现数组的响应式更新：
+
+1. **获取数组原型**：首先，获取`Array.prototype `的引用，并将其赋值给一个变量`arrayProto`。
+2. **创建新的数组方法对象**：创建一个新的对象`arrayMethods`，其原型是`arrayProto`。这一步是为了防止污染原生的`Array.prototype `。
+3. **定义需要重写的数组方法**：列出需要重写的数组方法名，如`push`、`pop`、`shift`、`unshift`、`splice`、`sort`和`reverse`。
+4. **遍历并重写这些方法**：遍历上述方法名，对每个方法进行拦截。对于每个方法，保存其原始实现，并在新的方法体中调用原始方法，然后执行一些额外的操作。
+5. **处理新增元素**：在重写的方法中，根据具体的方法类型（如`push`、`unshift`或`splice`），将新增的元素存储在一个变量中。如果存在新增元素，则调用观察者方法（如`ob.observeArray (inserted)`）来确保新增元素也是响应式的。
+6. **通知变更**：在执行完原始方法后，调用观察者实例的`notify()`方法来通知所有订阅者，从而触发视图更新。
+7. **应用到响应式数据上**：在初始化响应式数据时，Vue会判断一个对象是否是数组。如果是数组，则将该数组的原型指向上面提到的`arrayMethods`，从而使得这个数组调用这些重写的方法时，能够触发视图的更新。
+
+通过上述步骤，Vue2能够有效地监控到数组的变化，并及时更新视图，确保组件状态与数据源保持一致。这种方法虽然巧妙，但也存在一些局限性，比如无法直接监听通过索引修改数组元素或修改数组长度的操作。
+
+在 Vue 2 中，为了实现响应式系统，框架重写了一些数组方法（例如 `push`、`pop`、`shift` 等），使得当数组内容发生变化时，能够触发视图更新。这些重写的方法被称为 **观察者数组方法**，它们在 Vue 2 的核心实现中通过 `Array.prototype` 的原型链完成。
+
+### 实现原理
+Vue 2 的实现方式是：
+1. 创建一个新的对象 `arrayMethods`，并将其原型设置为 `Array.prototype`。
+2. 在这个对象上定义需要拦截的数组方法，例如 `push`、`pop` 等。
+3. 将数组实例的 `__proto__` 指向 `arrayMethods`，以此拦截调用这些方法时的行为。
+4. 在重写的方法中，调用原始方法并触发依赖更新。
+
+### 核心代码示例
+以下是 Vue 2 中关于数组方法拦截的简化实现：
+
+```javascript
+// 保存原始的 Array 原型
+const arrayProto = Array.prototype;
+
+// 创建一个新的对象继承自 Array.prototype
+const arrayMethods = Object.create(arrayProto);
+
+// 需要拦截的数组方法
+const methodsToPatch = [
+  'push',
+  'pop',
+  'shift',
+  'unshift',
+  'splice',
+  'sort',
+  'reverse'
+];
+
+// 重写这些方法
+methodsToPatch.forEach(function (method) {
+  const original = arrayProto[method]; // 保存原始方法
+  Object.defineProperty(arrayMethods, method, {
+    value: function (...args) {
+      const result = original.apply(this, args); // 调用原始方法
+
+      // 获取该数组的观察者对象（__ob__ 是 Vue 内部添加的一个属性）
+      const ob = this.__ob__;
+
+      // 对新插入的元素进行响应式处理
+      let inserted;
+      switch (method) {
+        case 'push':
+        case 'unshift':
+          inserted = args;
+          break;
+        case 'splice':
+          inserted = args.slice(2); // splice 方法的第三个参数及之后是新插入的元素
+          break;
+      }
+      if (inserted) ob.observeArray(inserted); // 让新元素也变成响应式
+
+      // 触发依赖更新
+      ob.dep.notify();
+
+      return result; // 返回原方法的执行结果
+    },
+    configurable: true,
+    writable: true
+  });
+});
+
+// 将数组变成响应式的函数
+function observeArray(items) {
+  for (let i = 0; i < items.length; i++) {
+    observe(items[i]); // 递归对数组中的每个元素做响应式处理
+  }
+}
+
+// Vue 内部初始化时，将数组的 __proto__ 指向 arrayMethods
+function defineReactiveArray(arr) {
+  arr.__proto__ = arrayMethods; // 替换原型链
+}
+```
+
+### 关键点解析
+1. **`__proto__` 替换**：
+   - Vue 将数组的 `__proto__` 指向自定义的 `arrayMethods`，从而拦截特定方法的调用。
+   - 不支持 `__proto__` 的环境（如 IE 10 及以下）会采用直接在对象上定义方法的方式。
+
+2. **`observeArray` 方法**：
+   - 当通过 `push` 等方法添加新元素时，Vue 会递归地将新元素变为响应式对象。
+
+3. **依赖收集和通知**：
+   - 重写的方法通过 `ob.dep.notify()` 通知观察者，这样视图就会重新渲染。
+
+### 举例说明
+```javascript
+const data = [];
+defineReactiveArray(data); // 手动设置响应式
+
+// 为数组添加观察者对象模拟
+data.__ob__ = {
+  dep: {
+    notify: () => console.log('视图更新！')
+  },
+  observeArray: (items) => console.log('新元素变为响应式', items)
+};
+
+data.push(1); // 输出：新元素变为响应式 [1]，视图更新！
+data.pop();   // 输出：视图更新！
+```
+
+### Vue 的实际应用
+在 Vue 2 中，当你在 `data` 中定义一个数组时，Vue 会自动调用类似 `defineReactiveArray` 的逻辑，确保数组的变更能够触发视图更新。
+
+```javascript
+new Vue({
+  data() {
+    return {
+      myArray: []
+    };
+  }
+});
+
+// 对 myArray 调用 push、splice 等方法会自动触发视图更新。
+```
+
+## Vue.$set的实现原理
+
+`Vue.$set` 是 Vue 2 中用来动态添加对象属性或更新数组指定索引的响应式工具。其主要目的是解决 Vue 2 基于 `Object.defineProperty` 实现的响应式系统的一些局限性，比如无法检测到动态属性的添加和数组索引的变化。
+
+下面是 `Vue.$set` 的实现原理和代码解析：
+
+------
+
+### 实现原理
+
+1. **目标对象为数组**：
+   - 如果目标对象是数组，`Vue.$set` 使用重写的 `splice` 方法修改数组内容。
+   - `splice` 方法已经被 Vue 重写，能够触发依赖通知，进而更新视图。
+2. **目标对象为普通对象**：
+   - 如果目标对象是普通对象，`Vue.$set` 动态添加一个属性，并使用 `Object.defineProperty` 为新属性定义 getter 和 setter，从而使其具备响应式能力。
+   - 同时，通过 `ob.dep.notify()` 触发依赖更新。
+3. **通知更新**：
+   - 如果目标对象已经被观察（存在 `__ob__` 属性），会通知依赖更新。
