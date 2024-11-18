@@ -5,6 +5,7 @@ function preciseSetInterval(callback, interval, ...args) {
     function loop() {
 		if(stop) return
         const now = Date.now();
+        //当前时间与开始时间的时间差
         const elapsed = now - start;
         const remaining = interval - (elapsed % interval);
         // 调用回调函数
