@@ -732,6 +732,7 @@ for (let i = 0; i < 100; i++) {
 - 使用HTTP/2协议，使多路复用和服务器推送等功能，提高传输效率。
 
 **3.3 使用缓存**
+
 - 设置适当的缓存策略（如使用`Cache-Control`、`Etag`、`Last-Modified`等头部），避免重复加载资源。
 - 使用服务工作者（Service Worker）实现离线缓存和预缓存。
 
@@ -753,9 +754,11 @@ for (let i = 0; i < 100; i++) {
 ### 5. 服务器优化
 
 **5.1 启用压缩**
+
 - 使用Gzip或Brotli等压缩传输文件，减少传输数据量。
 
 **5.2 优化服务器响应时间**
+
 - 优化服务器端性能，减少请求响应时间（TTFB，Time to First Byte）。
 
 ### 6. 数据优化
@@ -1077,11 +1080,9 @@ someAsyncFunction()
 - **`defer`**：适用于需要等待完整的 HTML 解析后但又需要按顺序执行的脚本。
 - **`async`**：适用于独立、无依赖性，且无需等待全部 HTML 解析的脚本。
 
-通过合理使用 `defer` 和 `async` 属性，可以显著提升页面的加载性能和用户体验。因此，在开发过程中，根据具体的需求选择合适的属性来标记脚本。
-
 ## 事件委托能够解决什么问题
 
-事件委托是一种常用的高级事件处理机制，利用事件冒泡的特性来管理事件。通过将子元素的事件处理绑定到父元素上，而不是为每个子元素单独绑定，可以解决许多性能和代码维护性的问题。以下是事件委托能够解决和优化的一些问题：
+事件委托是一种常用的高级事件处理机制，利用事件冒泡的特性来管理事件。通过**将子元素的事件处理绑定到父元素上**，而不是为每个子元素单独绑定，可以解决许多性能和代码维护性的问题。以下是事件委托能够解决和优化的一些问题：
 
 ### 1. **性能优化**
 
@@ -1122,8 +1123,6 @@ document.querySelector('#parentElement').addEventListener('click', function(even
 
 在这个例子中，我们只在父元素上绑定了一次点击事件处理器，通过检查 `event.target` 来确定实际触发事件的元素，而不需要在每个按钮上单独绑定事件处理器。
 
-综上，事件委托是一种强大的技术，能够提高网页的性能并简化代码管理，非常适合处理诸如动态元素和大型 DOM 树等场景。
-
 ## map和foreach的区别
 
 **map()** 和 **forEach()** 都是 JavaScript 数组方法，用于迭代数组元素，但它们在功能和返回值方面有所不同。
@@ -1143,23 +1142,6 @@ document.querySelector('#parentElement').addEventListener('click', function(even
 - **map()** 是**可链接的**，因为它返回一个新数组，可以在其上调用其他数组方法。
 - **forEach()** **不可链接**，因为它不返回值。
 
-**4. 示例：**
-
-```javascript
-// map() 示例：将数组中的每个数字乘以 2
-const numbers = [1, 2, 3, 4];
-const doubledNumbers = numbers.map(number => number * 2);
-console.log(doubledNumbers); // [2, 4, 6, 8]
-
-// forEach() 示例：打印数组中的每个元素
-const fruits = ['apple', 'banana', 'orange'];
-fruits.forEach(fruit => console.log(fruit));
-// 输出：
-// apple
-// banana
-// orange
-```
-
 **总结：**
 
 | 特性     | map()    | forEach()  |
@@ -1167,18 +1149,6 @@ fruits.forEach(fruit => console.log(fruit));
 | 返回值   | 新数组   | undefined  |
 | 用途     | 转换数组 | 执行副作用 |
 | 可链接性 | 可链接   | 不可链接   |
-
-**何时使用 map()：**
-
-- 需要创建一个包含原始数组元素修改版本的新数组时。
-- 需要对数组进行转换操作时。
-
-**何时使用 forEach()：**
-
-- 需要对数组中的每个元素执行副作用操作时。
-- 不需要创建新数组时。
-
-希望这个解释能够帮助你理解 `map()` 和 `forEach()` 之间的区别！
 
 ## 字节面经
 
@@ -1274,7 +1244,7 @@ fruits.forEach(fruit => console.log(fruit));
 - **Rejected**（已失败）：操作失败。
 
 #### Generator 函数
-`async/await` 的实现与 ES6 中的 Generator 函数密切相关。Generator 函数是一个可以在执行过程中暂停和恢复的函数形式。它使用 `function*` 语法定义和 `yield` 关键字控制执行。
+`async/await` 的实现与 ES6 中的 Generator 函数密切相关。Generator 函数是一个`可以在执行过程中暂停和恢复的函数`形式。它使用 `function*` 语法定义和 `yield` 关键字控制执行。
 
 ```javascript
 function* generatorFunction() {
@@ -1646,7 +1616,7 @@ if (window.innerWidth <= 600) {
 
 ### 1. 使用视口 (Viewport) Meta 标签
 
-虽然视口标签主要用于移动设备，但在一些混合设备上也是有用的，可以确保页面正确缩放：
+虽然视口标签主要用于移动设备，但在一些混合设备上也是有用的，可以**确保页面正确缩放**：
 
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1972,7 +1942,7 @@ console.log(result); // 输出 0.3
 
 ### 6. 合成（Compositing）
 
-对于复杂的页面，浏览器会生成多个图层，然后将这些图层合成为一个图像，这个过程称为合成（Compositing）。在某些浏览器中，合成是由GPU（图形处理单元）加速的，以提高渲染性能。
+对于**复杂的页面，浏览器会生成多个图层**，然后将这些图层合成为一个图像，这个过程称为合成（Compositing）。在某些浏览器中，合成是由GPU（图形处理单元）加速的，以提高渲染性能。
 
 ### 流程图示例
 
@@ -2789,14 +2759,12 @@ console.log('计算结果:', result.toString());
 
 4. **Cookies**：
    - 最早的客户端存储机制，用于存储少量数据。
-   - 支持发送到服务器，可以用于会话状态管理。
+   - 请求中自动携带发送到服务器，可以用于会话状态管理。
    - 常用来存储用户认证信息（有安全及大小限制）。
 
 5. **Service Workers 和 Cache API**：
    - 强大的浏览器特性，允许应用在离线环境中也能工作。
    - `Cache API`允许将网络请求及其响应缓存下来，用于提高性能或离线访问。
-
-在选择客户端存储机制时，需要根据存储数据的性质以及应用需求（如数据大小、访问机制、安全性等）来决定使用哪种存储方式。
 
 ## instanceof原理
 
@@ -3039,9 +3007,7 @@ self.onmessage = function(event) {
 
 - **适用范围**：适用于检测基本数据类型（number, string, boolean, function, undefined, symbol）和一些特殊对象类型（如`null`和普通对象）。
 
-- 注意事项
-
-  ：
+- 注意事项：
 
   - 对于基本数据类型来说，`typeof`很直观。
   - `typeof null` 返回 `"object"`，这被认为是JavaScript的一个历史性错误。
@@ -3058,9 +3024,7 @@ self.onmessage = function(event) {
 
 - **工作机制**：检查对象的原型链，看是否某个特定构造函数的原型存在于该原型链上。
 
-- 注意事项
-
-  ：
+- 注意事项：
 
   - `instanceof`只能用于对象，不能用于原始值（比如字符串、数字等），否则会抛出错误。
   - 可以检测自定义类的实例。
@@ -3074,168 +3038,25 @@ self.onmessage = function(event) {
 
 当父组件传递给子组件的`props`发生变化时，子组件会自动重新渲染。你可以通过改变传递给子组件的`props`值来触发更新。
 
-```vue
-<!-- ParentComponent.vue -->
-<template>
-  <ChildComponent :data="parentData" />
-  <button @click="updateData">Update Data</button>
-</template>
-
-<script>
-import ChildComponent from './ChildComponent.vue';
-
-export default {
-  components: { ChildComponent },
-  data() {
-    return {
-      parentData: 'Initial Data'
-    };
-  },
-  methods: {
-    updateData() {
-      this.parentData = 'Updated Data';  // 这会导致子组件重新渲染
-    }
-  }
-};
-</script>
-```
-
 ### 2. 使用`key`属性重置组件
 
 通过改变组件的`key`来强制其完全重新渲染。`key`属性的变化会使Vue认为这是一个全新的组件实例，从而完全卸载之前的实例并挂载一个新的。
-
-```vue
-<!-- ParentComponent.vue -->
-<template>
-  <ChildComponent :key="componentKey" />
-  <button @click="resetComponent">Reset Component</button>
-</template>
-
-<script>
-import ChildComponent from './ChildComponent.vue';
-
-export default {
-  components: { ChildComponent },
-  data() {
-    return {
-      componentKey: 0
-    };
-  },
-  methods: {
-    resetComponent() {
-      this.componentKey += 1;  // 改变key值强制子组件重新创建
-    }
-  }
-};
-</script>
-```
 
 ### 3. 使用事件和方法
 
 父组件可以通过事件机制和子组件的方法来控制子组件的状态或数据，从而触发重新渲染。
 
-```vue
-<!-- ParentComponent.vue -->
-<template>
-  <ChildComponent ref="child" />
-  <button @click="refreshChild">Refresh Child</button>
-</template>
 
-<script>
-import ChildComponent from './ChildComponent.vue';
-
-export default {
-  components: { ChildComponent },
-  methods: {
-    refreshChild() {
-      this.$refs.child.refresh();  // 调用子组件的方法来触发更新
-    }
-  }
-};
-</script>
-```
-
-```vue
-<!-- ChildComponent.vue -->
-<template>
-  <div>{{ message }}</div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      message: 'Hello'
-    };
-  },
-  methods: {
-    refresh() {
-      this.message = 'Refreshed';  // 改变数据从而触发更新
-    }
-  }
-};
-</script>
-```
 
 ### 4. 使用Vuex或其他状态管理工具
 
 在Vuex或类似的状态管理工具中管理数据，可以在状态变化时自动更新组件。子组件只需监听或映射所需的状态。
 
-```javascript
-// store.js (Vuex)
-export default new Vuex.Store({
-  state: {
-    sharedData: 'Original Data'
-  },
-  mutations: {
-    updateData(state, payload) {
-      state.sharedData = payload;
-    }
-  }
-});
 
-// ParentComponent.vue
-<template>
-  <ChildComponent />
-  <button @click="changeData">Change Data</button>
-</template>
-
-<script>
-import { mapMutations } from 'vuex';
-import ChildComponent from './ChildComponent.vue';
-
-export default {
-  components: { ChildComponent },
-  methods: {
-    ...mapMutations(['updateData']),
-    changeData() {
-      this.updateData('New Data');
-    }
-  }
-};
-</script>
-
-// ChildComponent.vue
-<template>
-  <div>{{ sharedData }}</div>
-</template>
-
-<script>
-import { mapState } from 'vuex';
-
-export default {
-  computed: {
-    ...mapState(['sharedData'])
-  }
-};
-</script>
-```
 
 这些方法都依赖于Vue的响应式系统，可以根据具体的需求和场景选择最合适的方案来控制子组件的刷新。
 
 ## 讲讲什么是原型，这个原型对象指向谁，有什么一样的属性
-
-
 
 在 JavaScript 中，原型（prototype）是一个**用于创建对象的共享属性和方法的机制**。原型在 JavaScript 中的所有对象和构造函数中都发挥着关键作用。
 
@@ -3548,7 +3369,7 @@ function updateContent() {
 
 #### 实现方式
 
-原型链继承是通过将子类的原型指向父类的实例来实现的。
+原型链继承是通过**将子类的原型指向父类的实例**来实现的。
 
 ```javascript
 function Parent() {
@@ -3580,7 +3401,7 @@ child.sayHello(); // "Hello from Parent"
 
 - 所有实例共享父类原型上的引用属性。
 - 无法向父类构造函数传递参数。
-- 子类实例一旦改变原型上的属性，其他实例的该属性也会被改变。
+- 子类实例**一旦改变原型上的对象属性(数组或对象)，其他实例的该属性也会被改变**。
 
 ### 2. 借用构造函数（经典继承）
 
@@ -4855,10 +4676,6 @@ console.log(instance.someProperty); // 输出: 'value'
 4. **逐步更新渲染树**：
    - 浏览器在解析成新的可视节点时会更新渲染树，绘制这些部分到屏幕上。
    - 因此，在加载大文档时，用户会逐渐看到页面的各个部分出现。
-
-### 总结
-
-这种逐步解析和渲染的方式是现代浏览器中实现高效资源利用和提升用户体验的一个关键因素，特别对于数据量大且需要快速响应的网站来说尤为重要。通过这种机制，用户能够在完整页面加载之前就能与部分内容进行交互或预览。
 
 ## JavaScript 会阻塞页面渲染吗
 

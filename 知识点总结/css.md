@@ -28,7 +28,7 @@
 
 #### **`Hash` 模式示例**
 
-```
+```javascript
 const router = new VueRouter({
   mode: 'hash',
   routes: [
@@ -40,7 +40,7 @@ const router = new VueRouter({
 
 **URL 示例：**
 
-```
+```http
 http://example.com/#/about
 ```
 
@@ -967,7 +967,7 @@ BFC（Block Formatting Context，块级格式化上下文）是 CSS 中的一个
 
 1. **块级元素**：块级元素（如 `div`、`p`、`ul` 等）自然地会形成一个新的 BFC。
 2. **浮动元素**：浮动元素（`float` 属性不为 `none` 的元素）也会创建一个 BFC。
-3. **绝对定位元素**：绝对定位元素（`position` 属性为 `absolute` 或 `fixed` 的元素）会创建一个 BFC。
+3. **绝对定位元素**：（`position` 属性为 `absolute` 或 `fixed` 的元素）会创建一个 BFC。
 4. **inline-blocks 和 table-cells**：`display` 属性为 `inline-block` 或 `table-cell` 的元素也会创建 BFC。
 5. **overflow 不是 visible 的块级元素**：如果一个块级元素的 `overflow` 属性不是 `visible`（即 `hidden`、`auto` 或 `scroll`），那么这个元素也会创建一个 BFC。
 
