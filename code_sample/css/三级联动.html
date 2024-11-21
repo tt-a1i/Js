@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>三级联动示例</title>
+		<style>
+			select {
+				width: 200px;
+				margin: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<select id="province" onchange="updateCity()">
+			<option value="">请选择省</option>
+		</select>
+		<select id="city" onchange="updateArea()">
+			<option value="">请选择市</option>
+		</select>
+		<select id="area">
+			<option value="">请选择区</option>
+		</select>
+
+		<script>
+			// 数据源
+			const data = {
+				广东: {
+					广州: ["天河区", "越秀区", "海珠区"],
+					深圳: ["福田区", "南山区", "宝安区"],
+				},
+				江苏: {
+					南京: ["玄武区", "秦淮区", "建邺区"],
+					苏州: ["姑苏区", "吴中区", "相城区"],
+				},
+			};
+
+			// 获取DOM元素
+			const provinceSelect = document.getElementById("province");
+			const citySelect = document.getElementById("city");
+			const areaSelect = document.getElementById("area");
+
+			// 填充省数据
+			for (const province in data) {
+				//new Option为新建option标签
+				const option = new Option(province, province);
+				provinceSelect.add(option);
+			}
+
+			// 更新市的选项
+			function updateCity() {
+				const selectedProvince = provinceSelect.value;
+				const cities = data[selectedProvince];
+				citySelect.innerHTML = '<option value="">请选择市</option>';
+				areaSelect.innerHTML = '<option value="">请选择区</option>';
+				if (cities) {
+					for (const city in cities) {
+						const option = new Option(city, city);
+						citySelect.add(option);
+					}
+				}
+			}
+
+			// 更新区的选项
+			function updateArea() {
+				const selectedProvince = provinceSelect.value;
+				const selectedCity = citySelect.value;
+				const areas = data[selectedProvince][selectedCity];
+				areaSelect.innerHTML = '<option value="">请选择区</option>';
+				if (areas) {
+					for (const area of areas) {
+						const option = new Option(area, area);
+						areaSelect.add(option);
+					}
+				}
+			}
+		</script>
+	</body>
+</html>

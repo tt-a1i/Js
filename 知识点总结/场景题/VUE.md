@@ -1470,3 +1470,74 @@ const app = new Vue({
 ### 10. 优化与调试
 
 为了提高渲染性能，Vue 提供了一些优化技巧，例如使用 `key` 属性来帮助 Vue 识别哪些元素发生了变化，使用 `v-once` 指令来渲染静态内容，以及使用 `v-if` 和 `v-for` 的优先级来优化列表渲染。此外，Vue Devtools 是一个非常有用的工具，可以帮助开发者调试和优化 Vue 应用。
+
+## watch深层响应式变量，怎么优化
+
+在 Vue 3 中，使用 `watch` 进行深层响应式变量的监听时，确实可能会带来一些性能开销，尤其是在处理大型或复杂的数据结构时。为了优化深层监听的性能，可以采取以下几种策略：
+
+### 1. 避免不必要的深度监听
+
+#### 使用 `watchEffect` 替代深度监听
+`watchEffect` 会自动追踪其依赖的响应式属性，并在这些属性变化时重新执行。相比深度监听，`watchEffect` 只会追踪实际使用的属性，因此通常更高效。
+
+```javascript
+import { ref, watchEffect } from 'vue';
+
+const user = ref({
+  name: 'John',
+  age: 30,
+  address: {
+    city: 'New York',
+    zip: '10001'
+  }
+});
+
+watchEffect(() => {
+  console.log('User name changed:', user.value.name);
+});
+```
+
+### 2. 细粒度监听
+
+#### 监听特定属性
+如果只需要监听对象中的某个特定属性，可以直接监听该属性，而不是整个对象。
+
+```javascript
+import { ref, watch } from 'vue';
+
+const user = ref({
+  name: 'John',
+  age: 30,
+  address: {
+    city: 'New York',
+    zip: '10001'
+  }
+});
+
+watch(() => user.value.name, (newValue, oldValue) => {
+  console.log(`Name changed from ${oldValue} to ${newValue}`);
+});
+```
+
+### 3. 使用 `shallowRef` 和 `shallowReactive`
+
+#### 创建浅层响应式对象
+`shallowRef` 和 `shallowReactive` 可以创建浅层响应式对象，减少对嵌套对象的性能开销。
+
+```javascript
+import { shallowRef, watch } from 'vue';
+
+const user = shallowRef({
+  name: 'John',
+  age: 30,
+  address: {
+    city: 'New York',
+    zip: '10001'
+  }
+});
+
+watch(() => user.value.name, (newValue, oldValue) => {
+  console.log(`Name changed from ${oldValue} to ${newValue}`);
+});
+```
+

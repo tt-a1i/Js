@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+        <link rel="stylesheet" href="./index.css">
+        <script src="./index.js" defer></script>
+	</head>
+	<body>
+		<div class="carousel">
+			<div class="carousel-inner">
+				<div class="carousel-item">内容1</div>
+				<div class="carousel-item">内容2</div>
+				<div class="carousel-item">内容3</div>
+			</div>
+			<div class="carousel-dots">
+				<span class="dot active"></span>
+				<span class="dot"></span>
+				<span class="dot"></span>
+			</div>
+			<button class="carousel-control prev">上一个</button>
+			<button class="carousel-control next">下一个</button>
+		</div>
+	</body>
+</html>
+<!--
+好，我现在要实现一个轮播图，但是不想用swiper这样的轮播库。那我应该怎么做呢？首先，我需要明确轮播图的基本功能和需求。一般来说，轮播图需要有左右切换、自动播放、循环播放、指示点、可能的触摸滑动等功能。
+
+首先，我需要一个容器来容纳所有的轮播项。通常是一个<div>元素，设置 overflow: hidden，这样可以隐藏溢出的内容。然后，内部是一个包含所有轮播项的容器，可能是另一个<div>，里面放几个<img>或者<div>作为轮播项。
+
+接下来，我需要让这些轮播项能够水平排列，并且能够通过某种方式切换。常见的方法有使用translateX来移动内部容器，或者使用margin-left来移动。
+
+假设我使用translateX来实现。首先，我需要获取所有轮播项的宽度，然后设置内部容器的宽度为单个轮播项的宽度乘以轮播项的数量。
+
+然后，我需要一个变量来记录当前显示的是第几个轮播项，比如currentIndex，初始值为0。
+
+为了实现自动播放，我可以使用setInterval来定时切换轮播项。
+
+接下来是切换逻辑。当切换到下一个轮播项时，currentIndex加一，然后使用translateX(-currentIndex * 单个轮播项的宽度)来移动内部容器。
+
+但是，如果currentIndex超过轮播项的数量，我需要让它回到第一个，实现循环播放。这可以通过取模运算来实现。
+
+另外，还需要处理指示点。指示点通常是一组小圆点，对应每个轮播项。我需要在HTML中添加这些指示点，并且在切换轮播项时，高亮当前的指示点。
+
+可能还需要添加左右切换的按钮，用户可以手动切换轮播项。
+
+另外，触摸滑动是一个常见的需求。对于触摸滑动，我需要监听触摸事件，比如touchstart、touchmove、touchend，来实现滑动切换轮播项。
+
+首先，记录触摸开始的位置，然后在touchmove中计算滑动的距离，如果超过了某个阈值，就切换到下一个或上一个轮播项。
+
+还有，要处理边界情况，比如当前已经是第一个轮播项，再向左滑动时，应该循环到最后一项。
+
+此外，可能需要考虑动画效果，比如切换时的过渡动画，可以使用CSS的transition来实现。
+
+最后，还需要处理一些细节，比如自动播放的暂停和恢复。当用户手动切换轮播项时，自动播放应该暂停，等一段时间后再继续播放。
+-->

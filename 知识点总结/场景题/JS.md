@@ -7647,3 +7647,89 @@ console.log(proxyArray); // 输出: [1, 2, 3]
 
 - **微任务的应用**：当你希望某个操作尽可能快地执行，同时又不想阻塞当前任务的执行时，可以使用微任务。例如，使用`Promise`来处理异步操作的回调，或者使用`MutationObserver`来监听DOM的变化。
 
+## 内存泄漏
+
+### 前端内存泄漏的常见场景
+
+1. **意外的全局变量(未声名变量挂在window上)**
+   
+   - **场景**：由于 JavaScript 对未声明变量的处理方式是在全局对象上创建该变量的引用。如果在浏览器中，全局对象就是 `window` 对象。变量在窗口关闭或重新刷新页面之前都不会被释放，如果未声明的变量缓存了大量的数据，就会导致内存泄露。
+   - **示例**：
+     ```javascript
+     function fn() {
+       a = 'global variable'; // 未声明变量
+     }
+     fn();
+     ```
+   - **解决方法**：避免创建全局变量，使用严格模式（`use strict`）来防止未声明的变量。
+   
+2. **闭包引起的内存泄漏**
+   
+   - **场景**：闭包可以读取函数内部的变量，然后让这些变量始终保存在内存中。如果在使用结束后没有将局部变量清除，就可能导致内存泄露。
+   - **示例**：
+     ```javascript
+     function fn() {
+       var a = "I'm a";
+       return function() {
+         console.log(a);
+       };
+     }
+     ```
+   - **解决方法**：将事件处理函数定义在外部，解除闭包，或者在定义事件处理函数的外部函数中将其置为 `null`。
+   
+3. **未清理的 DOM 元素引用**
+   - **场景**：虽然别的地方删除了，但是**对象中还存在对 DOM 的引用**。即使 DOM 元素被从文档中移除，如果 JavaScript 仍然持有对它的引用，那么它就不会被垃圾回收器回收。
+   - **示例**：
+     ```javascript
+     var elements = {
+       btn: document.getElementById('btn')
+     };
+     
+     function removeBtn() {
+       document.body.removeChild(document.getElementById('button'));
+       // 但是此时全局变量 elements 还保留了对 btn 的引用
+     }
+     ```
+   - **解决方法**：手动删除引用，例如 `elements.btn = null`。
+
+4. **被遗忘的定时器或者回调**
+   - **场景**：**定时器中有 DOM 的引用**，即使 DOM 删除了，但是定时器还在，所以内存中还是有这个 DOM。
+   - **示例**：
+     ```javascript
+     var serverData = loadData();
+     setInterval(function() {
+       var renderer = document.getElementById('renderer');
+       if (renderer) {
+         renderer.innerHTML = JSON.stringify(serverData);
+       }
+     }, 5000);
+     ```
+   - **解决方法**：手动删除定时器和 DOM，例如 `clearInterval(timer)` 和 `document.body.removeChild(renderer)`。
+
+5. **Vue 中容易出现内存泄漏的情况**
+   - **场景**：在 Vue SPA 开发应用中，用户使用它时是不需要刷新浏览器的，所以 JavaScript 应用需要自行清理组件来确保垃圾回收以预期的方式生效。常见的内存泄漏场景包括全局变量造成的内存泄露、监听在 `window` 或 `body` 上的事件没有解绑、绑在 `EventBus` 的事件没有解绑等。
+   - **解决方法**：在页面卸载时解除引用，例如在 `destroyed` 生命周期钩子中将全局变量置为 `null`。
+
+### 如何定位内存泄漏
+
+1. **使用开发者工具进行内存快照**
+   - **工具**：Chrome DevTools 提供了强大的内存分析功能，可以通过多次快照对比，查看内存的分配和释放情况，从而找出内存泄漏的具体位置。
+   
+2. **分析垃圾回收机制**
+   - **概念**：了解垃圾回收的工作原理对排查和预防内存泄漏很有帮助。在 JavaScript 中，垃圾回收器会定期扫描不再引用的对象，并将它们从内存中清除。
+   - **工具**：Chrome DevTools 的 Performance 面板可以用来观察垃圾回收的时机和频率。
+
+3. **监控内存使用情况**
+   - **工具**：可以使用 `performance.memory` API 来监控内存使用情况，例如 `usedJSHeapSize` 表示当前使用的堆内存大小。
+   - **示例**：
+     ```javascript
+     console.log(performance.memory.usedJSHeapSize);
+     ```
+
+4. **使用第三方工具**
+   
+   - **工具**：例如 `heapdump` 可以生成快照文件，导入至 Chrome DevTools 中的 Memory 进行快照对比。
+   - **步骤**：
+     1. 安装 `heapdump` 包。
+     2. 在代码中调用 `heapdump.writeSnapshot` 生成快照文件。
+     3. 将生成的快照文件导入 Chrome DevTools 进行分析。

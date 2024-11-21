@@ -1,0 +1,64 @@
+body {
+	display: flex;
+	justify-content: center;
+}
+.carousel {
+	position: relative;
+	overflow: hidden;
+	width: 600px;
+	height: 400px;
+}
+
+.carousel-inner {
+	display: flex;
+	width: 300%; /* 3个轮播项，每个占100%宽度 */
+	transition: transform 0.5s ease;
+}
+
+.carousel-item {
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+/* 指示点样式 */
+.carousel-dots {
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.dot {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: #ccc;
+	margin: 0 5px;
+	cursor: pointer;
+}
+
+.dot.active {
+	background-color: green;
+}
+
+/* 切换按钮样式 */
+.carousel-control {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: rgba(0, 0, 0, 0.5);
+	color: #fff;
+	border: none;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.prev {
+	left: 10px;
+}
+
+.next {
+	right: 10px;
+}
