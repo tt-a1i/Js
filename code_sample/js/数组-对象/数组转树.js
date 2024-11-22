@@ -8,7 +8,7 @@ function arrayToTree(items) {
 	}
 
 	for (const item of map.values()) {
-		if (item.parentId === null || item.parentId === undefined) {
+		if (!item.parentId) {
 			tree.push(item);
 		} else {
 			const parent = map.get(item.parentId);

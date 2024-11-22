@@ -1,10 +1,45 @@
 ## TypeScript中type和interface的区别
 
-在 TypeScript 中，`type` 和 `interface` 用于定义自定义类型，但它们有一些重要的区别和各自的使用场景。以下是它们的主要区别和使用示例：
+**`type`（类型别名）**:
+
+- 用来给一个类型起一个新的名字。
+- 可以用于定义基本类型、联合类型、元组、交叉类型等复杂类型。
+
+
+
+**`interface`（接口）**:
+
+- 专门用于定义对象的结构（属性和方法）。
+
+**都可以描述对象和函数**
+
+**都允许继承**
+
+- `interface`可以通过`extends`关键字继承其他`interface`。
+- `type`可以通过交叉类型（`&`）实现继承。
+
+
+
+**`type`可以做到而`interface`不能做到**:
+
+- 定义基本类型:
+  - `type`可以定义基本类型的别名，如`type Name = string;`。
+- 定义联合类型:
+  - `type`可以定义联合类型，如`type NameOrNumber = string | number;`。
+- 定义元组:
+  - `type`可以定义元组类型，如`type Data = [number, string];`。
+- 定义交叉类型:
+  - `type`可以定义交叉类型，如`type Developer = Person & Employee;`。
+- 使用`typeof`操作符:
+  - `type`可以使用`typeof`操作符来声明类型，如`type MyType = typeof someObject;`。
+
+- **`interface`可以做到而`type`不能做到**:
+  - 声明合并:
+    - `interface`支持声明合并，可以多次声明同一个`interface`，最终会合并成一个接口。
 
 ### 1. 定义基本类型（Type）
 
-`type` 是定义类型别名的一种方式，可以用于更复杂的联合类型、交叉类型等。此外，`type` 可以定义原始类型的别名。
+`type` 是**定义类型别名**的一种方式，**可以用于更复杂的联合类型、交叉类型**等。此外，`type` 可以定义原始类型的**别名**。
 
 ```typescript
 // 定义基本类型别名
@@ -41,7 +76,7 @@ const person: IdentifiedPerson = {
 
 ### 2. 定义接口（Interface）
 
-`interface` 用于声明对象的结构，在面对对象编程中非常常见，尤其是在定义类的类型时。此外，`interface` 还可以进行扩展（extend）和实现（implements）。
+`interface` 用于**声明对象的结构**，在面对对象编程中非常常见，尤其是在定义类的类型时。此外，`interface` 还可以进行扩展（**extend**）和实现（**implements**）。
 
 ```typescript
 interface Point {
@@ -68,7 +103,7 @@ const person: IdentifiedPerson = {
 
 ### 3. 扩展和合并
 
-`interface` 支持声明合并，可以在多个地方声明相同名字的接口，TypeScript 会自动合并它们。这在一些库中（如 React）非常有用。
+`interface` 支持**声明合并**，可以在**多个地方声明相同名字的接口，TypeScript 会自动合并**它们。这在一些库中（如 React）非常有用。
 
 ```typescript
 interface A {
