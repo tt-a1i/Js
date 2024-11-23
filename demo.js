@@ -1,31 +1,25 @@
-function solution(s) {
-  // 去除前导零
-  s = parseFloat(s).toString();
-
-  // 分离整数部分和小数部分
-  let parts = s.split('.');
-  let integerPart = parts[0];
-  let decimalPart = parts.length > 1 ? '.' + parts[1] : '';
-
-  // 使用正则表达式为整数部分添加千分位逗号
-  let formattedIntegerPart = '';
-  let count = 0;
-  for (let i = integerPart.length - 1; i >= 0; i--) {
-      if (count > 0 && count % 3 === 0) {
-          formattedIntegerPart = ',' + formattedIntegerPart;
-      }
-      formattedIntegerPart = integerPart[i] + formattedIntegerPart;
-      count++;
-  }
-
-  // 返回格式化后的字符串
-  return formattedIntegerPart + decimalPart;
+function solution(numbers) {
+  // 生成所有可能的组合
+  let combinations = numbers.reduce((acc, group) => {
+    return acc.flatMap(x => String(group).split('').map(digit => x + digit));
+}, ['']);
+// 统计符合条件的组合数量
+let count = 0;
+for (let combination of combinations) {
+    // 计算组合的各位数字之和
+    let digitSum = combination.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+    // 检查和是否为偶数
+    if (digitSum % 2 === 0) {
+        count++;
+    }
 }
-
+return count;
+}
 function main() {
-  console.log(solution("1294512.12412") === '1,294,512.12412');
-  console.log(solution("0000123456789.99") === '123,456,789.99');
-  console.log(solution("987654321") === '987,654,321');
+// You can add more test cases here
+console.log(solution([123, 456, 789]) === 14);
+console.log(solution([123456789]) === 4);
+console.log(solution([14329, 7568]) === 10);
 }
 
 main();
