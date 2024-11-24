@@ -1,25 +1,81 @@
-function solution(numbers) {
-  // 生成所有可能的组合
-  let combinations = numbers.reduce((acc, group) => {
-    return acc.flatMap(x => String(group).split('').map(digit => x + digit));
-}, ['']);
-// 统计符合条件的组合数量
-let count = 0;
-for (let combination of combinations) {
-    // 计算组合的各位数字之和
-    let digitSum = combination.split('').reduce((sum, digit) => sum + parseInt(digit), 0);
-    // 检查和是否为偶数
-    if (digitSum % 2 === 0) {
-        count++;
+class MinHeap {
+  constructor() {
+    this.heap = [];
+  }
+
+  push(val) {
+    this.heap.push(val);
+    this.bubbleUp();
+  }
+
+  pop() {
+    if (this.size() === 1) return this.heap.pop();
+    const top = this.heap[0];
+    this.heap[0] = this.heap.pop();
+    this.bubbleDown();
+    return top;
+  }
+
+  bubbleUp() {
+    let index = this.heap.length - 1;
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      if (this.heap[index] >= this.heap[parentIndex]) break;
+      [this.heap[index], this.heap[parentIndex]] = [
+        this.heap[parentIndex],
+        this.heap[index],
+      ];
+      index = parentIndex;
     }
-}
-return count;
-}
-function main() {
-// You can add more test cases here
-console.log(solution([123, 456, 789]) === 14);
-console.log(solution([123456789]) === 4);
-console.log(solution([14329, 7568]) === 10);
+  }
+
+  bubbleDown() {
+    let index = 0;
+    const length = this.heap.length;
+    while (true) {
+      let leftChild = 2 * index + 1;
+      let rightChild = 2 * index + 2;
+      let smallest = index;
+
+      if (leftChild < length && this.heap[leftChild] < this.heap[smallest]) {
+        smallest = leftChild;
+      }
+      if (rightChild < length && this.heap[rightChild] < this.heap[smallest]) {
+        smallest = rightChild;
+      }
+      if (smallest === index) break;
+
+      [this.heap[index], this.heap[smallest]] = [
+        this.heap[smallest],
+        this.heap[index],
+      ];
+      index = smallest;
+    }
+  }
+
+  peek() {
+    return this.heap[0];
+  }
+
+  size() {
+    return this.heap.length;
+  }
 }
 
-main();
+function topK(arr, k) {
+  const heap = new MinHeap();
+  for (let num of arr) {
+    if (heap.size() < k) {
+      heap.push(num);
+    } else if (num > heap.peek()) {
+      heap.pop();
+      heap.push(num);
+    }
+  }
+  return heap.heap.sort((a, b) => b - a); // 返回 Top K 的降序排列
+}
+
+// 测试
+const arr = [3, 2, 1, 5, 6, 4];
+const k = 2;
+console.log(topK(arr, k)); // 输出: [6, 5]
