@@ -1,4 +1,6 @@
-
 /.obsidian/
 /.idea/
+.vscode/
+.vscode/**
+/.prettierrc
 /问题收集/

@@ -1541,3 +1541,124 @@ watch(() => user.value.name, (newValue, oldValue) => {
 });
 ```
 
+## VUEX原理
+
+### 核心概念
+
+1. **State**: 存放应用的状态，类似于 Vue 组件中的 `data`，但它是全局的，可以在整个应用中共享。Vuex 的状态存储是响应式的，当状态改变时，相关组件会自动更新。
+
+2. **Getters**: 类似于 Vue 的计算属性，用于从 `state` 派生出新的状态数据。Getters 可以缓存结果，直到其依赖的状态发生变化。
+
+3. **Mutations**: 更改 `state` 的唯一方法。每个 mutation 都有一个字符串类型的事件类型和一个回调函数。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 `state` 作为第一个参数。
+
+4. **Actions**: 与 mutations 类似，但是它们可以包含任意异步操作。Actions 提交 mutations，而不是直接改变状态。
+
+5. **Modules**: Vuex 允许将状态分割成模块，每个模块拥有自己的 `state`、`getters`、`mutations` 和 `actions`。模块化使得大型应用的状态管理变得更加容易。
+
+### 底层实现原理
+
+#### 1. `Store 的创建`
+
+当创建一个 Vuex Store 时，实际上是实例化了一个 `Store` 类。这个类接收一个配置对象，其中包括 `state`、`getters`、`mutations`、`actions` 和 `modules` 等属性。在这个过程中，Vuex 会对 `state` 进行响应式处理，使 `state` 成为 Vue 实例的一个属性，从而实现了响应式。
+
+```javascript
+class Store {
+  constructor(options) {
+    this.state = new Vue({
+      data: options.state
+    });
+    this.getters = {};
+    this.mutations = options.mutations;
+    this.actions = options.actions;
+
+    // 绑定 this
+    this.commit = this.commit.bind(this);
+    this.dispatch = this.dispatch.bind(this);
+
+    // 初始化 getters
+    Object.keys(options.getters).forEach(getterKey => {
+      this.getters[getterKey] = options.getters[getterKey];
+    });
+
+    // 初始化 modules
+    if (options.modules) {
+      // 处理模块
+    }
+  }
+
+  // 实现 commit 和 dispatch 方法
+  commit(type, payload) {
+    this.mutations[type](this.state, payload);
+  }
+
+  dispatch(type, payload) {
+    this.actions[type](this, payload);
+  }
+}
+```
+
+#### 2.` 插件机制`
+
+Vuex 作为一个 Vue 插件，通过 `Vue.use(Vuex)` 调用了 Vuex 的 `install` 方法。在 `install` 方法中，通过 `Vue.mixin` 将 `vuexInit` 方法混入到 Vue 实例的 `beforeCreate` 生命周期钩子中。`vuexInit` 方法负责将 Store 注入到 Vue 实例中，使 `$store` 属性可以在所有 Vue 组件中访问。
+
+```javascript
+function install(_Vue) {
+  if (Vue && _Vue === Vue) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[vuex] already installed. Vue.use(Vuex) should be called only once.');
+    }
+    return;
+  }
+  Vue = _Vue;
+  applyMixin(Vue);
+}
+
+function applyMixin(Vue) {
+  Vue.mixin({
+    beforeCreate: vuexInit
+  });
+
+  function vuexInit() {
+    const options = this.$options;
+    if (options.store) {
+      this.$store = typeof options.store === 'function' ? options.store() : options.store;
+    } else if (options.parent && options.parent.$store) {
+      this.$store = options.parent.$store;
+    }
+  }
+}
+```
+
+#### 3. `响应式更新`
+
+由于 `state` 是通过 Vue 实例的 `data` 属性创建的，因此它是响应式的。当 `state` 中的数据发生变化时，Vue 的响应式系统会自动更新相关的组件。此外，Vuex 通过 `getters` 提供了派生状态的计算属性，这些计算属性也是响应式的。(上面源码中可以看到)
+
+#### 4. 模块化
+
+Vuex 支持将状态分割成模块，每个模块都可以有自己的 `state`、`getters`、`mutations` 和 `actions`。模块化使得大型应用的状态管理变得更加容易，同时也便于代码的组织和维护。
+
+```javascript
+const moduleA = {
+  state: { ... },
+  mutations: { ... },
+  actions: { ... },
+  getters: { ... }
+};
+
+const moduleB = {
+  state: { ... },
+  mutations: { ... },
+  actions: { ... }
+};
+
+const store = new Vuex.Store({
+  modules: {
+    a: moduleA,
+    b: moduleB
+  }
+});
+```
+
+## VueX是在哪个阶段挂载到 vue 实例上的
+
+Vuex 是在 Vue 实例的 `beforeCreate` 生命周期钩子阶段挂载到 Vue 实例上的。这一过程通过 Vue 插件机制和全局混入实现，确保了 Vuex Store 可以被应用中的所有组件访问。

@@ -1,6 +1,6 @@
 {
-    "cSpell.words": [
-        "nums",
-        "strs"
-    ]
+	"cSpell.words": ["nums", "strs"],
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"prettier.requireConfig": true
 }
