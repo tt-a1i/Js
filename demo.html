@@ -1,56 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Handwriting Animation</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>demo</title>
+    <!-- ...existing code... -->
     <style>
-      /* 使用 flex 布局使内容居中 */
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: #f0f0f0;
-        margin: 0;
-      }
-
-      /* SVG 容器大小设置 */
-      .letter {
-        width: 200px;
-        height: 200px;
-      }
-
-      /* 路径样式和动画属性 */
-      .letter path {
-        stroke: #000; /* 线条颜色 */
-        stroke-width: 4; /* 线条宽度 */
-        stroke-linecap: round; /* 线条端点为圆形 */
-        stroke-linejoin: round; /* 线条连接处为圆角 */
-        fill: none; /* 不填充路径内部 */
-        stroke-dasharray: 800; /* 虚线总长度 */
-        stroke-dashoffset: 800; /* 初始偏移量，使线条不可见 */
-        animation: write 6s ease forwards; /* 6秒书写动画，保持最终状态 */
-      }
-
-      /* 动画：将虚线偏移量从800减少到0，实现书写效果 */
-      @keyframes write {
-        to {
-          stroke-dashoffset: 0;
+        .container {
+            column-count: 3;
+            column-gap: 1em;
         }
-      }
+        .item {
+            break-inside: avoid;
+            margin-bottom: 1em;
+            background: #f0f0f0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
     </style>
-  </head>
-  <body>
-    <!-- SVG绘制字母"A" -->
-    <svg class="letter" viewBox="0 0 100 100">
-      <!-- 路径命令说明：
-             M20,80 - 移动到起始点
-             L50,20 - 画线到A的顶部
-             L80,80 - 画线到右下角
-             M35,50 - 移动到横线起点
-             L65,50 - 画横线到终点 -->
-      <path d="M20,80 L50,20 L80,80 M35,50 L65,50"></path>
-    </svg>
-  </body>
+</head>
+<body>
+    
+</body>
 </html>

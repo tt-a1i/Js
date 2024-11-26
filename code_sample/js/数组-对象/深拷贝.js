@@ -1,76 +1,98 @@
-function deepCopy(obj, cache = new WeakMap()) {
-	// 基本数据类型直接返回
-	if (obj === null || typeof obj !== "object") {
-		return obj;
-	}
+/* function deepCopy(obj, hash = new WeakMap()) {
+	// 如果 obj 不是对象（包括 null），直接返回 obj
+    if (Object(obj) !== obj) return obj; // Handle primitives
+    if (hash.has(obj)) return hash.get(obj); // Handle circular references
+    let result;
+    if (obj instanceof Set) {
+        result = new Set();
+        hash.set(obj, result);
+        obj.forEach(value => result.add(deepCopy(value, hash)));
+    } else if (obj instanceof Map) {
+        result = new Map();
+        hash.set(obj, result);
+        obj.forEach((value, key) => result.set(deepCopy(key, hash), deepCopy(value, hash)));
+    } else if (obj instanceof Date) {
+        result = new Date(obj);
+    } else if (obj instanceof RegExp) {
+        result = new RegExp(obj.source, obj.flags);
+    } else if (typeof obj === 'function') {
+        result = obj.bind(null);
+    } else if (Array.isArray(obj)) {
+        result = [];
+        hash.set(obj, result);
+        obj.forEach((item, index) => result[index] = deepCopy(item, hash));
+    } else {
+        result = Object.create(Object.getPrototypeOf(obj));
+        hash.set(obj, result);
+        Reflect.ownKeys(obj).forEach(key => result[key] = deepCopy(obj[key], hash));
+    }
+    return result;
+} */
+function deepCopy(obj, hash = new WeakMap()) {
+    // 如果 obj 不是对象（包括 null），直接返回 obj
+    if (Object(obj) !== obj) return obj; // 处理原始值
+    if (hash.has(obj)) return hash.get(obj); // Handle circular references
 
-	// 检查是否已经拷贝过该对象，避免循环引用
-	if (cache.has(obj)) {
-		return cache.get(obj);
-	}
+    let result;
+    const objType = Object.prototype.toString.call(obj);
 
-	// 处理特殊对象类型
-	if (obj instanceof Date) {
-		return new Date(obj);
-	}
-
-	if (obj instanceof RegExp) {
-		return new RegExp(obj);
-	}
-
-	// 创建新的数组或对象
-	const copy = Array.isArray(obj) ? [] : {};
-	cache.set(obj, copy);
-
-	// 处理数组和普通对象
-    //缺点:Object.keys在处理数组时会遍历数组的索引，可能会带来一些性能开销
-	Object.keys(obj).forEach((key) => {
-		copy[key] = deepCopy(obj[key], cache);
-	});
-
-	return copy;
-
-    /*
-    未简写版本
-    // 处理数组
-    if (Array.isArray(obj)) {
-        const copy = [];
-        cache.set(obj, copy);
-        obj.forEach((item, index) => {
-            copy[index] = deepCopy(item, cache);
-        });
-        return copy;
+    switch (objType) {
+        case '[object Set]':
+            result = new Set();
+            hash.set(obj, result);
+            obj.forEach((value) => result.add(deepCopy(value, hash)));
+            break;
+        case '[object Map]':
+            result = new Map();
+            hash.set(obj, result);
+            obj.forEach((value, key) => result.set(deepCopy(key, hash), deepCopy(value, hash)));
+            break;
+        case '[object Date]':
+            result = new Date(obj);
+            break;
+        case '[object RegExp]':
+            result = new RegExp(obj.source, obj.flags);
+            break;
+        case '[object Function]':
+            result = obj.bind(null);
+            break;
+        case '[object Array]':
+            result = [];
+            hash.set(obj, result);
+            obj.forEach((item, index) => (result[index] = deepCopy(item, hash)));
+            break;
+        default:
+            // 创建一个新对象，继承自原对象的原型
+            result = Object.create(Object.getPrototypeOf(obj));
+            hash.set(obj, result);
+            // 获取原对象的所有属性（包括不可枚举属性和符号属性）
+            //只会获取对象自身的属性，不包括原型链上的属性。
+            Reflect.ownKeys(obj).forEach((key) => (result[key] = deepCopy(obj[key], hash)));
+            break;
     }
 
-    // 处理普通对象
-    const copy = {};
-    cache.set(obj, copy);
-    Object.keys(obj).forEach(key => {
-        copy[key] = deepCopy(obj[key], cache);
-    });
-    return copy;
-    */
+    return result;
 }
-
-// 示例使用
+// Example usage
 const original = {
-	a: 1,
-	b: {
-		c: 2,
-		d: [3, 4, { e: 5 }],
-	},
-	f: new Date(),
-	g: /abc/i,
-	h: function () {
-		console.log("Hello");
-	},
+    number: 1,
+    boolean: true,
+    nullValue: null,
+    undefinedValue: undefined,
+    date: new Date(),
+    regex: /test/gi,
+    array: [1, 2, { nested: 'obj' }],
+    set: new Set([1, 2, 3]),
+    map: new Map([['key', 'value']]),
+    func: function () {
+        return 'function';
+    },
+    [Symbol('id')]: 123,
 };
+original.self = original; // Circular reference
 
 const copied = deepCopy(original);
-
 console.log(copied);
-console.log(copied.b.d[2] === original.b.d[2]); // false，表示深拷贝成功
-console.log(JSON.parse(JSON.stringify(original)));
-
-//d: [3, 4, { e: 5 }],为什么这部分输出的是d: [ 3, 4, [Object] ]
-//会简化输出, 浏览器运行就可以展开了
+copied.array[2]['key'] = 'value';
+console.log(copied.array[2]);
+console.log(original.array[2]);

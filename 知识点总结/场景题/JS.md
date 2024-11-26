@@ -7364,7 +7364,7 @@ console.log(copied.b.c); // 输出: 2 (未受影响)
 
 iframe通信是指在父页面和嵌入的iframe子页面之间进行数据交换和方法调用的过程。根据页面是否同源（即协议、域名和端口是否相同），通信方式有所不同。以下是几种常见的iframe通信方法：
 
-### 1. 同源通信
+### 1. 同源通信(contentwindow)
 
 #### 1.1 父页面调用子页面的方法
 当父页面和子页面同源时，可以通过直接访问iframe的`contentWindow`对象来调用子页面的方法。
@@ -7418,48 +7418,46 @@ iframe通信是指在父页面和嵌入的iframe子页面之间进行数据交�
 </script>
 ```
 
-### 2. 跨域通信
+### 2. 跨域通信(postmessage)
 
 #### 2.1 使用 `postMessage` 和 `message` 事件
 `postMessage` 方法允许不同源的窗口之间进行通信。父页面和子页面可以通过 `postMessage` 发送消息，并通过监听 `message` 事件来接收消息。
 
-**父页面代码：**
-```html
-<!-- 父页面 -->
-<iframe id="myIframe" src="http://example.com/child.html"></iframe>
-<script>
-    window.onload = function() {
-        var iframe = document.getElementById('myIframe');
-        iframe.onload = function() {
-            var data = 'Hello from parent';
-            iframe.contentWindow.postMessage(data, 'http://example.com'); // 发送消息
-        };
+**父页面向iFrame发送消息**：
 
-        window.addEventListener('message', function(event) {
-            if (event.origin !== 'http://example.com') return; // 安全检查
-            console.log('Received from child:', event.data); // 输出: Received from child: Hello from child
-        });
-    };
-</script>
+```
+document.getElementById('myIframe').contentWindow.postMessage('hello, child!', 'http://example.com');
 ```
 
-**子页面代码：**
-```html
-<!-- 子页面 -->
-<script>
-    window.onload = function() {
-        var data = 'Hello from child';
-        window.parent.postMessage(data, 'http://parentdomain.com'); // 发送消息
-    };
+这里，`http://example.com`是目标窗口的源，确保消息仅发送给指定的源，以提高安全性。
 
-    window.addEventListener('message', function(event) {
-        if (event.origin !== 'http://parentdomain.com') return; // 安全检查
-        console.log('Received from parent:', event.data); // 输出: Received from parent: Hello from parent
-    });
-</script>
+**iFrame向父页面发送消息：**
+
+```
+window.parent.postMessage('hello, parent!', 'http://example.org');
 ```
 
-### 3. 通过URL传参
+#### 监听`message`事件
+
+接收方需要监听`message`事件来处理接收到的消息。例如，父页面可以这样监听来自iFrame的消息：
+
+```js
+window.addEventListener('message', function(e) {
+    if (e.origin !== 'http://example.com') return; // 安全检查
+    console.log('Received message from iFrame:', e.data);
+}, false);
+```
+
+iFrame也可以监听来自父页面的消息：
+
+```js
+window.addEventListener('message', function(e) {
+    if (e.origin !== 'http://example.org') return; // 安全检查
+    console.log('Received message from parent:', e.data);
+}, false);
+```
+
+### 3. 通过URL传参(src拼参数)
 
 #### 3.1 父页面向子页面传递参数
 父页面可以通过在iframe的`src`属性中附加查询参数来向子页面传递数据。
@@ -7521,6 +7519,64 @@ iframe通信是指在父页面和嵌入的iframe子页面之间进行数据交�
     };
 </script>
 ```
+
+### 5.window.name
+
+`window.name`方法是一种利用浏览器窗口生命周期中`window.name`属性的持久性来实现跨域数据传输的技术。这种方法可以传递相对大量的数据（大约2MB，具体取决于浏览器），但确实需要两次加载页面，从而增加了一定的复杂度。下面详细介绍`window.name`方法的工作原理及其带来的复杂性。
+
+#### `window.name`的工作原理
+
+1. **共享性**：每个窗口都有独立的`window.name`属性，但在一个窗口的生命周期中（直到窗口被关闭），所有在这个窗口中加载的页面都会共享同一个`window.name`。这意味着，即使页面跳转或重新加载，`window.name`的值也会保持不变。
+
+2. **读写权限**：每个页面都可以读取和修改`window.name`的值，这为数据的传递提供了基础。
+
+3. **数据量**：`window.name`可以存储的数据量较大，一般可以达到2MB，某些浏览器甚至支持更大的数据量。
+
+#### 跨域数据传输的具体步骤
+
+1. **设置数据**：在源页面（A页面）中，通过设置一个隐藏的`iframe`的`src`属性来加载目标页面（B页面）。B页面加载完成后，会将需要传递的数据设置到`window.name`中。例如：
+   ```html
+   <!-- A页面 -->
+   <iframe id="hiddenIframe" src="http://target-domain.com/B.html" style="display:none;"></iframe>
+   ```
+   B页面中的JavaScript代码：
+   ```javascript
+   window.name = JSON.stringify({key: 'value'}); // 设置需要传递的数据
+   ```
+
+2. **切换源**：为了绕过浏览器的同源策略，需要将`iframe`的`src`属性切换到与源页面相同的域下的一个空页面（C页面）。这个操作会触发`iframe`的`onload`事件，此时`window.name`的值不会改变。例如：
+   ```javascript
+   // A页面中的JavaScript代码
+   var iframe = document.getElementById('hiddenIframe');
+   iframe.onload = function() {
+       if (!this.src.match(/C\.html$/)) {
+           this.src = 'C.html'; // 切换到同源的空页面
+       } else {
+           var data = JSON.parse(iframe.contentWindow.name); // 获取数据
+           console.log(data);
+           // 清理工作
+           iframe.contentWindow.document.write('');
+           iframe.contentWindow.close();
+           document.body.removeChild(iframe);
+       }
+   };
+   ```
+
+3. **获取数据**：当`iframe`加载C页面后，A页面可以通过`iframe.contentWindow.name`来获取B页面设置的数据。由于此时`iframe`与A页面同源，因此可以无障碍地访问`window.name`。
+
+#### 增加的复杂度
+
+1. **两次加载**：`window.name`方法需要两次加载页面才能完成数据的传递，第一次加载目标页面（B页面），第二次加载同源的空页面（C页面）。这不仅增加了网络请求的次数，还可能导致页面加载时间的延长。
+
+2. **状态管理**：为了正确处理两次加载的过程，需要在A页面中维护一定的状态，以确保在正确的时机执行相应的操作。例如，使用标志变量来区分当前是第一次加载还是第二次加载。
+
+3. **内存消耗**：虽然`window.name`可以存储较大的数据量，但如果频繁使用或数据量过大，可能会导致内存消耗增加，影响性能。
+
+4. **安全性**：尽管`window.name`方法本身并不涉及敏感信息的直接暴露，但在实现过程中仍需注意防止XSS攻击等安全问题。例如，确保数据的来源可信，避免直接将接收到的数据插入DOM。
+
+#### 结论
+
+`window.name`方法作为一种跨域数据传输的技术，虽然能够传递相对大量的数据，但也带来了额外的复杂性。在实际应用中，需要权衡数据量需求、性能影响和安全性等因素，选择最适合项目需求的通信方式。对于简单的数据传递场景，可以考虑使用`postMessage`等更为简洁和安全的方法。
 
 ### 总结
 
@@ -7869,7 +7925,7 @@ History模式需要服务器支持的原因主要在于其工作原理和对URL�
 3. **服务器端支持**：History模式需要服务器端的支持来正确处理路由请求。这意味着当用户直接访问某个URL时，服务器能够返回相应的页面内容，而不是默认的404错误页面。这不仅提升了用户体验，也使得搜索引擎能够顺利索引这些页面。
 4. **提高网站在搜索结果中的排名**：由于History模式的URL更加清晰和符合搜索引擎的爬虫算法，它有助于提升网站在搜索结果中的排名。这使得网站更容易被用户发现和访问
 
-## localStorage能跨越吗
+## localStorage能跨域吗
 
 localStorage 是一种在客户端存储数据的方式，但它遵循同源策略，这意味着默认情况下，localStorage 的数据在不同域名或跨域的情况下是无法直接访问的。具体来说，localStorage 是以域名为单位进行存储的，每个域名下的 localStorage 是独立的，无法跨域访问。
 
@@ -7885,3 +7941,54 @@ localStorage 是一种在客户端存储数据的方式，但它遵循同源策�
    - 例如 CrossStorageHub，它允许在多个浏览器窗口或标签页中共享单一的 localStorage，适用于不同域。
 5. **设置 document.domain**：
    - 如果两个页面的主域名相同，可以将 document.domain 属性值设置为根域名，从而实现跨子域的 localStorage 访问。
+
+## reject和catch的区别是什么
+
+### `reject`
+
+1. **定义**：`reject` 是 `Promise` 构造函数内部提供的一个方法，用于显式地将 `Promise` 状态设置为被拒绝（rejected）。当异步操作失败时，可以通过调用 `reject` 方法来传递失败的原因，通常是一个 `Error` 对象或描述错误的字符串。
+2. **使用场景**：在 `Promise` 的构造函数中，通常会在异步操作失败时调用 `reject` 方法，将错误信息传递给后续的处理逻辑。例如，在发起一个 HTTP 请求时，如果请求失败，可以通过 `reject` 来处理这种失败情况。
+
+### `catch`
+
+1. **定义**：`catch` 是 `Promise` 实例的一个方法，用于注册处理 `Promise` 被拒绝时的回调函数。`catch` 方法实际上是 `then(null, onRejected)` 的语法糖，专门用于处理 `Promise` 链中的错误。
+2. **使用场景**：`catch` 方法通常用于捕获 `Promise` 链中任何地方抛出的错误，无论是由 `reject` 方法引起的，还是在 `then` 方法的回调函数中抛出的错误。它提供了一种集中处理错误的机制，使得代码更加清晰和易于维护。
+
+### 关键区别
+
+1. **方法归属**：
+   - `reject` 是 `Promise` 构造函数内部的一个方法，用于设置 `Promise` 的状态为被拒绝。
+   - `catch` 是 `Promise` 实例的一个方法，用于注册处理 `Promise` 被拒绝时的回调函数。
+
+2. **用途**：
+   - `reject` 用于在异步操作失败时显式地拒绝 `Promise`，并传递失败的原因。
+   - `catch` 用于捕获和处理 `Promise` 链中的任何错误，包括由 `reject` 方法引起的错误以及在 `then` 方法的回调函数中抛出的错误。
+
+3. **链式调用**：
+   - `reject` 通常在 `Promise` 的构造函数中使用，不会直接影响 `Promise` 链。
+   - `catch` 可以在 `Promise` 链的任何位置调用，捕获并处理链中任何地方抛出的错误，使得错误处理更加灵活和集中。
+
+### 总结
+
+`reject` 和 `catch` 在 `Promise` 中扮演着不同的角色。`reject` 用于在异步操作失败时显式地拒绝 `Promise`，而 `catch` 用于捕获和处理 `Promise` 链中的任何错误。通过合理使用这两个方法，可以有效地管理和处理异步操作中的错误，使代码更加健壮和易于维护。
+
+## 作用域输出
+
+```javascript
+var a = 0;
+var b = 0;
+var c = 0;
+function fn(a) {
+    console.log('fn', a++, c);
+    function fn2(b) {
+        console.log('fn2', a, b, c);
+    }
+    var c = 4;
+    fn = fn2;
+}
+fn(1);
+fn(2);
+console.log(a, b, c)
+```
+
+fn2中引用了外部作用域的参数，形成了闭包

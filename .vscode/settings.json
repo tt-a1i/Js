@@ -1,6 +1,10 @@
 {
-	"cSpell.words": ["nums", "strs"],
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"editor.formatOnSave": true,
-	"prettier.requireConfig": true
+    "cSpell.words": ["nums", "strs"],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "prettier.requireConfig": true,
+    "indentRainbow.indentSetter": {
+        // "indentRainbow.indentSize": 2,
+        // "indentRainbow.indentStyle": "space"
+    }
 }
