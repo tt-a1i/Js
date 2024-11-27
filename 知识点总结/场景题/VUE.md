@@ -1559,7 +1559,7 @@ watch(() => user.value.name, (newValue, oldValue) => {
 
 #### 1. `Store 的创建`
 
-当创建一个 Vuex Store 时，实际上是实例化了一个 `Store` 类。这个类接收一个配置对象，其中包括 `state`、`getters`、`mutations`、`actions` 和 `modules` 等属性。在这个过程中，Vuex 会对 `state` 进行响应式处理，使 `state` 成为 Vue 实例的一个属性，从而实现了响应式。
+当创建一个 Vuex Store 时，实际上是实例化了一个 `Store` 类。这个**类接收一个配置对象**，其中包括 `state`、`getters`、`mutations`、`actions` 和 `modules` 等属性。在这个过程中，Vuex 会对 `state` 进行响应式处理，使 `state` 成为 Vue 实例的一个属性，从而实现了响应式。
 
 ```javascript
 class Store {
@@ -1599,7 +1599,7 @@ class Store {
 
 #### 2.` 插件机制`
 
-Vuex 作为一个 Vue 插件，通过 `Vue.use(Vuex)` 调用了 Vuex 的 `install` 方法。在 `install` 方法中，通过 `Vue.mixin` 将 `vuexInit` 方法混入到 Vue 实例的 `beforeCreate` 生命周期钩子中。`vuexInit` 方法负责将 Store 注入到 Vue 实例中，使 `$store` 属性可以在所有 Vue 组件中访问。
+Vuex 作为一个 Vue 插件，通过 `Vue.use(Vuex)` 调用了 Vuex 的 `install` 方法。在 `install` 方法中，通过 `Vue.mixin` 将 `vuexInit` 方法混入到 Vue 实例的 `beforeCreate` 生命周期钩子中。`vuexInit` 方法负责将 **Store 注入到 Vue 实例**中，使 `$store` 属性可以在所有 Vue 组件中访问。
 
 ```javascript
 function install(_Vue) {
@@ -1631,7 +1631,7 @@ function applyMixin(Vue) {
 
 #### 3. `响应式更新`
 
-由于 `state` 是通过 Vue 实例的 `data` 属性创建的，因此它是响应式的。当 `state` 中的数据发生变化时，Vue 的响应式系统会自动更新相关的组件。此外，Vuex 通过 `getters` 提供了派生状态的计算属性，这些计算属性也是响应式的。(上面源码中可以看到)
+由于 `state` 是通过 **Vue 实例的 `data` 属性创建的**，因此它是响应式的。当 `state` 中的数据发生变化时，Vue 的响应式系统会自动更新相关的组件。此外，Vuex 通过 `getters` 提供了派生状态的计算属性，这些计算属性也是响应式的。(上面源码中可以看到)
 
 #### 4. 模块化
 
