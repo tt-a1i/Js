@@ -52,7 +52,7 @@ XSS 全称为(**Cross Site Scripting**)，即 **跨站脚本攻击**。同时为
 document.getElementById("xss").innerHTML = document.getElementById("ipt").value;
 ```
 
-此时用户如果输入**<img src="1" onerror="alert(1)"/>**，也会产生xss攻击。
+此时用户如果输入**<img src="./D:/Typora/1" onerror="alert(1)"/>**，也会产生xss攻击。
 
 **基于DOM类型的XSS攻击关键是数据没有经过服务器，而是来自于DOM操作**。
 
