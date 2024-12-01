@@ -7928,3 +7928,10 @@ console.log(a, b, c)
 ```
 
 fn2中引用了外部作用域的参数，形成了闭包
+
+## 怎么打开一个新页面
+
+- a标签
+- js的window.open
+- window.location.href
+- window.locations.replace

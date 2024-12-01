@@ -2307,6 +2307,8 @@ export default {
 
 Vue.js 的 Diff 算法是其高效更新视图的核心，该算法**用于比较新旧两棵虚拟 DOM 树之间的差异**，**并最小化地将这些差异反映在实际 DOM 上**。理解 Vue 的 Diff 算法的工作原理能够帮助开发者更好地掌握 Vue.js 的性能优化技巧。
 
+**diff作用就是在patch子vnode过程中，找到与新vnode对应的老vnode，复用真实的dom节点，避免不必要的性能开销**
+
 ### 1. 什么是 Diff 算法？
 
 Diff（差异）算法的概念来源于文本编辑器中对两段文本的比较。前端框架中的 Diff 算法用于比较两个树结构之间的差异，并得出如何将旧树转换为新树所需的变更操作。
@@ -2389,33 +2391,21 @@ const newVNode = {
 
 ### 3.4 Key 属性的作用
 
-当在列表中对节点进行添加、删除或重排序时，使用 `key` 属性可以提高 Diff 算法的性能和正确性。`key` 可以用一个唯一标识符来标识每个节点：
+当在列表中对节点进行添加、删除或重排序时，使用 `key` 属性可以提高 Diff 算法的性能和正确性。`key` 可以用一个唯一标识符来标识每个节点
 
-```vue
-<template>
-  <div>
-    <ul>
-      <li v-for="item in items" :key="item.id">{{ item.text }}</li>
-    </ul>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      items: [
-        { id: 1, text: 'Item 1' },
-        { id: 2, text: 'Item 2' },
-        { id: 3, text: 'Item 3' }
-      ]
-    };
-  }
-};
-</script>
-```
+***key的作用是：通过判断newVnode和OldVnode的key是否相等，从而复用与新节点对应的老节点，节约性能的开销。***
 
 通过 `key` 属性，Vue 可以更高效地跟踪每个列表项的变动。如果不使用 `key` 属性，Diff 算法必须对每个位置上的节点进行逐个比较，从而导致更低的性能。
+
+#### 为什么不能用index作为key
+
+***用index做key的效果实际和没有用diff算法是一样的，为什么这么说呢，下面我就用一幅图来说明：***
+
+**数组列表在开头删除元素的例子**
+
+![img](https://pic2.zhimg.com/v2-da64c8b42601b85eeb7c1218abecc4e1_1440w.jpg)
+
+如果所示当我们用index作为key的时候，无论我们怎么样移动删除节点，到了diff算法中都会从头到尾依次patch(图中：***所有节点均未有效的复用***)
 
 ### 4. Diff 算法的时间复杂度
 
@@ -4429,7 +4419,7 @@ project-root/
 
 记住，好的目录结构应该是直观的、一致的，并且能够随着项目的增长而轻松扩展。
 
-## vue-router原理
+## Vue-router原理
 
 ### Vue Router 的原理
 
@@ -4456,19 +4446,14 @@ Vue Router 初始化过程中完成以下几项关键任务：
 2. **记录初始路由**：
    Router 实例会记录当前的初始路由，以便在后续操作中进行路由匹配。
 
-3. **设置路由模式**：
-   Router 支持两种模式：`history` 模式和 `hash` 模式。可以通过传递 `mode` 参数来指定：
-   - `history` 模式：基于 HTML5 History API。
-   - `hash` 模式：基于 URL 的哈希部分。
+3. **设置路由模式**：Vue-router 支持两种主要的路由模式：Hash 模式和 History 模式。
 
-   ```javascript
-   const router = new VueRouter({
-       mode: 'history', // 或者 'hash'
-       routes: [...]
-   });
-   ```
+   - **Hash 模式**：默认情况下使用，通过 URL 中的 `#` 符号来改变路径，不涉及服务器请求。当用户点击链接或修改 URL 时，会触发 `hashchange` 事件，Vue-router 监听该事件并根据当前的 hash 值匹配对应的路由组件进行渲染。
+   - **History 模式**：利用 HTML5 的 History API（如 `pushState` 和 `replaceState`）来改变 URL 而不刷新页面。Vue-router 通过监听 `popstate` 事件来响应 URL 的变化，并根据当前的 URL 匹配对应的路由组件进行渲染。
 
 #### 2. 路由匹配
+
+当 URL 发生变化时，Vue-router 根据路由配置进行匹配，找到与当前 URL 匹配的路由记录，并将对应的组件渲染到页面上。这一过程不需要重新加载整个页面，而是通过更新视图来实现页面内容的切换
 
 当路由发生变化时，Vue Router 会根据已配置的路由表进行路径匹配。这个过程通常包括以下几步：
 
@@ -4481,24 +4466,10 @@ Vue Router 初始化过程中完成以下几项关键任务：
 3. **加载组件**：
    根据匹配的路由记录加载相应的 Vue 组件，并将其渲染到 `<router-view>` 中。
 
-#### 3. 路由模式
-
-##### Hash模式
-- **原理**：基于 URL 的哈希（#）部分，它不会被浏览器发送到服务器。
-- **实现**：使用 `window.onhashchange` 监听 URL 的变化。
-
-##### History模式
-- **原理**：利用 HTML5 自带的 History API（pushState, replaceState, popstate）。
-- **实现**：通过调用 `history.pushState` 和 `history.replaceState` 方法来设置 URL，并使用 `window.onpopstate` 事件监听回退和前进操作。
-  - pushState: 将新的状态推入（push）历史堆栈。
-  - replaceState: 替换（replace）历史堆栈中的当前状态。
-  - pushState: 增加浏览器历史的长度。
-  - replaceState: 不改变浏览器历史的长度。
-  - pushState: 允许用户通过后退按钮逐步回到之前的状态。
-  - replaceState: 用户无法通过后退按钮回到被替换的状态。
 
 
-#### 4. 导航过程
+
+#### 3. 导航过程
 
 1. **导航触发**：
    导航可以通过点击 `<router-link>` 或调用 `router.push`、`router.replace` 等方法触发。
@@ -4572,10 +4543,6 @@ Vue Router 初始化过程中完成以下几项关键任务：
        }
    };
    ```
-
-### 总结
-
-Vue Router 是 Vue.js 中用于管理单页面应用路由的工具。它通过路径匹配和导航守卫，使得开发者可以方便地管理不同 URL 与组件之间的关系，并对导航进行控制。了解其核心原理，有助于我们开发出功能丰富且安全可靠的前端应用。
 
 ## 路由的history和hash模式
 

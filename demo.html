@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>demo</title>
-    <!-- ...existing code... -->
-    <style>
-        .container {
-            column-count: 3;
-            column-gap: 1em;
-        }
-        .item {
-            break-inside: avoid;
-            margin-bottom: 1em;
-            background: #f0f0f0;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-    </style>
-</head>
-<body>
-    
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>三列布局示例</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                display: flex;
+                height: 100vh; /* 视口高度，可根据需要调整 */
+            }
+            .column {
+                flex: 1;
+                display: flex;
+                justify-content: center; /* 水平居中 */
+                align-items: center; /* 垂直居中 */
+                border: 1px solid #ccc; /* 边框用于视觉分隔 */
+                padding: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="column">内容 1</div>
+            <div class="column">内容 2</div>
+            <div class="column">内容 3</div>
+        </div>
+    </body>
 </html>

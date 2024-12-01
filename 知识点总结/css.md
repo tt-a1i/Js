@@ -6,13 +6,7 @@
 
 ### 1. **`Hash` 模式**
 
-- URL 结构：使用 
-
-  ```
-#
-  ```
-  
-  （哈希符号）作为路径的一部分。
+- URL 结构：使用 #（哈希符号）作为路径的一部分。
 
   - 示例：`http://example.com/#/about`
 
@@ -1531,7 +1525,7 @@ flex: <flex-grow> <flex-shrink> <flex-basis>;
 
 - **`flex-grow`**：定义元素在父容器中按比例增长的权重。
 - **`flex-shrink`**：定义元素在父容器缩小时按比例收缩的权重。
-- **`flex-basis`**：定义元素的初始大小，默认为 `auto`（即根据内容大小决定）。
+- **`flex-basis`**：定义元素的初始大小，默认为 `auto`（即根据内容大小决定）。**优先级高于 `width` 或 `height`**`flex-basis` ，定义的是内容盒（content-box）的尺寸，因此它会受到 `box-sizing` 属性的影响
 
 **语法实例：**
 
