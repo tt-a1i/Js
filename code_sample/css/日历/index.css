@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 50px;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    display: inline-block;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#datePicker {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+#calendar {
+    display: inline-block;
+    text-align: left;
+}
+
+.calendar-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.calendar-table th, .calendar-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.calendar-table th {
+    background-color: #f2f2f2;
+}
+
+.today {
+    background-color: #ffeb3b;
+}

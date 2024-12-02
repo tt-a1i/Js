@@ -1,19 +1,11 @@
-function parseQueryParams(url){
-  const urlObj = new URL(url)
-  const searchParams = urlObj.searchParams
-  const params = {}
-  for(let [key, value] of searchParams){
-    value = decodeURIComponent(value)
-    if(params[key]){
-      if(!Array.isArray(params[key])){
-        params[key] = [params[key]]
-      }
-      params[key].push(value)
-    }else{
-      params[key] = value
-    }
+function parseQueryParams(url) {
+  const params = new URL(url).searchParams;
+  const result = {};
+  for (const key of params.keys()) {
+    const values = params.getAll(key);
+    result[key] = values.length > 1 ? values : values[0];
   }
-  return params
+  return result;
 }
 // 测试用例 1: 基本 URL 参数
 console.log(parseQueryParams('https://example.com?name=John&age=30'));

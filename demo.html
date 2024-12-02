@@ -3,31 +3,54 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>三列布局示例</title>
+        <title>Box Animation</title>
         <style>
-            body {
+            body,
+            html {
+                height: 100%;
                 margin: 0;
-                padding: 0;
-            }
-            .container {
                 display: flex;
-                height: 100vh; /* 视口高度，可根据需要调整 */
+                justify-content: center;
+                align-items: center;
             }
-            .column {
-                flex: 1;
-                display: flex;
-                justify-content: center; /* 水平居中 */
-                align-items: center; /* 垂直居中 */
-                border: 1px solid #ccc; /* 边框用于视觉分隔 */
-                padding: 20px;
+
+            #box {
+                width: 50px;
+                height: 100px;
+                background-color: red;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                animation: resizeAndMove 1s forwards;
+            }
+
+            @keyframes resizeAndMove {
+                0% {
+                    width: 50px;
+                    height: 100px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+                50% {
+                    width: 100px;
+                    height: 100px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+                100% {
+                    width: 100px;
+                    height: 100px;
+                    top: 0;
+                    left: 100%;
+                    transform: translate(-100%, 0);
+                }
             }
         </style>
     </head>
     <body>
-        <div class="container">
-            <div class="column">内容 1</div>
-            <div class="column">内容 2</div>
-            <div class="column">内容 3</div>
-        </div>
+        <div id="box"></div>
     </body>
 </html>

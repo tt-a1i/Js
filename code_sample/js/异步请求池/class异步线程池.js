@@ -19,15 +19,14 @@ class taskScheduler {
   }
 
   addTask(task) {
-    return new Promise((...args) => {
-      this.tasks.push(() => task().then(...args));
+    return new Promise((resolve, reject) => {
+      this.tasks.push(() => task().then(resolve, reject));
       this.run();
     });
   }
 }
 
 function promiseTimeout(time, label) {
-  console.log(label);
   console.time(label);
   return () => new Promise((resolve) => {
     setTimeout(() => {
@@ -35,7 +34,7 @@ function promiseTimeout(time, label) {
     }, time);
   }).then(() => {
     console.timeEnd(label);
-  });
+  })
 }
 
 const scheduler = new taskScheduler(3);

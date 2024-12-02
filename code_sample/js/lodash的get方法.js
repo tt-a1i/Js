@@ -1,8 +1,9 @@
 function get(object, path, defaultValue) {
 	//路径转换为数组
-	const pathArray = Array.isArray(path)
-		? path
-		: path.replace(/\[(\d+)\]/g, ".$1").split(".");
+	// const pathArray = Array.isArray(path)
+	// 	? path
+	// 	: path.replace(/\[(\d+)\]/g, ".$1").split(".");
+	const pathArray = Array.isArray(path) ? path: path.split('.')
 	let result = object;
 	for (const key of pathArray) {
 		result = result ? result[key] : undefined;
