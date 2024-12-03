@@ -7935,3 +7935,9 @@ fn2中引用了外部作用域的参数，形成了闭包
 - js的window.open
 - window.location.href
 - window.locations.replace
+
+## fetch如果没有返回一个promise怎么捕获错误
+
+- window.onhandleRejection
+- async await 判断response的状态码
+- await结合 try catch
