@@ -1,6 +1,6 @@
 function getNestedProperty(obj, path, defaultValue = undefined) {
     // 将字符串路径分割为数组，以支持“a.b.c”或["a", "b", "c"]两种形式
-    const pathArray = Array.isArray(path) ? path : path.split('.').filter(key => key);
+    const pathArray = Array.isArray(path) ? path : path.split('.');
 
     // 使用 reduce 迭代路径数组
     return pathArray.reduce((accumulator, key) => {
@@ -13,14 +13,14 @@ function getNestedProperty(obj, path, defaultValue = undefined) {
     }, obj);
 }
 
-// 使用示例 
+// 使用示例
 const data = {
     user: {
         profile: {
             name: 'Alice',
-            age: 30
-        }
-    }
+            age: 30,
+        },
+    },
 };
 
 console.log(getNestedProperty(data, 'user.profile.name')); // 输出: Alice

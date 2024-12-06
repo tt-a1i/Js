@@ -5,52 +5,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Box Animation</title>
         <style>
-            body,
-            html {
-                height: 100%;
-                margin: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            #box {
-                width: 50px;
-                height: 100px;
-                background-color: red;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                animation: resizeAndMove 1s forwards;
-            }
-
-            @keyframes resizeAndMove {
+            @keyframes move {
                 0% {
-                    width: 50px;
-                    height: 100px;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
+                    transform: translateX(0);
                 }
                 50% {
-                    width: 100px;
-                    height: 100px;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
+                    transform: translateX(200px);
                 }
                 100% {
-                    width: 100px;
-                    height: 100px;
-                    top: 0;
-                    left: 100%;
-                    transform: translate(-100%, 0);
+                    transform: translateX(0);
                 }
+            }
+            .box {
+                width: 100px;
+                height: 100px;
+                background-color: lightblue;
+                animation: move 2s infinite;
             }
         </style>
     </head>
     <body>
-        <div id="box"></div>
+        <div class="box"></div>
     </body>
 </html>
