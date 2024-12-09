@@ -19,7 +19,6 @@ const getPrime = (function() {
         }
     };
 })();
-
 // 示例使用
 console.log(getPrime()); // 输出: 2
 console.log(getPrime()); // 输出: 3

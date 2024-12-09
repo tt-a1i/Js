@@ -1,28 +1,12 @@
-// 使用闭包实现的 getPrime 方法，每次调用返回一个质数
-const getPrime = (function() {
-    let current = 2;
-
-    function isPrime(n) {
-        if (n < 2) return false;
-        for(let i = 2; i <= Math.sqrt(n); i++) {
-            if(n % i === 0) return false;
-        }
-        return true;
+Array.prototype.myReduce = function(cb, initialValue){
+    let currIndex = 0, accumulator = 0
+    if(!initialValue){
+        currIndex = 1
+        accumulator = this[0]
     }
-
-    return function() {
-        while (true) {
-            if (isPrime(current)) {
-                return current++;
-            }
-            current++;
-        }
-    };
-})();
-
-// 示例使用
-console.log(getPrime()); // 输出: 2
-console.log(getPrime()); // 输出: 3
-console.log(getPrime()); // 输出: 5
-console.log(getPrime()); // 输出: 7
-console.log(getPrime());
+    for(let i = currIndex; i < this.length; i++){
+        accumulator = cb(accumulator, this[i], i, this)
+    }
+    return accumulator
+}
+console.log([1,2,3].myReduce((a, b) => a + b, 0))
