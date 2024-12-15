@@ -1,6 +1,7 @@
 //其元素顺序与传入的 promise 一致，而非按照兑现的时间顺序排列,保持预测性和一致性
 function myPromiseAll(promises){
-    //首先确保是可迭代对象
+    //JavaScript 中的一个内置符号，用于定义对象的默认迭代器
+    //任何实现了 Symbol.iterator 方法的对象都被认为是可迭代的
     if(!promises[Symbol.iterator]){
         throw new TypeError('Argument must be iterable')
     }

@@ -1,21 +1,34 @@
-//在有序数组中查找目标值第一次出现的位置，没有则返回-1
-function findTarget(arr, n){
-    let idx = null
-    let l = 0, r = arr.length - 1
-    while(l <= r){
-        let middle = Math.floor((l + r) / 2)
-        let num = arr[middle]
-        if(num === n){
-            while(arr[middle] === arr[middle - 1]) middle--
-            idx = middle
-            break
-        }else if(num < n){
-            l = middle + 1
-        }else{
-            r = middle - 1
-        }
+function myPromiseAll(promises){
+    if(!promises[Symbol.iterator]){
+        throw new Error(`argument must be iterable`)
     }
-    return idx === null ? -1 : idx
+    const promiseArr = Array.from(promises)
+    const result = []
+    let computed = 0
+    return new Promise((resolve, reject) => {
+        if(promiseArr.length === 0){
+            resolve(result)
+        }
+        promiseArr.forEach((promise, index) => {
+            Promise.resolve(promise)
+                .then(res => {
+                    result[index] = res
+                    computed++
+                    if(computed === promiseArr.length){
+                        resolve(result)
+                    }
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    })
 }
-let arr = [1,2,3,3,3,3,3,4]
-console.log(findTarget(arr, 3))
+const promises = [
+    Promise.resolve(1),
+    Promise.resolve(2),
+    Promise.reject(3)
+]
+myPromiseAll(promises)
+    .then(res => console.log(res))
+    .catch(err => console.log(err))
